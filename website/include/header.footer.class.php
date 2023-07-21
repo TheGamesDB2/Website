@@ -112,6 +112,9 @@ class HEADER
 				<li class="nav-item">
 					<a class="nav-link" href="/add_game.php">Add New Game</a>
 				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="https://www.patreon.com/thegamesdb" target="_blank">Patreon</a>
+				</li>
 			</ul>
 			<form action="/search.php" method="get" class="form-inline my-2 my-lg-0">
 				<input name="name" class="form-control mr-sm-2" type="text" placeholder="Search">
