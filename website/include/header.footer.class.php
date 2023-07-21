@@ -75,6 +75,12 @@ class HEADER
 	<?php if(isset($this->_printExtraHeader)) : call_user_func($this->_printExtraHeader); endif; ?>
 </head>
 <body>
+	<?php 
+		if ($_SERVER['HTTP_HOST'] == "dev.thegamesdb.net")
+		{
+			echo "<div id=\"dev\" style=\"background-color: red; min-width:100%; color:white; font-size:30px; text-align: center;\">DEV SITE</div>";
+		}
+	?>
 	<nav class="navbar navbar-expand-lg navbar-dark bg-primary" style="margin: 10px;">
 		<a class="navbar-brand" href="/">TheGamesDB</a>
 		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
@@ -105,6 +111,9 @@ class HEADER
 				</li>
 				<li class="nav-item">
 					<a class="nav-link" href="/add_game.php">Add New Game</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="https://www.patreon.com/thegamesdb" target="_blank">Patreon</a>
 				</li>
 			</ul>
 			<form action="/search.php" method="get" class="form-inline my-2 my-lg-0">
