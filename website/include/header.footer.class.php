@@ -68,9 +68,9 @@ class HEADER
 				echo '<link rel="stylesheet" href="/css/materia-bootstrap.min.css" crossorigin="anonymous">';
 		}
 	?>
-	<script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
-	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.13.0/umd/popper.min.js"></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+	<script type="text/javascript" src="/js/jquery-3.2.1.min.js"></script>
+	<script type="text/javascript" src="/js/popper.min.1.13.0.js"></script>
+	<script type="text/javascript" src="/js/bootstrap.min.4.0.0.js"></script>
 	<link rel="stylesheet" href="/css/main.css" crossorigin="anonymous">
 	<?php if(isset($this->_printExtraHeader)) : call_user_func($this->_printExtraHeader); endif; ?>
 </head>

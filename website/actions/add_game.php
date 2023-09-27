@@ -46,6 +46,10 @@ if(!checkdate($date[1], $date[2], $date[0]))
 	returnJSONAndDie(-1, "Invalid Date Format");
 }
 
+if ($date[0] > 3000)
+{
+	returnJSONAndDie(-1, "Invalid Date Format"); // Implementing fix for https://github.com/TheGamesDB2/Website/issues/20 - example date 20223 in theory is a valid date, as such put a limit of 3000.
+}
 
 require_once __DIR__ . "/../../include/TGDB.API.php";
 require_once __DIR__ . "/../include/DiscordUtils.class.php";
@@ -99,7 +103,7 @@ try
 	}
 
 	$conditions = [];
-	$conditions['game_title'] = [htmlspecialchars($_REQUEST['game_title']), PDO::PARAM_STR];
+	$conditions['game_title'] = [htmlspecialchars(trim($_REQUEST['game_title'])), PDO::PARAM_STR];
 	$conditions['overview'] = [htmlspecialchars($_REQUEST['overview']), PDO::PARAM_STR];
 	$conditions['youtube'] = [htmlspecialchars($_REQUEST['youtube']), PDO::PARAM_STR];
 

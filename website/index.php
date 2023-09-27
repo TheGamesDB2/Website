@@ -118,6 +118,8 @@ $Header->appendRawHeader(function() { ?>
 										<a href="/game.php?id=<?= $game->id ?>">
 											<?= $game->game_title ?>
 											<br/>
+											<span class="text-muted">(<?= $game->release_date ?>)</span>
+											<br/>
 											<span class="text-muted"><?= $Platforms[$game->platform]->name ?></span>
 										</a>
 									</th>
