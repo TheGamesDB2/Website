@@ -103,7 +103,7 @@ try
 	}
 
 	$conditions = [];
-	$conditions['game_title'] = [htmlspecialchars($_REQUEST['game_title']), PDO::PARAM_STR];
+	$conditions['game_title'] = [htmlspecialchars(trim($_REQUEST['game_title'])), PDO::PARAM_STR];
 	$conditions['overview'] = [htmlspecialchars($_REQUEST['overview']), PDO::PARAM_STR];
 	$conditions['youtube'] = [htmlspecialchars($_REQUEST['youtube']), PDO::PARAM_STR];
 
