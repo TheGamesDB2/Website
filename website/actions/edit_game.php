@@ -122,7 +122,7 @@ try
 		$Lock->commit();
 	}
 
-	$res = $API->UpdateGame( $_user->GetUserID(), $_REQUEST['game_id'], $_REQUEST['game_title'], $_REQUEST['overview'], $_REQUEST['youtube'], $_REQUEST['release_date'],
+	$res = $API->UpdateGame( $_user->GetUserID(), $_REQUEST['game_id'], trim($_REQUEST['game_title']), $_REQUEST['overview'], $_REQUEST['youtube'], $_REQUEST['release_date'],
 		$_REQUEST['players'], $_REQUEST['coop'], $_REQUEST['developers'], $_REQUEST['publishers'], $_REQUEST['genres'], $_REQUEST['rating'],  $_REQUEST['alternate_names'],
 		$_REQUEST['uids'], $_REQUEST['platform'], $_REQUEST['region_id'], $_REQUEST['country_id']);
 
