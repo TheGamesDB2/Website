@@ -81,6 +81,7 @@ $Fields = ['game_id', 'type', 'subtype'];
 		case 'banner':
 		case 'screenshot':
 		case 'clearlogo':
+		case 'testicle':
 			if(empty($_REQUEST['subtype']))
 			{
 				break;
