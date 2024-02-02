@@ -81,6 +81,7 @@ $screenshots = TGDBUtils::GetAllCovers($Game, 'screenshot', '');
 $banners = TGDBUtils::GetAllCovers($Game, 'banner', '');
 $clearlogos = TGDBUtils::GetAllCovers($Game, 'clearlogo', '');
 $titlescreens = TGDBUtils::GetAllCovers($Game, 'titlescreen', '');
+$testicle = TGDBUtils::GetAllCovers($Game, 'testicle', '');
 $is_graphics_empty = empty($fanarts) && empty($screenshots) && empty($banners) &&  empty($clearlogos) && empty($titlescreens);
 
 $box_cover = new \stdClass();
