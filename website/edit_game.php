@@ -844,6 +844,19 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 									</div>
 									<?php endif; ?>
 
+									<?php if(!empty($cover = array_shift($testicle))) : ?>
+									<div class="col-12 col-sm-6" style="margin-bottom:10px; overflow:hidden;">
+										<a class="fancybox-thumb" data-image-id="<?= $cover->id ?>" data-fancybox="testicle" data-caption="Testicle" href="<?= $cover->original ?>">
+											<img class="rounded img-thumbnail img-fluid" src="<?= $cover->cropped_center_thumb ?>" alt=""/>
+											<img src="/images/ribbonFanarts.png" style="position: absolute; left: 15px; top: 0; height: 80%; z-index: 10"/>
+										</a>
+										<?php while($cover = array_shift($testicle)) : ?>
+											<a class="fancybox-thumb" data-image-id="<?= $cover->id ?>" style="display:none" data-fancybox="testicle" data-caption="Testicle"
+												href="<?= $cover->original ?>" data-thumb="<?= $cover->thumbnail ?>"></a>
+										<?php endwhile; ?>
+									</div>
+									<?php endif; ?>
+
 									<?php if(!empty($cover = array_shift($titlescreens))) : ?>
 									<div class="col-12 col-sm-6" style="margin-bottom:10px; overflow:hidden;">
 										<a class="fancybox-thumb" data-image-id="<?= $cover->id ?>" data-fancybox="titlescreens" data-caption="Title Screens" href="<?= $cover->original ?>">
