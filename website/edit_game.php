@@ -932,6 +932,8 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 															  data-backdrop="static" data-keyboard="false" data-target="#UploadModal2" class="btn btn-primary margin5px col-4">Upload ClearLogo</button>
 														<button type="button" data-upload-type="titlescreen" data-upload-subtype="" data-toggle="modal"
 															  data-backdrop="static" data-keyboard="false" data-target="#UploadModal2" class="btn btn-primary margin5px col-4">Upload Title Screens</button>
+														<button type="button" data-upload-type="testicle" data-upload-subtype="" data-toggle="modal"
+															  data-backdrop="static" data-keyboard="false" data-target="#UploadModal2" class="btn btn-primary margin5px col-4">Upload testicle Screens</button>
 													</div>
 													<div class="modal fade" id="UploadModal2" tabindex="-1" role="dialog" aria-labelledby="UploadModal2Label"
 														aria-hidden="true">
