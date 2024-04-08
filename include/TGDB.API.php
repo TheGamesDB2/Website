@@ -723,7 +723,7 @@ class TGDB
 		if(!empty($games_uid_unfiltered))
 		{
 			$games_uid_arr = explode(",", $games_uid_unfiltered);
-			$valid_chars = "abcdefghijklmnopqrstuvwxyz1234567890-_.";
+			$valid_chars = "abcdefghijklmnopqrstuvwxyz1234567890-_. ";
 			$games_uid_arr_filter = [];
 			foreach($games_uid_arr as $uid)
 			{
