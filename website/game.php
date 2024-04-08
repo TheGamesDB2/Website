@@ -403,6 +403,7 @@ $Header->appendRawHeader(function() { global $Game, $box_cover, $_user; ?>
 										<?php endwhile; ?>
 									</div>
 									<?php endif; ?>
+									
 									<?php if(!empty($cover = array_shift($screenshots))) : ?>
 									<div class="col-12 col-sm-6" style="margin-bottom:10px; overflow:hidden;">
 										<a class="fancybox-thumb" data-fancybox="screenshots" data-caption="Screenshot" href="<?= $cover->original ?>">
