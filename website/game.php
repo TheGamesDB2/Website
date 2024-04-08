@@ -66,8 +66,7 @@ $screenshots = TGDBUtils::GetAllCovers($Game, 'screenshot', '');
 $banners = TGDBUtils::GetAllCovers($Game, 'banner', '');
 $clearlogos = TGDBUtils::GetAllCovers($Game, 'clearlogo', '');
 $titlescreens = TGDBUtils::GetAllCovers($Game, 'titlescreen', '');
-$testicle = TGDBUtils::GetAllCovers($Game, 'testicle', '');
-$is_graphics_empty = empty($fanarts) && empty($screenshots) && empty($banners) && empty($clearlogos) && empty($titlescreens) && empty($testicle);
+$is_graphics_empty = empty($fanarts) && empty($screenshots) && empty($banners) && empty($clearlogos) && empty($titlescreens);
 
 $box_cover =  new \stdClass();
 $box_cover->front = TGDBUtils::GetAllCovers($Game, 'boxart', 'front');
@@ -404,18 +403,7 @@ $Header->appendRawHeader(function() { global $Game, $box_cover, $_user; ?>
 										<?php endwhile; ?>
 									</div>
 									<?php endif; ?>
-									<?php if(!empty($cover = array_shift($testicle))) : ?>
-									<div class="col-12 col-sm-6" style="margin-bottom:10px; overflow:hidden;">
-										<a class="fancybox-thumb" data-fancybox="testicle" data-caption="Testicle Screen" href="<?= $cover->original ?>">
-											<img alt="titlescreen(s)" class="rounded img-thumbnail img-fluid" src="<?= $cover->cropped_center_thumb ?>"/>
-											<img alt="titlescreen ribbon" src="/images/ribbonTitlescreens.png" style="position: absolute; left: 15px; top: 0; height: 80%; z-index: 10"/>
-										</a>
-										<?php while($cover = array_shift($testicle)) : ?>
-											<a class="fancybox-thumb" style="display:none" data-fancybox="testicle" data-caption="Title Screen"
-												href="<?= $cover->original ?>" data-thumb="<?= $cover->thumbnail ?>"></a>
-										<?php endwhile; ?>
-									</div>
-									<?php endif; ?>
+									
 									<?php if(!empty($cover = array_shift($screenshots))) : ?>
 									<div class="col-12 col-sm-6" style="margin-bottom:10px; overflow:hidden;">
 										<a class="fancybox-thumb" data-fancybox="screenshots" data-caption="Screenshot" href="<?= $cover->original ?>">
