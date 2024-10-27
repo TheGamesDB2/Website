@@ -52,6 +52,7 @@ if(isset($_GET['name']) && !empty($_GET['name']))
 			}
 		}
 		$regionsID = $API->GetRegionsList();
+		$countriesID = $API->GetCountriesList();
 	}
 }
 
@@ -102,8 +103,24 @@ $Header->setTitle("TGDB - Search");
 							</div>
 							<div class="card-footer bg-secondary" style="text-align:center;">
 								<p><?= $Game->game_title ?></p>
-								<?php if ($Game->region_id > 0): ?>
-								<p><?= $regionsID[$Game->region_id]->name; ?></p>
+								
+								<?php 
+									$regionName = NULL;
+									$countryName = NULL;
+									if ($Game->region_id > 0) {
+										$regionName = $regionsID[$Game->region_id]->name;
+									}
+									if ($Game->country_id > 0) {
+										$countryName = $countriesID[$Game->country_id]->name;
+									}
+								?>
+								<?php if ($regionName != NULL): ?>
+								<p>
+									<?= $regionName ?>
+									<?php if ($countryName != NULL): ?>
+									<br />(<?= $countryName ?>)
+									<?php endif; ?>
+								</p>
 								<?php endif; ?>
 								<p><?= $Game->release_date ?></p>
 								<p class="text-muted"><?= $PlatformList[$Game->platform]->name ?></p>
