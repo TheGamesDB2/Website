@@ -73,6 +73,10 @@ class HEADER
 	<script type="text/javascript" src="/js/bootstrap.min.4.0.0.js"></script>
 	<link rel="stylesheet" href="/css/main.css" crossorigin="anonymous">
 	<?php if(isset($this->_printExtraHeader)) : call_user_func($this->_printExtraHeader); endif; ?>
+	<?php if(!$_user->isLoggedIn()) : ?>
+	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5337615406686584"
+     crossorigin="anonymous"></script>
+	 <?php endif; ?>
 </head>
 <body>
 	<?php 
