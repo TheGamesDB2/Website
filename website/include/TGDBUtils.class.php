@@ -36,13 +36,13 @@ class TGDBUtils
 		{
 			if(isset($game->game_title))
 			{
-				return "https://via.placeholder.com/200x200?text=" . urlencode($game->game_title);
+				return "https://dummyimage.com/200x200?text=" . urlencode($game->game_title);
 			}
 			elseif(isset($game->name))
 			{
-				return "https://via.placeholder.com/200x200?text=" . urlencode($game->name);
+				return "https://dummyimage.com/200x200?text=" . urlencode($game->name);
 			}
-			return "https://via.placeholder.com/200x200";
+			return "https://dummyimage.com/200x200";
 		}
 	}
 
