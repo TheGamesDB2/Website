@@ -187,7 +187,7 @@ class FOOTER
 						<ul>
 							<li><a href="https://api.thegamesdb.net/">API Documentation</a></li>
 							<li><a href="https://forums.thegamesdb.net/viewforum.php?f=10">API Access Request</a></li>
-							<li><a href="https://github.com/TheGamesDB/TheGamesDBv2">Github Repo</a></li>
+							<li><a href="https://github.com/TheGamesDB2/Website">Github Repo</a></li>
 						</ul>
 					</div>
 					<?php if(false) : ?>

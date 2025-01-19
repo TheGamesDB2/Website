@@ -49,6 +49,10 @@ foreach($lastupdated as $Game)
 		$Game->boxart = $covers[$Game->id];
 	}
 }
+	
+$regionsID = $API->GetRegionsList();
+$countriesID = $API->GetCountriesList();
+
 $Game = null;
 
 $Header = new HEADER();
@@ -96,6 +100,23 @@ $Header->appendRawHeader(function() { ?>
 					<div class="col-9">
 						<h4><a href="/game.php?id=<?= $game->id ?>"><?= $game->game_title ?></a></h4>
 						<h6 class="text-muted">Platform: <?= $Platforms[$game->platform]->name ?></h6>
+						<?php 
+							$regionName = NULL;
+							$countryName = NULL;
+							if ($game->region_id > 0) {
+								$regionName = $regionsID[$game->region_id]->name;
+							}
+							if ($game->country_id > 0) {
+								$countryName = $countriesID[$game->country_id]->name;
+							}
+						?>
+						<?php if ($regionName != NULL): ?>
+							<h6 class="text-muted">Region: <?= $regionName ?>
+							<?php if ($countryName != NULL): ?>
+							(<?= $countryName ?>)
+							<?php endif; ?>
+							</h6>
+						<?php endif; ?>
 						<p>
 							<?= !empty($game->overview) ? WebUtils::truncate($game->overview, 200) : "No overview is currently available for this title, please feel free to add one."; ?>... <a href="/game.php?id=<?= $game->id ?>">Read More</a></p>
 					</div>
