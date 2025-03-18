@@ -70,7 +70,7 @@ $Header->appendRawHeader(function() { ?>
 		<div class="row justify-content-center" style="margin:10px;">
 			<div class="col-md-10">
 
-				<div class="row">
+				<div class="row" data-testid="recent-games">
 					<?php foreach($recent as $game) : ?>
 					<div class="col-6 col-md-2">
 						<a href="/game.php?id=<?= $game->id ?>" style="padding-bottom: 10px;">
@@ -88,7 +88,7 @@ $Header->appendRawHeader(function() { ?>
 
 		<div class="row justify-content-center">
 
-			<div class="col-12 col-lg-6 order-2 order-lg-1">
+			<div class="col-12 col-lg-6 order-2 order-lg-1" data-testid="recently-added">
 				<h2>Recently Added</h2><hr/>
 				<?php foreach($lastupdated as $game) : ?>
 				<div class="row" style="padding-bottom:10px">
@@ -131,7 +131,7 @@ $Header->appendRawHeader(function() { ?>
 					<div class="card-header">
 						<h5>Releasing Soon</h5></div>
 					<div>
-						<table class="table">
+						<table class="table" data-testid="releasing-soon">
 							<tbody>
 								<?php foreach($soon as $game) : ?>
 								<tr>
