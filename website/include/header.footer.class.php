@@ -71,6 +71,8 @@ class HEADER
 	<script type="text/javascript" src="/js/jquery-3.2.1.min.js"></script>
 	<script type="text/javascript" src="/js/popper.min.1.13.0.js"></script>
 	<script type="text/javascript" src="/js/bootstrap.min.4.0.0.js"></script>
+	<script type="text/javascript" src="/js/fontawesome.5.0.10.js"></script>
+	<link rel="stylesheet" href="/css/fontawesome.5.0.10.css" crossorigin="anonymous">
 	<link rel="stylesheet" href="/css/main.css" crossorigin="anonymous">
 	<?php if(isset($this->_printExtraHeader)) : call_user_func($this->_printExtraHeader); endif; ?>
 	<?php if(!$_user->isLoggedIn()) : ?>
