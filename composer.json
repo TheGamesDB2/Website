@@ -1,10 +1,15 @@
 {
-	"require": {
+    "require": {
         "php": ">=8.2.0",
         "slim/slim": "^3.1",
         "slim/php-view": "^2.0",
         "monolog/monolog": "^1.17",
         "claviska/simpleimage": "^3.6",
         "cloudflare/sdk": "^1.1"
+    },
+    "require-dev": {
+        "codeception/codeception": "^5.2",
+        "codeception/module-phpbrowser": "*",
+        "codeception/module-asserts": "*"
     }
 }
