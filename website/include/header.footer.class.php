@@ -95,12 +95,6 @@ class HEADER
 
 		<div class="collapse navbar-collapse" id="navbarColor01">
 			<ul class="navbar-nav mr-auto">
-				<li class="nav-item">
-					<a class="nav-link" href="/">Home</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link" href="https://forums.thegamesdb.net/">Forums</a>
-				</li>
 				<li class="nav-item dropdown">
 					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 					Browse
@@ -110,21 +104,22 @@ class HEADER
 						<a class="dropdown-item" href="/list_platforms.php">Platforms</a>
 						<a class="dropdown-item" href="/list_devs.php">Developers</a>
 						<a class="dropdown-item" href="/list_pubs.php">Publishers</a>
+						<a class="dropdown-item" href="/stats.php">Stats</a>
 					</div>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link" href="/stats.php">Stats</a>
 				</li>
 				<li class="nav-item">
 					<a class="nav-link" href="/add_game.php">Add New Game</a>
 				</li>
 				<li class="nav-item">
+					<a class="nav-link" href="https://forums.thegamesdb.net/">Forums</a>
+				</li>
+				<li class="nav-item">
 					<a class="nav-link" href="https://www.patreon.com/thegamesdb" target="_blank">Patreon</a>
 				</li>
 			</ul>
-			<form action="/search.php" method="get" class="form-inline my-2 my-lg-0">
-				<input name="name" class="form-control mr-sm-2" type="text" placeholder="Search">
-				<button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+			<form id="search-form" action="/search.php" method="get" class="form-inline my-2 my-lg-0">
+				<input name="name" type="text" placeholder="Search">
+				<button type="submit"><i class="fa fa-search" title="Search"></i></button>
 			</form>
 			<ul class="navbar-nav my-2 my-lg-0">
 				<?php if($_user->isLoggedIn()) : ?>
@@ -186,6 +181,7 @@ class FOOTER
 							<li><a href="/list_platforms.php">Platforms</a></li>
 							<li><a href="/list_devs.php">Developers</a></li>
 							<li><a href="/list_pubs.php">Publishers</a></li>
+							<li><a href="/stats.php">Stats</a></li>
 						</ul>
 					</div>
 					<div class="col-sm-3">

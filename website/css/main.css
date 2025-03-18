@@ -149,3 +149,67 @@ h1, h2, h3, h4, h5, h6
 {
 	text-transform: none !important;
 }
+
+#search-form {
+	background: white;
+	border-radius: 0.25em;
+	font-size: 11pt;
+	padding: 0.25em;
+	width: 230px;
+}
+
+#search-form button,
+#search-form input {
+	background: white;
+	border: 0;
+	display: inline-block;
+	font-family: inherit;
+}
+
+#search-form button {
+	cursor: pointer;
+	color: gray;
+}
+
+#search-form button:hover {
+	color: black;
+}
+
+#search-form input {
+	outline: none;
+	width: 200px;
+}
+
+@media (min-width: 992px) {
+	#search-form {
+		width: auto;
+	}
+
+	#search-form input {
+		width: 130px;
+	}
+
+	.navbar-nav .btn {
+		padding: 0;
+	}
+
+	.navbar-nav .nav-item {
+		margin-right: 1rem;
+		margin-right: 1rem;
+	}
+}
+
+@media (min-width: 1200px) {
+	#search-form input {
+		width: 240px;
+	}
+
+	.navbar-nav .btn {
+		padding: 0;
+	}
+
+	.navbar-nav .nav-item {
+		margin-right: 1rem;
+		margin-right: 1rem;
+	}
+}
