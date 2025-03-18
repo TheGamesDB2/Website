@@ -41,10 +41,8 @@ $Header->appendRawHeader(function() { global $devs_list, $pubs_list; ?>
 
 	<link href="/css/select-pure.css" rel="stylesheet">
 	<link href="/css/social-btn.css" rel="stylesheet">
-	<link href="/css/fa-brands.5.0.10.css" rel="stylesheet">
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
 
-	<script type="text/javascript" defer src="/js/brands.5.0.10.js" crossorigin="anonymous"></script>
 	<script type="text/javascript" src="/js/pure-select.modded.0.6.2.js"></script>
 
 

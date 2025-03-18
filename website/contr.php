@@ -35,8 +35,6 @@ $Header->appendRawHeader(function() { global $Game, $_user; ?>
 	<link href="/css/fa-brands.5.0.10.css" rel="stylesheet">
 	<link href="/css/jquery.fancybox.min.3.3.5.css" rel="stylesheet">
 
-	<script defer src="/js/brands.5.0.10.js" crossorigin="anonymous"></script>
-
 	<script src="/js/jquery.fancybox.3.3.5.js"></script>
 	<script src="/js/fancybox.config.js"></script>
 

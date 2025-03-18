@@ -107,11 +107,8 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 
 	<link href="/css/select-pure.css" rel="stylesheet">
 	<link href="/css/social-btn.css" rel="stylesheet">
-	<link href="/css/fa-brands.5.0.10.css" rel="stylesheet">
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
 	<link href="/css/jquery.fancybox.min.3.3.5.css" rel="stylesheet">
-
-	<script type="text/javascript" defer src="/js/brands.5.0.10.js" crossorigin="anonymous"></script>
 
 	<script type="text/javascript" src="/js/jquery.fancybox.3.3.5.js"></script>
 	<script type="text/javascript" src="/js/fancybox.config.js"></script>
