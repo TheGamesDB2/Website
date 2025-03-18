@@ -169,10 +169,10 @@ class FOOTER
 		<footer class="container-fluid bg-dark" style="margin-top:10px; padding: 20px;">
 			<div class="container">
 				<div class="row">
-					<div class="col-sm-3">
+					<div class="col-lg-3">
 						<h2 class="logo"><a href="/"> TheGamesDB </a></h2>
 					</div>
-					<div class="col-sm-2">
+					<div class="col-sm-4 col-lg-2">
 						<h5>Get started</h5>
 						<ul>
 							<li><a href="/">Home</a></li>
@@ -186,7 +186,7 @@ class FOOTER
 							<li><a href="/stats.php">Stats</a></li>
 						</ul>
 					</div>
-					<div class="col-sm-3">
+					<div class="col-sm-4 col-lg-3">
 						<h5>Developers</h5>
 						<ul>
 							<li><a href="https://api.thegamesdb.net/">API Documentation</a></li>
@@ -195,7 +195,7 @@ class FOOTER
 						</ul>
 					</div>
 					<?php if(false) : ?>
-					<div class="col-sm-2">
+					<div class="col-lg-2">
 						<h5>About us</h5>
 						<ul>
 							<li><a href="#">Company Information</a></li>
@@ -203,7 +203,7 @@ class FOOTER
 							<li><a href="#">Reviews</a></li>
 						</ul>
 					</div>
-					<div class="col-sm-2">
+					<div class="col-lg-2">
 						<h5>Support</h5>
 						<ul>
 							<li><a href="#">FAQ</a></li>
@@ -212,7 +212,7 @@ class FOOTER
 						</ul>
 					</div>
 					<?php endif;?>
-					<div class="col-sm-3">
+					<div class="col-sm-4 col-lg-3">
 						<div class="social-networks">
 							<a href="https://twitter.com/thegamesdb" class="twitter"><i class="fab fa-twitter"></i></a>
 							<a href="https://www.facebook.com/thegamesdb/" class="facebook"><i class="fab fa-facebook"></i></a>
