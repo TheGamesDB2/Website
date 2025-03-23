@@ -10,6 +10,7 @@
     "require-dev": {
         "codeception/codeception": "^5.2",
         "codeception/module-phpbrowser": "*",
-        "codeception/module-asserts": "*"
+        "codeception/module-asserts": "*",
+        "codeception/module-rest": "^3.4"
     }
 }
