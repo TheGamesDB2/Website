@@ -51,14 +51,19 @@ Install the dependencies via Composer:
 composer install
 ```
 
-Run the server using the built-in PHP web server:
+Run the servers using the built-in PHP web server:
 
 ```shell
 cd website
 php -S 127.0.0.1:8080
 ```
 
-The website is now available on [localhost:8080](http://localhost:8080).
+```shell
+cd API
+php -S 127.0.0.1:8088
+```
+
+The website is now available on [localhost:8080](http://localhost:8080) and the API on [localhost:8088](http://localhost:8088).
 
 _Note that you may need to change the DB config in the `db.config.php` file to reflect your locally running Maria instance._
 
@@ -72,4 +77,4 @@ Tests are written using [Codeception](https://codeception.com/) and are run usin
 php vendor/bin/codecept run
 ```
 
-**NOTE:** The website needs to be running before you run any acceptance tests!
+**NOTE:** The website and API needs to be running before you run any acceptance tests!
