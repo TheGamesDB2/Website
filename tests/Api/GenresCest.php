@@ -39,7 +39,12 @@ final class GenresCest
 			'status' => 'string',
 			'data' => [
 				'count' => 'integer',
-				'genres' => 'array',
+				'genres' => [
+					'1' => [
+						'id' => 'integer:>0',
+						'name' => 'string:!empty',
+					],
+				],
 			],
 		]);
 	}
