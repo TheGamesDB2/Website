@@ -1,9 +1,5 @@
-# Codeception Test Suite Configuration
-#
-# Suite for unit or integration tests.
-
 actor: UnitTester
+suite_namespace: Tests\Unit
 modules:
-    enabled:
-        - Asserts
-step_decorators: ~
+    # enable helpers as array
+    enabled: []
