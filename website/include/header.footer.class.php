@@ -71,6 +71,10 @@ class HEADER
 	<script type="text/javascript" src="/js/jquery-3.2.1.min.js"></script>
 	<script type="text/javascript" src="/js/popper.min.1.13.0.js"></script>
 	<script type="text/javascript" src="/js/bootstrap.min.4.0.0.js"></script>
+	<script type="text/javascript" src="/js/fontawesome.5.0.10.js"></script>
+	<script type="text/javascript" src="/js/brands.5.0.10.js"></script>
+	<link rel="stylesheet" href="/css/fontawesome.5.0.10.css" crossorigin="anonymous">
+	<link rel="stylesheet" href="/css/fa-brands.5.0.10.css" crossorigin="anonymous">
 	<link rel="stylesheet" href="/css/main.css" crossorigin="anonymous">
 	<?php if(isset($this->_printExtraHeader)) : call_user_func($this->_printExtraHeader); endif; ?>
 	<?php if(!$_user->isLoggedIn()) : ?>
@@ -93,12 +97,6 @@ class HEADER
 
 		<div class="collapse navbar-collapse" id="navbarColor01">
 			<ul class="navbar-nav mr-auto">
-				<li class="nav-item">
-					<a class="nav-link" href="/">Home</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link" href="https://forums.thegamesdb.net/">Forums</a>
-				</li>
 				<li class="nav-item dropdown">
 					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 					Browse
@@ -108,21 +106,22 @@ class HEADER
 						<a class="dropdown-item" href="/list_platforms.php">Platforms</a>
 						<a class="dropdown-item" href="/list_devs.php">Developers</a>
 						<a class="dropdown-item" href="/list_pubs.php">Publishers</a>
+						<a class="dropdown-item" href="/stats.php">Stats</a>
 					</div>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link" href="/stats.php">Stats</a>
 				</li>
 				<li class="nav-item">
 					<a class="nav-link" href="/add_game.php">Add New Game</a>
 				</li>
 				<li class="nav-item">
+					<a class="nav-link" href="https://forums.thegamesdb.net/">Forums</a>
+				</li>
+				<li class="nav-item">
 					<a class="nav-link" href="https://www.patreon.com/thegamesdb" target="_blank">Patreon</a>
 				</li>
 			</ul>
-			<form action="/search.php" method="get" class="form-inline my-2 my-lg-0">
-				<input name="name" class="form-control mr-sm-2" type="text" placeholder="Search">
-				<button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+			<form id="search-form" action="/search.php" method="get" class="form-inline my-2 my-lg-0">
+				<input name="name" type="text" placeholder="Search">
+				<button type="submit"><i class="fa fa-search" title="Search"></i></button>
 			</form>
 			<ul class="navbar-nav my-2 my-lg-0">
 				<?php if($_user->isLoggedIn()) : ?>
@@ -170,10 +169,10 @@ class FOOTER
 		<footer class="container-fluid bg-dark" style="margin-top:10px; padding: 20px;">
 			<div class="container">
 				<div class="row">
-					<div class="col-sm-3">
+					<div class="col-lg-3">
 						<h2 class="logo"><a href="/"> TheGamesDB </a></h2>
 					</div>
-					<div class="col-sm-2">
+					<div class="col-sm-4 col-lg-2">
 						<h5>Get started</h5>
 						<ul>
 							<li><a href="/">Home</a></li>
@@ -184,9 +183,10 @@ class FOOTER
 							<li><a href="/list_platforms.php">Platforms</a></li>
 							<li><a href="/list_devs.php">Developers</a></li>
 							<li><a href="/list_pubs.php">Publishers</a></li>
+							<li><a href="/stats.php">Stats</a></li>
 						</ul>
 					</div>
-					<div class="col-sm-3">
+					<div class="col-sm-4 col-lg-3">
 						<h5>Developers</h5>
 						<ul>
 							<li><a href="https://api.thegamesdb.net/">API Documentation</a></li>
@@ -195,7 +195,7 @@ class FOOTER
 						</ul>
 					</div>
 					<?php if(false) : ?>
-					<div class="col-sm-2">
+					<div class="col-lg-2">
 						<h5>About us</h5>
 						<ul>
 							<li><a href="#">Company Information</a></li>
@@ -203,7 +203,7 @@ class FOOTER
 							<li><a href="#">Reviews</a></li>
 						</ul>
 					</div>
-					<div class="col-sm-2">
+					<div class="col-lg-2">
 						<h5>Support</h5>
 						<ul>
 							<li><a href="#">FAQ</a></li>
@@ -212,7 +212,7 @@ class FOOTER
 						</ul>
 					</div>
 					<?php endif;?>
-					<div class="col-sm-3">
+					<div class="col-sm-4 col-lg-3">
 						<div class="social-networks">
 							<a href="https://twitter.com/thegamesdb" class="twitter"><i class="fab fa-twitter"></i></a>
 							<a href="https://www.facebook.com/thegamesdb/" class="facebook"><i class="fab fa-facebook"></i></a>
