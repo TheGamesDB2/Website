@@ -29,7 +29,7 @@ To start this environment you simply run `docker compose up`.
 You can navigate to http://localhost:8080/ to browse the website or http://localhost:8088/ to access the api.
 
 This will also start a mariadb sql server which is configured to be accessible on hostname `localhost` with port `13306`.
-Username is `root` and passwort is `abc123`.
+Username is `root` and password is `abc123`.
 
 A simple database export will be inserted (see file docker/sql/init.sql) to get you started if you run the up command the first time.
 
