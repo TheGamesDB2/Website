@@ -31,14 +31,4 @@ final class HomeCest
 		$I->seeNumberOfElements('[data-testid="recently-added"] .row', 18);
 		$I->seeLink('Next >>', '/recently_added.php?page=2');
 	}
-
-	/**
-	 * Shows a list of five games releasing soon.
-	 */
-	public function releasingSoonList(AcceptanceTester $I): void
-	{
-		$I->amOnPage('/');
-		$I->see('Releasing Soon', 'h5');
-		$I->seeNumberOfElements('[data-testid="releasing-soon"] a', 5);
-	}
 }

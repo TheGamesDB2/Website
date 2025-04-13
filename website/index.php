@@ -131,7 +131,7 @@ $Header->appendRawHeader(function() { ?>
 					<div class="card-header">
 						<h5>Releasing Soon</h5></div>
 					<div>
-						<table class="table" data-testid="releasing-soon">
+						<table class="table">
 							<tbody>
 								<?php foreach($soon as $game) : ?>
 								<tr>

@@ -37,13 +37,13 @@ Or just run `docker compose exec tgdb_api bash` to access the root shell of the 
 
 ### Direct
 
-Alternatively you can run the website (or API) directly on your machine. Ensure you have the following dependencies installed:
+Alternatively you can run the website (and API) directly on your machine. Ensure you have the following dependencies installed:
 
 * [PHP](https://www.php.net/)
 * [Composer](https://getcomposer.org/)
 * [MariaDB](https://mariadb.org/)
 
-Run the SQL in the `docker/sql/init.sql` file in your database to setup the necessary database tables.
+Run the SQL in the `db/init.sql` file in your database to setup the necessary database tables.
 
 Install the dependencies via Composer:
 
@@ -77,4 +77,6 @@ Tests are written using [Codeception](https://codeception.com/) and are run usin
 php vendor/bin/codecept run
 ```
 
-**NOTE:** The website and API needs to be running before you run any acceptance tests!
+#### Requirements
+
+The website and API needs to be running before you run any acceptance tests. You will also need to add some test data to your database using the the SQL in the `db/text_fixtures.sql` file.
