@@ -21,8 +21,8 @@ final class GenresCest
 		$I->seeResponseCodeIs(401);
 		$I->seeResponseIsJson();
 		$I->seeResponseContainsJson([
-		  'code' => 401,
-		  'status' => 'This route requires and API key and no API key was provided.',
+			'code' => 401,
+			'status' => 'This route requires and API key and no API key was provided.',
 		]);
 	}
 

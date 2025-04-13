@@ -21,11 +21,11 @@ namespace Tests\Support;
 */
 class ApiTester extends \Codeception\Actor
 {
-    use _generated\ApiTesterActions;
+	use _generated\ApiTesterActions;
 
-    public string $apiKey = 'TESTING';
+	public string $apiKey = 'TESTING';
 
-    /**
-     * Define custom actions here
-     */
+	/**
+	 * Define custom actions here
+	 */
 }
