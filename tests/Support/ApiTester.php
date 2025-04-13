@@ -23,7 +23,7 @@ class ApiTester extends \Codeception\Actor
 {
     use _generated\ApiTesterActions;
 
-    public string $apiKey = 'abc123';
+    public string $apiKey = 'TESTING';
 
     /**
      * Define custom actions here

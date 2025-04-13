@@ -18,20 +18,6 @@ class AuthMiddleware
 		}
 		else
 		{
-			if(Config::$debug)
-			{
-				// Just accept any API key
-				$response = $next($request, $response);
-				$JSON_Response = json_decode($response->getBody(), true);
-				$JSON_Response['remaining_monthly_allowance'] = 999;
-				$JSON_Response['extra_allowance'] = 0;
-				$JSON_Response['allowance_refresh_timer'] = NULL;
-				return $response->withJson(
-					$JSON_Response,
-					isset($JSON_Response['code']) ? $JSON_Response['code'] : 200
-				);
-			}
-
 			$auth = APIAccessDB::getInstance();
 			$User = $auth->GetUserAllowanceByAPIKey($_REQUEST['apikey']);
 			if(!empty($User))
