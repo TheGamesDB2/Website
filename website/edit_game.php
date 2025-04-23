@@ -416,159 +416,96 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 
 	</style>
 
-	<link href="/css/fine_uploader.5.16.2/fine-uploader-new.css" rel="stylesheet">
+	<!-- Uppy CSS and JS -->
+	<link href="https://releases.transloadit.com/uppy/v4.13.3/uppy.min.css" rel="stylesheet">
+	<script src="https://releases.transloadit.com/uppy/v4.13.3/uppy.min.js"></script>
 
-	<!-- Fine Uploader jQuery JS file
-	====================================================================== -->
-	<script src="/js/fine_uploader.5.16.2/jquery.fine-uploader.js"></script>
-
-	<!-- Fine Uploader Thumbnails template w/ customization
-	====================================================================== -->
-	<script type="text/template" id="qq-template-manual-trigger">
-		<div class="qq-uploader-selector qq-uploader" qq-drop-area-text="Drop files here">
-			<div class="qq-upload-drop-area-selector qq-upload-drop-area" qq-hide-dropzone>
-				<span class="qq-upload-drop-area-text-selector"></span>
-			</div>
-			<div class="buttons">
-				<div class="qq-upload-button-selector qq-upload-button">
-					<div>Select files</div>
-				</div>
-				<button type="button" id="trigger-upload" class="btn btn-primary">
-					<i class="icon-upload icon-white"></i> Upload
-				</button>
-			</div>
-			<div class="qq-total-progress-bar-container-selector qq-total-progress-bar-container">
-				<div role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" class="qq-total-progress-bar-selector qq-progress-bar qq-total-progress-bar"></div>
-			</div>
-			<span class="qq-drop-processing-selector qq-drop-processing">
-				<span>Processing dropped files...</span>
-				<span class="qq-drop-processing-spinner-selector qq-drop-processing-spinner"></span>
-			</span>
-			<ul class="qq-upload-list-selector qq-upload-list" aria-live="polite" aria-relevant="additions removals">
-				<li>
-					<div class="qq-progress-bar-container-selector">
-						<div role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" class="qq-progress-bar-selector qq-progress-bar"></div>
-					</div>
-					<span class="qq-upload-spinner-selector qq-upload-spinner"></span>
-					<img class="qq-thumbnail-selector" qq-max-size="100" qq-server-scale>
-					<span class="qq-upload-file-selector qq-upload-file"></span>
-					<input class="qq-edit-filename-selector qq-edit-filename" tabindex="0" type="text">
-					<span class="qq-upload-size-selector qq-upload-size"></span>
-					<button type="button" class="qq-btn qq-upload-cancel-selector qq-upload-cancel">Cancel</button>
-					<button type="button" class="qq-btn qq-upload-retry-selector qq-upload-retry">Retry</button>
-					<button type="button" class="qq-btn qq-upload-delete-selector qq-upload-delete">Delete</button>
-					<span role="status" class="qq-upload-status-text-selector qq-upload-status-text"></span>
-				</li>
-			</ul>
-
-			<dialog class="qq-alert-dialog-selector">
-				<div class="qq-dialog-message-selector"></div>
-				<div class="qq-dialog-buttons">
-					<button type="button" class="qq-cancel-button-selector">Close</button>
-				</div>
-			</dialog>
-
-			<dialog class="qq-confirm-dialog-selector">
-				<div class="qq-dialog-message-selector"></div>
-				<div class="qq-dialog-buttons">
-					<button type="button" class="qq-cancel-button-selector">No</button>
-					<button type="button" class="qq-ok-button-selector">Yes</button>
-				</div>
-			</dialog>
-
-			<dialog class="qq-prompt-dialog-selector">
-				<div class="qq-dialog-message-selector"></div>
-				<input type="text">
-				<div class="qq-dialog-buttons">
-					<button type="button" class="qq-cancel-button-selector">Cancel</button>
-					<button type="button" class="qq-ok-button-selector">Ok</button>
-				</div>
-			</dialog>
-		</div>
-	</script>
 	<script>
 		var is_uploading = false;
 
-		$(document).ready(function()
-		{
-			var fineuploader_config =
-			{
-				template: 'qq-template-manual-trigger',
-				request:
-				{
-					endpoint: '/actions/uploads.php',
-				},
-				thumbnails:
-				{
-					placeholders:
-					{
-						waitingPath: '/css/fine_uploader.5.16.2/placeholders/waiting-generic.png',
-						notAvailablePath: '/css/fine_uploader.5.16.2/placeholders/not_available-generic.png'
-					}
-				},
-				validation:
-				{
-					itemLimit: <?= WebUtils::$_image_upload_count_limit; ?>,
-					acceptFiles: 'image/*',
-					allowedExtensions: ['jpe', 'jpg', 'jpeg', 'gif', 'png', 'bmp']
-				},
-				callbacks:
-				{
-					onAllComplete: function(succeeded, failed)
-					{
-						is_uploading = false;
-					},
-					onUpload : function(id, name)
-					{
-						is_uploading = true;
-						this.setParams(
-						{
-							game_id : <?= $Game->id ?>,
-							type : upload_type,
-							subtype : upload_subtype,
-						});
-					}
-				},
-				autoUpload: false
-			};
-			$('#fine-uploader-manual-trigger').fineUploader(fineuploader_config);
-
+		$(document).ready(function() {
 			var upload_type = "";
 			var upload_subtype = "";
-			$('#trigger-upload').click(function()
-			{
-				$('#fine-uploader-manual-trigger').fineUploader('uploadStoredFiles');
+			
+			// Initialize Uppy instance
+			const uppy = new Uppy.Uppy({
+				autoProceed: false,
+				restrictions: {
+					maxFileSize: <?= WebUtils::$_image_upload_size_limit; ?>,
+					maxNumberOfFiles: <?= WebUtils::$_image_upload_count_limit; ?>,
+					allowedFileTypes: ['.jpe', '.jpg', '.jpeg', '.gif', '.png', '.bmp']
+				},
+				meta: {
+					game_id: <?= $Game->id ?>
+				}
 			});
-
-			$('#UploadModal2').on('show.bs.modal', function(event)
-			{
-				var button = $(event.relatedTarget)
-				upload_type = button.data('upload-type')
-				upload_subtype = button.data('upload-subtype')
-
-				var modal = $(this)
-				modal.find('.modal-title').text('Uploading ' + upload_type + ' ' + upload_subtype)
-			})
-			// bootstrap doesnt handled nested modal, as such closing the top modal by clicking on the backdrop closes all modal,
-			// only closes only 1 backdrop to work around this we have to trigger another hiding
-			$('#UploadModal').on('hidden.bs.modal', function(e)
-			{
+			
+			// Add the Dashboard UI
+			uppy.use(Uppy.Dashboard, {
+				target: '#uppy-dashboard',
+				inline: true,
+				height: 250,
+				width: '100%',
+				proudlyDisplayPoweredByUppy: false,
+				showProgressDetails: true,
+				hideUploadButton: true
+			});
+			
+			// Add upload destination
+			uppy.use(Uppy.XHRUpload, {
+				endpoint: '/actions/uploads.php',
+				fieldName: 'file',
+				formData: true
+			});
+						
+			uppy.on('complete', (result) => {
+				is_uploading = false;
+			});
+			
+			uppy.on('upload', () => {
+				is_uploading = true;
+				
+				// Update metadata for this upload
+				uppy.setMeta({
+					game_id: <?= $Game->id ?>,
+					type: upload_type,
+					subtype: upload_subtype
+				});
+			});
+			
+			// Handle manual upload button
+			$('#manual-trigger-upload').click(function() {
+				uppy.upload();
+				return false; // Prevent default button behavior
+			});
+			
+			// Handle modal events
+			$('#UploadModal2').on('show.bs.modal', function(event) {
+				var button = $(event.relatedTarget);
+				upload_type = button.data('upload-type');
+				upload_subtype = button.data('upload-subtype');
+				
+				var modal = $(this);
+				modal.find('.modal-title').text('Uploading ' + upload_type + ' ' + upload_subtype);
+			});
+			
+			// Handle nested modal issue
+			$('#UploadModal').on('hidden.bs.modal', function(e) {
 				$('#UploadModal2').modal('hide');
 			});
-			$('#UploadModal2Button').click(function()
-			{
-				if(is_uploading)
-				{
+			
+			// Handle modal close button
+			$('#UploadModal2Button').click(function() {
+				if(is_uploading) {
 					alert("Uploading is in progress");
-				}
-				else
-				{
+				} else {
 					$("#UploadModal2").modal('hide');
-					$('#fine-uploader-manual-trigger').fineUploader('clearStoredFiles');
+					uppy.clear();
 				}
 			});
 		});
 	</script>
+
 	<script type="text/template" id="template-multi-field">
 		<div class="input-group mb-3">
 			<input id="field" name="field[]" type="text" class="form-control" placeholder="Alt Name(s)"/>
@@ -940,7 +877,12 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 																	</button>
 																</div>
 																<div class="modal-body">
-																	<div id="fine-uploader-manual-trigger"></div>
+																	<div id="uppy-dashboard"></div>
+																	<div class="text-center mt-3">
+																		<button type="button" id="manual-trigger-upload" class="btn btn-primary">
+																			<i class="icon-upload icon-white"></i> Upload
+																		</button>
+																	</div>
 																</div>
 															</div>
 														</div>

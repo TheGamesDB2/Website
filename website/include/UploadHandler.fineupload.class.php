@@ -14,7 +14,7 @@ class UploadHandler {
 
     public $allowedExtensions = array();
     public $sizeLimit = null;
-    public $inputName = 'qqfile';
+    public $inputName = 'file';
 
     protected $uploadName;
 
@@ -22,9 +22,7 @@ class UploadHandler {
      * Get the original filename
      */
     public function getName(){
-        if (isset($_REQUEST['qqfilename']))
-            return $_REQUEST['qqfilename'];
-
+        // Check for Uppy filename
         if (isset($_FILES[$this->inputName]))
             return $_FILES[$this->inputName]['name'];
     }
