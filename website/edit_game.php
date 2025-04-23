@@ -450,6 +450,43 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 				showProgressDetails: true,
 				hideUploadButton: true
 			});
+
+			uppy.use(Uppy.ImageEditor);
+
+			// When a file is added, open the image editor if the upload type is boxart and the subtype is front or back
+			// This will hopefully force user to remove unwanted box borders on boxart.
+			uppy.on('file-added', (file) => {
+				if (upload_type == "boxart" && (upload_subtype == "front" || upload_subtype == "back")) {
+					// The openFileEditor is not documented or officially supported, but it works
+					// See: https://github.com/transloadit/uppy/issues/3264
+					uppy.getPlugin('Dashboard').openFileEditor(file)
+				}
+			});
+
+			const setDashboardHeight = (height) => {
+  				uppy.getPlugin('Dashboard').setOptions({ height });
+			};
+
+			const toggleUploadButton = (enabled) => {
+  				const uploadBtn = document.querySelector('#manual-trigger-upload');
+  				if (uploadBtn) {
+    				uploadBtn.disabled = !enabled;
+    				uploadBtn.style.opacity = enabled ? '1' : '0.5';
+  				}
+			};
+
+			uppy.on('file-editor:start', () => {
+  				setDashboardHeight(750);
+  				toggleUploadButton(false);
+			});
+
+			const resetEditorUI = () => {
+  				setDashboardHeight(250);
+  				toggleUploadButton(true);
+			};
+
+			uppy.on('file-editor:complete', resetEditorUI);
+			uppy.on('file-editor:cancel', resetEditorUI);
 			
 			// Add upload destination
 			uppy.use(Uppy.XHRUpload, {
@@ -501,6 +538,9 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 				} else {
 					$("#UploadModal2").modal('hide');
 					uppy.clear();
+					// Same for the closeFileEditor methods (not documented or officially supported)
+					uppy.getPlugin('Dashboard').closeFileEditor();
+					resetEditorUI();
 				}
 			});
 		});
@@ -873,7 +913,7 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 																<div class="modal-header">
 																	<h5 class="modal-title" id="UploadModal2Label">Upload</h5>
 																	<button id="UploadModal2Button" type="button" class="close" aria-label="Close">
-																	<span aria-hidden="true">&times;</span>
+																		<span aria-hidden="true">&times;</span>
 																	</button>
 																</div>
 																<div class="modal-body">
