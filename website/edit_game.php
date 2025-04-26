@@ -457,6 +457,7 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 			// This will hopefully force user to remove unwanted box borders on boxart.
 			uppy.on('file-added', (file) => {
 				if (upload_type == "boxart" && (upload_subtype == "front" || upload_subtype == "back")) {
+					$('#informer').text("Please, edit the image to keep only the cover and remove the box.")
 					// The openFileEditor is not documented or officially supported, but it works
 					// See: https://github.com/transloadit/uppy/issues/3264
 					uppy.getPlugin('Dashboard').openFileEditor(file)
@@ -483,6 +484,7 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 			const resetEditorUI = () => {
   				setDashboardHeight(250);
   				toggleUploadButton(true);
+				$('#informer').text(null)
 			};
 
 			uppy.on('file-editor:complete', resetEditorUI);
@@ -526,7 +528,8 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 				modal.find('.modal-title').text('Uploading ' + upload_type + ' ' + upload_subtype);
 			});
 			
-			// Handle nested modal issue
+			// bootstrap doesnt handled nested modal, as such closing the top modal by clicking on the backdrop closes all modal,
+			// only closes only 1 backdrop to work around this we have to trigger another hiding
 			$('#UploadModal').on('hidden.bs.modal', function(e) {
 				$('#UploadModal2').modal('hide');
 			});
@@ -917,6 +920,7 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 																	</button>
 																</div>
 																<div class="modal-body">
+																	<div id="informer"></div>
 																	<div id="uppy-dashboard"></div>
 																	<div class="text-center mt-3">
 																		<button type="button" id="manual-trigger-upload" class="btn btn-primary">
