@@ -75,7 +75,7 @@ class TGDBUtils
 
 	public static function GetPlaceholderImage($Name, $size)
 	{
-		return "https://via.placeholder.com/200x200?text=" . urlencode($Name);
+		return "https://dummyimage.com/200x200?text=" . urlencode($Name);
 	}
 }
 

@@ -652,20 +652,13 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 							<a class="fancybox-thumb" data-image-id="<?= $box_cover->front->id ?>" data-fancybox="cover" data-caption="Front Cover" href="<?= $box_cover->front->original ?>">
 								<img class="card-img-top" src="<?= $box_cover->front->thumbnail ?>"/>
 							</a>
-								<?php if(!empty($box_cover->back)): ?>
-							<a class="fancybox-thumb" data-image-id="<?= $box_cover->back->id ?>" style="display:none;" data-fancybox="cover" data-caption="Back Cover"
-								href="<?= $box_cover->back->original ?>" data-thumb="<?= $box_cover->back->thumbnail ?>"/>
-							</a>
-								<?php endif; ?>
-								
 							<?php elseif(!empty($box_cover->back)): ?>
-							<a class="fancybox-thumb" data-image-id="<?= $box_cover->back->id ?>" data-fancybox="cover" data-caption="Back Cover" href="<?= $box_cover->front->original ?>">
-								<img class="card-img-top" src="<?= $box_cover->front->thumbnail ?>"/>
+							<a class="fancybox-thumb" data-image-id="<?= $box_cover->back->id ?>" data-fancybox="cover" data-caption="Back Cover" href="<?= $box_cover->back->original ?>">
+								<img class="card-img-top" src="<?= $box_cover->back->thumbnail ?>"/>
 							</a>
 							<?php else: ?>
 								<img class="card-img-top" src="<?= TGDBUtils::GetPlaceholderImage($Game->game_title, 'boxart'); ?>"/>
 							<?php endif; ?>
-							</a>
 							<div class="card-body">
 								<?php if($_user->hasPermission('m_delete_games')): ?>
 								<p>Platform: <select name="platform" style="width:100%">

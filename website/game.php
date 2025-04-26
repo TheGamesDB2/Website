@@ -241,15 +241,9 @@ $Header->appendRawHeader(function() { global $Game, $box_cover, $_user; ?>
 							<a class="fancybox-thumb" data-fancybox="cover" data-caption="Front Cover" href="<?= $box_cover->front->original ?>">
 								<img alt="front cover" class="card-img-top" src="<?= $box_cover->front->thumbnail ?>"/>
 							</a>
-							<?php if(!empty($box_cover->back)): ?>
-							<a class="fancybox-thumb" style="display:none;" data-fancybox="cover" data-caption="Back Cover"
-								href="<?= $box_cover->back->original ?>" data-thumb="<?= $box_cover->back->thumbnail ?>"/>
-							</a>
-							<?php endif; ?>
-								
 							<?php elseif(!empty($box_cover->back)): ?>
-							<a class="fancybox-thumb" data-fancybox="cover" data-caption="Back Cover" href="<?= $box_cover->front->original ?>">
-								<img alt="back cover" class="card-img-top" src="<?= $box_cover->front->thumbnail ?>"/>
+							<a class="fancybox-thumb" data-fancybox="cover" data-caption="Back Cover" href="<?= $box_cover->back->original ?>">
+								<img alt="back cover" class="card-img-top" src="<?= $box_cover->back->thumbnail ?>"/>
 							</a>
 							<?php else: ?>
 							<img alt="cover placeholder" class="card-img-top" src="<?= TGDBUtils::GetPlaceholderImage($Game->game_title, 'boxart'); ?>"/>
@@ -267,7 +261,7 @@ $Header->appendRawHeader(function() { global $Game, $box_cover, $_user; ?>
 								<?php endif; ?>
 								<p>Region: <?= isset($region) ? $region->name : "Region Not Set" ?></p>
 								<?php if(isset($country)) : ?>
-								<p>Country: <?= $country->name; ?></a></p>
+								<p>Country: <?= $country->name; ?></p>
 								<?php endif; ?>
 								<?php if (!empty($Game->developers) && !empty($DevsList)) : ?>
 								<p>Developer(s): <?php $last_key = end(array_keys($DevsList)); foreach($DevsList as $key => $Dev) : ?>
