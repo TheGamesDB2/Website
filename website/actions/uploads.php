@@ -58,37 +58,37 @@ else
 		returnJSONAndDie(ErrorPage::$MSG_NO_PERMISSION_TO_EDIT_ERROR);
 	}
 }
+
 $Fields = ['game_id', 'type', 'subtype'];
+
+// Validate required fields
+foreach($Fields as $field) {
+    if(!isset($_REQUEST[$field])) {
+        returnJSONAndDie(ErrorPage::$MSG_MISSING_PARAM_ERROR . ": ($field).");
+    }
+}
+
+// TODO: move these hardcoded values to a table, but this will do for now
+switch($_REQUEST['type'])
 {
-	foreach($Fields as $field)
-	{
-		if(!isset($_REQUEST[$field]))
+	case 'boxart':
+		if($_REQUEST['subtype'] == 'front' || $_REQUEST['subtype'] == 'back')
 		{
-			returnJSONAndDie(ErrorPage::$MSG_MISSING_PARAM_ERROR . ": ($field).");
+			break;
 		}
-	}
-	// TODO: move these hardcoded values to a table, but this will do for now
-	switch($_REQUEST['type'])
-	{
-		case 'boxart':
-			if($_REQUEST['subtype'] == 'front' || $_REQUEST['subtype'] == 'back')
-			{
-				break;
-			}
-			returnJSONAndDie("Invalid subtype selection: " . $_REQUEST['subtype']);
-		case 'titlescreen':
-		case 'fanart':
-		case 'banner':
-		case 'screenshot':
-		case 'clearlogo':
-			if(empty($_REQUEST['subtype']))
-			{
-				break;
-			}
-			returnJSONAndDie("Invalid subtype selection: " . $_REQUEST['subtype']);
-		default:
-			returnJSONAndDie("Invalid type selection: " . $_REQUEST['type']);
-	}
+		returnJSONAndDie("Invalid subtype selection: " . $_REQUEST['subtype']);
+	case 'titlescreen':
+	case 'fanart':
+	case 'banner':
+	case 'screenshot':
+	case 'clearlogo':
+		if(empty($_REQUEST['subtype']))
+		{
+			break;
+		}
+		returnJSONAndDie("Invalid subtype selection: " . $_REQUEST['subtype']);
+	default:
+		returnJSONAndDie("Invalid type selection: " . $_REQUEST['type']);
 }
 
 
@@ -97,7 +97,7 @@ $uploader = new UploadHandler();
 $uploader->allowedExtensions = array('jpe', 'jpg', 'jpeg', 'gif', 'png', 'bmp');
 $uploader->sizeLimit = WebUtils::$_image_upload_size_limit;
 
-$uploader->inputName = "qqfile";
+$uploader->inputName = "file";
 
 function get_request_method()
 {
@@ -118,7 +118,7 @@ function get_request_method()
 
 if (get_request_method() == "POST")
 {
-	header("Content-Type: text/plain");
+	header("Content-Type: application/json");
 
 	$tmp_path = __DIR__ . "/../../cdn/images/tmp/original/" . $_REQUEST['type'];
 	$path = __DIR__ . "/../../cdn/images/original/" . $_REQUEST['type'];
