@@ -41,6 +41,27 @@ services:
       - ./:/app:rw,cached
       - ./docker/apache/:/opt/docker/etc/httpd/vhost.common.d:ro
 
+  tgdb_cdn:
+    image: webdevops/php-apache-dev:8.2
+    working_dir: /app
+    environment:
+      - WEB_DOCUMENT_ROOT=/app/cdn
+      - PHP_DISPLAY_ERRORS=1
+      - PHP_MEMORY_LIMIT=128M
+      - PHP_MAX_EXECUTION_TIME=5
+      - XDEBUG_MODE=debug
+      - XDEBUG_START_WITH_REQUEST=yes
+      - XDEBUG_CLIENT_PORT=9000
+      - XDEBUG_CLIENT_HOST=host.docker.internal
+      - XDEBUG_MAX_NESTING_LEVEL=1000
+    networks:
+      - internal
+    ports:
+      - "8089:80"
+    volumes:
+      - ./:/app:rw,cached
+      - ./docker/apache/:/opt/docker/etc/httpd/vhost.common.d:ro
+
   mariadb:
     image: mariadb:10.5
     networks:

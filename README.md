@@ -28,6 +28,23 @@ There is a docker compose file which provides a full development environment wit
 To start this environment you simply run `docker compose up`.
 You can navigate to http://localhost:8080/ to browse the website or http://localhost:8088/ to access the api.
 
+You will need to modify /include/CommonUtils.class.php to use the following:
+```
+$WEBSITE_BASE_URL = "http://localhost:8080/"
+$API_BASE_URL = "http://localhost:8088/"
+$BOXART_BASE_URL = "http://localhost:8089/"
+```
+To have the images working correctly, add a .htaccess file in your cdn directory with the following:
+```
+Options +FollowSymLinks
+RewriteEngine On
+RewriteCond %{REQUEST_URI} .(jpg|png)$ [NC]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ createimage.php [QSA,L]
+```
+Also copy website/tools/createimage.php into your cdn directory.
+
 This will also start a mariadb sql server which is configured to be accessible on hostname `localhost` with port `13306`.
 Username is `root` and password is `abc123`.
 
