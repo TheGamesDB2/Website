@@ -3,7 +3,7 @@ require_once __DIR__ . "/../website/include/login.common.class.php";
 
 $key = "NA";
 $_user = phpBBUser::getInstance();
-if($_user->isLoggedIn() && $_user->hasPermission('u_api_access'))
+if($_user->isLoggedIn())
 {
 	require_once __DIR__ . "/../API/include/APIAccessDB.class.php";
 	$auth = APIAccessDB::getInstance();
@@ -62,8 +62,6 @@ if($_user->isLoggedIn() && $_user->hasPermission('u_api_access'))
 			<div class="col">
 				<?php if(!$_user->isLoggedIn() ) : ?>
 				<h3>You must login to the forum to view your api key.</h3>
-				<?php elseif($_user->isLoggedIn() && !$_user->hasPermission('u_api_access')) : ?>
-				<h3>You must request access to the api via the <a href="https://forums.thegamesdb.net/viewforum.php?f=10">forum</a>.</h3>
 				<?php elseif($_user->isLoggedIn() && $_user->hasPermission('u_api_access')) : ?>
 				<div class="card" style="margin-bottom:10px;">
 					<div class="card-header">
