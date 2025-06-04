@@ -62,7 +62,7 @@ if($_user->isLoggedIn())
 			<div class="col">
 				<?php if(!$_user->isLoggedIn() ) : ?>
 				<h3>You must login to the forum to view your api key.</h3>
-				<?php elseif($_user->isLoggedIn() && $_user->hasPermission('u_api_access')) : ?>
+				<?php elseif($_user->isLoggedIn()) : ?>
 				<div class="card" style="margin-bottom:10px;">
 					<div class="card-header">
 						Public API Key: <?= $key ?>
