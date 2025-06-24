@@ -113,7 +113,7 @@ class HEADER
 					<a class="nav-link" href="/add_game.php">Add New Game</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="https://forums.thegamesdb.net/">Forums</a>
+					<a class="nav-link" href="https://discord.gg/2gxeAURxmA">Discord</a>
 				</li>
 				<li class="nav-item">
 					<a class="nav-link" href="https://www.patreon.com/thegamesdb" target="_blank">Patreon</a>
