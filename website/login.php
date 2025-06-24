@@ -139,7 +139,7 @@ $Header->appendRawHeader(function() { global $Game; ?>
 							<button type="submit" class="btn btn-primary btn-lg btn-block">login</button>
 						</div>
 						<div class="login-register">
-							<a href="https://forums.thegamesdb.net/ucp.php?mode=register">register</a>
+							Visit us on <a href="https://discord.gg/2gxeAURxmA">Discord</a> to request an account.
 						</div>
 					</form>
 				</div>
