@@ -61,7 +61,7 @@ if($_user->isLoggedIn())
 		<div class="row">
 			<div class="col">
 				<?php if(!$_user->isLoggedIn() ) : ?>
-				<h3>You must login to the forum to view your api key.</h3>
+				<h3>You must be logged in to the site to view your api key.</h3>
 				<?php elseif($_user->isLoggedIn()) : ?>
 
 				<div class="card" style="margin-bottom:10px;">
