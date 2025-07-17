@@ -134,9 +134,6 @@ class HEADER
 					</button>
 					<div class="dropdown-menu " aria-labelledby="dropdownMenuButton">
 						<a class="dropdown-item" href="/my_games.php">My Games</a>
-						<a class="dropdown-item" href="https://forums.thegamesdb.net/memberlist.php?mode=viewprofile&u=<?= $_user->GetUserID() ?>">Forum Profile</a>
-						<a class="dropdown-item" href="https://forums.thegamesdb.net/ucp.php?i=ucp_notifications">Notifications <span class="nav-link badge badge-pill badge-<?= $_user->GetNotificationCount() == 0 ? 'dark' : 'danger' ?>"> <?= $_user->GetNotificationCount(); ?> </span></a>
-						<a class="dropdown-item" href="https://forums.thegamesdb.net/ucp.php?i=pm&folder=inbox">Private Msg <span class="nav-link badge badge-pill badge-<?= $_user->GetPMCount() == 0 ? 'dark' : 'danger' ?>"> <?= $_user->GetPMCount(); ?> </span></a>
 						<div class="dropdown-divider"></div>
 						<?php if($_user->hasPermission('m_delete_games')) : ?>
 						<a class="dropdown-item" href="/add_dev_pub.php">Add Devs/Pubs</a>
@@ -177,7 +174,7 @@ class FOOTER
 						<ul>
 							<li><a href="/">Home</a></li>
 							<?php if(empty($_user) || !$_user->isLoggedIn()) : ?>
-							<li><a href="https://forums.thegamesdb.net/ucp.php?mode=register">Sign up</a></li>
+							<li><a href="https://discord.gg/2gxeAURxmA">Request Account on Discord</a></li>
 							<?php endif; ?>
 							<li><a href="/browse.php">Games</a></li>
 							<li><a href="/list_platforms.php">Platforms</a></li>
@@ -190,7 +187,7 @@ class FOOTER
 						<h5>Developers</h5>
 						<ul>
 							<li><a href="https://api.thegamesdb.net/">API Documentation</a></li>
-							<li><a href="https://forums.thegamesdb.net/viewforum.php?f=10">API Access Request</a></li>
+							<li><a href="https://api.thegamesdb.net/key.php">API Access Request</a></li>
 							<li><a href="https://github.com/TheGamesDB2/Website">Github Repo</a></li>
 						</ul>
 					</div>
@@ -208,7 +205,6 @@ class FOOTER
 						<ul>
 							<li><a href="#">FAQ</a></li>
 							<li><a href="#">Help desk</a></li>
-							<li><a href="https://forums.thegamesdb.net/">Forums</a></li>
 						</ul>
 					</div>
 					<?php endif;?>
@@ -217,7 +213,7 @@ class FOOTER
 							<a href="https://twitter.com/thegamesdb" class="twitter"><i class="fab fa-twitter"></i></a>
 							<a href="https://www.facebook.com/thegamesdb/" class="facebook"><i class="fab fa-facebook"></i></a>
 						</div>
-						<a href="https://forums.thegamesdb.net/memberlist.php?mode=contactadmin" role="button" class="btn btn-info">Contact us</a>
+						<a href="https://discord.gg/2gxeAURxmA" role="button" class="btn btn-info">Contact us</a>
 					</div>
 				</div>
 
