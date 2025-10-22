@@ -39,6 +39,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && empty($error_msgs) && empty($success_
 				echo "</pre>";
 				$_GET['sid'] = $_user->user->session_id;
 				$_user->Logout();
+				header("Location: index.php");
 				exit();
 				//Capture forum info and then logout
 				//$_user->Logout();
