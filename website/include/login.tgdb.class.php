@@ -1,6 +1,6 @@
 <?php
 
-include_once __DIR__ . "/../db.config.php";	
+include_once __DIR__ . "/../../include/db.config.php";	
 
 class TGDBUser
 {
