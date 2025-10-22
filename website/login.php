@@ -38,14 +38,15 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && empty($error_msgs) && empty($success_
 				//echo "<pre>";
 				//var_dump($_user);
 				//echo "</pre>";
-				$tgdb_user->createUser($_POST['username'], $_POST['password'], $_user->user->user_email);
+				$res = $tgdb_user->createUser($_POST['username'], $_POST['password'], $_user->user->user_email);
+				echo $res;
 				$_GET['sid'] = $_user->user->session_id;
 				$_GET['logout'] = true;
 				// Logout the user from phpBB
 				//$_user->Logout();
 				$_user->user->session_kill();
 				$tgdb_user->Login(false, false);
-				header("Location: index.php");
+				//header("Location: index.php");
 				exit();
 				//Capture forum info and then logout
 				//$_user->Logout();
