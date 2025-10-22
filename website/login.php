@@ -6,7 +6,7 @@ $error_msgs = array();
 $success_msg = array();
 
 $_user = phpBBUser::getInstance();
-/**if(isset($_REQUEST['logout']))
+if(isset($_REQUEST['logout']))
 {
 	if($_user->isLoggedIn() && $_user->Logout())
 	{
@@ -23,7 +23,7 @@ else if($_user->isLoggedIn())
 {
 	$error_msgs[] = "User is already logged in. You will be automatically redirected, if it takes longer than 10 seconds <a href='" . CommonUtils::$WEBSITE_BASE_URL . "'>Click Here</a>." .
 		'<script type="text/javascript">setTimeout(function(){window.location="' . CommonUtils::$WEBSITE_BASE_URL . '";}, 5000);</script>';
-}**/
+}
 
 if($_SERVER['REQUEST_METHOD'] == "POST" && empty($error_msgs) && empty($success_msg))
 {
