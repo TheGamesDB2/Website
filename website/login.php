@@ -10,16 +10,16 @@ $tgdb_user = TGDBUser::getInstance();
 if(isset($_REQUEST['logout']))
 {
 	$tgdb_user->Logout();
-	if($_user->isLoggedIn() && $_user->Logout())
-	{
+	//if($_user->isLoggedIn() && $_user->Logout())
+	//{
 		$success_msg[] = "User logged out successfully. You will be automatically redirected, if it takes longer than 10 seconds <a href='" . CommonUtils::$WEBSITE_BASE_URL . "'>Click Here</a>." .
 		'<script type="text/javascript">setTimeout(function(){window.location="' . CommonUtils::$WEBSITE_BASE_URL . '";}, 5000);</script>';
-	}
-	else
-	{
-		$error_msgs[] = "User is already logged out. You will be automatically redirected, if it takes longer than 10 seconds <a href='" . CommonUtils::$WEBSITE_BASE_URL . "'>Click Here</a>." .
-			'<script type="text/javascript">setTimeout(function(){window.location="' . CommonUtils::$WEBSITE_BASE_URL . '";}, 5000);</script>';
-	}
+	//}
+	//else
+	//{
+	//	$error_msgs[] = "User is already logged out. You will be automatically redirected, if it takes longer than 10 seconds <a href='" . CommonUtils::$WEBSITE_BASE_URL . "'>Click Here</a>." .
+	//		'<script type="text/javascript">setTimeout(function(){window.location="' . CommonUtils::$WEBSITE_BASE_URL . '";}, 5000);</script>';
+	//}
 }
 else if($_user->isLoggedIn())
 {
