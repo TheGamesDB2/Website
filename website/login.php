@@ -35,9 +35,9 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && empty($error_msgs) && empty($success_
 			$res = $_user->Login(isset($_POST['autologin']), isset($_POST['viewonline']));
 			if($res['status'] == LOGIN_SUCCESS)
 			{
-				//echo "<pre>";
-				//var_dump($_user);
-				//echo "</pre>";
+				echo "<pre>";
+				var_dump($_user);
+				echo "</pre>";
 				$res = $tgdb_user->createUser($_POST['username'], $_POST['password'], $_user->user->user_email);
 				echo "<pre>";
 				var_dump($res);
