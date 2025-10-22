@@ -135,7 +135,7 @@ class HEADER
 					<div class="dropdown-menu " aria-labelledby="dropdownMenuButton">
 						<a class="dropdown-item" href="/my_games.php">My Games</a>
 						<div class="dropdown-divider"></div>
-						<?php if($_user->hasPermission('m_delete_games')) : ?>
+						<?php if($tgdb_user->hasPermission('STAFF')) : ?>
 						<a class="dropdown-item" href="/add_dev_pub.php">Add Devs/Pubs</a>
 						<a class="dropdown-item" href="/merge_dev_pub.php">Merge Devs/Pubs</a>
 						<div class="dropdown-divider"></div>
