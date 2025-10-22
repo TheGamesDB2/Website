@@ -6,6 +6,7 @@ $error_msgs = array();
 $success_msg = array();
 
 $_user = phpBBUser::getInstance();
+$tgdb_user = TGDBUser::getInstance();
 if(isset($_REQUEST['logout']))
 {
 	if($_user->isLoggedIn() && $_user->Logout())
@@ -37,11 +38,13 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && empty($error_msgs) && empty($success_
 				//echo "<pre>";
 				//var_dump($_user);
 				//echo "</pre>";
+				$tgdb_user->createUser($_POST['username'], $_POST['password'], $_user->user->user_email);
 				$_GET['sid'] = $_user->user->session_id;
 				$_GET['logout'] = true;
 				// Logout the user from phpBB
 				//$_user->Logout();
 				$_user->user->session_kill();
+				$tgdb_user->Login(false, false);
 				header("Location: index.php");
 				exit();
 				//Capture forum info and then logout
