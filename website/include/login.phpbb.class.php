@@ -73,6 +73,11 @@ class phpBBUser
 			$this->user->session_kill();
 			return true;
 		}
+		else
+		{
+			echo $this->user->data['user_id']."<br>".$request->variable('sid', '')."<br>".$this->user->session_id;
+			exit();
+		}
 		return false;
 	}
 
