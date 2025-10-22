@@ -48,7 +48,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && empty($error_msgs) && empty($success_
 				//$_user->Logout();
 				$_user->user->session_kill();
 				$tgdb_user->Login(false, false);
-				//header("Location: index.php");
+				header("Location: index.php");
 				exit();
 				//Capture forum info and then logout
 				//$_user->Logout();
