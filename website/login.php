@@ -33,52 +33,59 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && empty($error_msgs) && empty($success_
 	{
 		if(!empty($_POST['username']) && !empty($_POST['password']))
 		{
-			$res = $_user->Login(isset($_POST['autologin']), isset($_POST['viewonline']));
-			if($res['status'] == LOGIN_SUCCESS)
+			$tgdb_res = $tgdb_user->Login(false,false);
+			if($tgdb_res['status'] != LOGIN_SUCCESS)
 			{
-				//echo "<pre>";
-				//var_dump($_user->user->data['user_email']);
-				//echo "</pre>";
-				$res = $tgdb_user->createUser($_POST['username'], $_POST['password'], $_user->user->data['user_email']);
-				//echo "<pre>";
-				//var_dump($res);
-				//echo "</pre>";
-				$_GET['sid'] = $_user->user->session_id;
-				$_GET['logout'] = true;
-				// Logout the user from phpBB
-				//$_user->Logout();
-				$_user->user->session_kill();
-				$tgdb_user->Login(false, false);
-				header("Location: index.php");
-				exit();
-				//Capture forum info and then logout
-				//$_user->Logout();
-
-				/**if(!empty($_POST['redirect']) && strpos($_POST['redirect'], "login") === false)
+				$res = $_user->Login(isset($_POST['autologin']), isset($_POST['viewonline']));
+				if($res['status'] == LOGIN_SUCCESS)
 				{
-					$length = strlen("thegamesdb.net");
-					$url = parse_url($_POST['redirect']);
-					if($length !== 0 && (substr($url['host'], -$length) === "thegamesdb.net"))
-					{
-						$success_msg[] = "Login successful, You will be automatically redirected, if it takes longer than 10 seconds <a href='" .$_POST['redirect'] . "'>Click Here</a>." .
-							'<script type="text/javascript">setTimeout(function(){window.location="' . $_POST['redirect'] . '";}, 5000);</script>';
+					$res = $tgdb_user->createUser($_POST['username'], $_POST['password'], $_user->user->data['user_email']);
+					$_GET['sid'] = $_user->user->session_id;
+					$_GET['logout'] = true;
+					
+					$session_user_id = $_user->user->data['user_id'];
 
+					$_user->user->session_kill();
+					$tgdb_user->Login(false, false);
+
+					$stmt = $this->dbh->prepare("UPDATE api_users SET users_id = :tgdb_user_id WHERE userid = :session_user_id");
+					$stmt->execute([
+						':tgdb_user_id' => $tgdb_user->user_data['id'],
+						':session_user_id' => $session_user_id
+					]);
+
+
+					header("Location: index.php");
+					exit();
+					//Capture forum info and then logout
+					//$_user->Logout();
+
+					/**if(!empty($_POST['redirect']) && strpos($_POST['redirect'], "login") === false)
+					{
+						$length = strlen("thegamesdb.net");
+						$url = parse_url($_POST['redirect']);
+						if($length !== 0 && (substr($url['host'], -$length) === "thegamesdb.net"))
+						{
+							$success_msg[] = "Login successful, You will be automatically redirected, if it takes longer than 10 seconds <a href='" .$_POST['redirect'] . "'>Click Here</a>." .
+								'<script type="text/javascript">setTimeout(function(){window.location="' . $_POST['redirect'] . '";}, 5000);</script>';
+
+						}
+						else
+						{
+							$success_msg[] = "Login successful, You will be automatically redirected, if it takes longer than 10 seconds <a href='" . CommonUtils::$WEBSITE_BASE_URL . "'>Click Here</a>." .
+								'<script type="text/javascript">setTimeout(function(){window.location="' . CommonUtils::$WEBSITE_BASE_URL . '";}, 5000);</script>';					}
 					}
 					else
 					{
 						$success_msg[] = "Login successful, You will be automatically redirected, if it takes longer than 10 seconds <a href='" . CommonUtils::$WEBSITE_BASE_URL . "'>Click Here</a>." .
-							'<script type="text/javascript">setTimeout(function(){window.location="' . CommonUtils::$WEBSITE_BASE_URL . '";}, 5000);</script>';					}
+							'<script type="text/javascript">setTimeout(function(){window.location="' . CommonUtils::$WEBSITE_BASE_URL . '";}, 5000);</script>';
+					}**/
 				}
-				else
-				{
-					$success_msg[] = "Login successful, You will be automatically redirected, if it takes longer than 10 seconds <a href='" . CommonUtils::$WEBSITE_BASE_URL . "'>Click Here</a>." .
-						'<script type="text/javascript">setTimeout(function(){window.location="' . CommonUtils::$WEBSITE_BASE_URL . '";}, 5000);</script>';
-				}**/
-			}
 			else
 			{
 				$error_msgs[] = $res['error_msg_str'];
 			}
+		}
 		}
 		else
 		{
