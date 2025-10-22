@@ -251,7 +251,7 @@ class TGDBUser
 			$hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
 			// Insert the new user
-			$stmt = $this->dbh->prepare("INSERT INTO users (username, password, email) VALUES (:username, :password, :email)");
+			$stmt = $this->dbh->prepare("INSERT INTO users (username, password, email_address) VALUES (:username, :password, :email)");
 			$stmt->bindParam(':username', $username);
 			$stmt->bindParam(':password', $hashed_password);
 			$stmt->bindParam(':email', $email);
