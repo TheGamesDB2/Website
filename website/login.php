@@ -39,7 +39,9 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && empty($error_msgs) && empty($success_
 				//var_dump($_user);
 				//echo "</pre>";
 				$res = $tgdb_user->createUser($_POST['username'], $_POST['password'], $_user->user->user_email);
-				echo $res;
+				echo "<pre>";
+				var_dump($res);
+				echo "</pre>";
 				$_GET['sid'] = $_user->user->session_id;
 				$_GET['logout'] = true;
 				// Logout the user from phpBB
