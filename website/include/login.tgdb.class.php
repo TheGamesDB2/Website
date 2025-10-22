@@ -1,5 +1,7 @@
 <?php
 
+include_once __DIR__ . "/../db.config.php";	
+
 class TGDBUser
 {
 	private $dbh;
