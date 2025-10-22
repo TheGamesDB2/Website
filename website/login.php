@@ -40,7 +40,8 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && empty($error_msgs) && empty($success_
 				$_GET['sid'] = $_user->user->session_id;
 				$_GET['logout'] = true;
 				// Logout the user from phpBB
-				$_user->Logout();
+				//$_user->Logout();
+				$_user->user->session_kill();
 				header("Location: index.php");
 				exit();
 				//Capture forum info and then logout
