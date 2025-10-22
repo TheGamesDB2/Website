@@ -48,9 +48,11 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && empty($error_msgs) && empty($success_
 					$_user->user->session_kill();
 					$tgdb_user->Login(false, false);
 
-					$stmt = $tgdb_user->dbh->prepare("UPDATE apiusers SET users_id = :tgdb_user_id WHERE userid = :session_user_id");
+					$db = $tgdb_user->getDatabase();
+					$stmt = $db->prepare("UPDATE apiusers SET users_id = :tgdb_user_id WHERE userid = :session_user_id");
+					$userData = $tgdb_user->getUserData();
 					$stmt->execute([
-						':tgdb_user_id' => $tgdb_user->user_data['id'],
+						':tgdb_user_id' => $userData['id'],
 						':session_user_id' => $session_user_id
 					]);
 

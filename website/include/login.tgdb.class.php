@@ -205,6 +205,26 @@ class TGDBUser
 	{
 		return session_id();
 	}
+	
+	/**
+	 * Get the database connection
+	 * 
+	 * @return PDO The database connection
+	 */
+	function getDatabase()
+	{
+		return $this->dbh;
+	}
+	
+	/**
+	 * Get the current user data
+	 * 
+	 * @return array|null The user data or null if not logged in
+	 */
+	function getUserData()
+	{
+		return $this->user_data;
+	}
 
 	/**
 	 * Create a new user with ADD_GAME permission
