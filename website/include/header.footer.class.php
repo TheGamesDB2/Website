@@ -3,6 +3,7 @@ require_once __DIR__ . "/../../include/CommonUtils.class.php";
 session_start();
 require_once __DIR__ . "/login.common.class.php";
 $_user = phpBBUser::getInstance();
+$tgdb_user = TGDBUser::getInstance();
 FOOTER::$_time_start = microtime(true);
 
 class HEADER
@@ -32,7 +33,7 @@ class HEADER
 		$this->_printExtraHeader = $fun;
 	}
 	public function print()
-	{ global $_user;?>
+	{ global $tgdb_user;?>
 <!doctype html>
 <html lang="en">
 
@@ -77,7 +78,7 @@ class HEADER
 	<link rel="stylesheet" href="/css/fa-brands.5.0.10.css" crossorigin="anonymous">
 	<link rel="stylesheet" href="/css/main.css" crossorigin="anonymous">
 	<?php if(isset($this->_printExtraHeader)) : call_user_func($this->_printExtraHeader); endif; ?>
-	<?php if(!$_user->isLoggedIn()) : ?>
+	<?php if(!$tgdb_user->isLoggedIn()) : ?>
 	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5337615406686584"
      crossorigin="anonymous"></script>
 	 <?php endif; ?>
@@ -124,11 +125,10 @@ class HEADER
 				<button type="submit"><i class="fa fa-search" title="Search"></i></button>
 			</form>
 			<ul class="navbar-nav my-2 my-lg-0">
-				<?php if($_user->isLoggedIn()) : ?>
+				<?php if($tgdb_user->isLoggedIn()) : ?>
 				<div class="nav-item mr-0 dropdown">
 					<button class="btn btn-link dropdown-toggle font-weight-bold" style="color:white;" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-						<img width="25px" src="<?= $_user->GetAvatar() ?>" style="border-radius: 50%;">
-						<?= $_user->GetUsername() ?> <span class="nav-link badge badge-pill badge-<?= ($_user->GetNotificationCount() + $_user->GetPMCount()) == 0 ? 'dark' : 'danger' ?>"> <?= $_user->GetNotificationCount() + $_user->GetPMCount(); ?> </span>
+						<?= $tgdb_user->GetUsername() ?>
 						<span class="glyphicon glyphicon-star" aria-hidden="true"></span>
 						<span class="caret"></span>
 					</button>
@@ -143,7 +143,7 @@ class HEADER
 						<div class="dropdown-divider"></div>
 						<a class="dropdown-item" href="/report_review.php">Duplicates Reports</a>
 						<?php endif; ?>
-						<a class="dropdown-item" href="<?= append_sid("/login.php", 'logout', false, $_user->GetUserSessionID()); ?>">Logout</a>
+						<a class="dropdown-item" href="<?= append_sid("/login.php", 'logout', false, $tgdb_user->GetUserSessionID()); ?>">Logout</a>
 					</div>
 				</div>
 				<?php else : ?>
@@ -173,7 +173,7 @@ class FOOTER
 						<h5>Get started</h5>
 						<ul>
 							<li><a href="/">Home</a></li>
-							<?php if(empty($_user) || !$_user->isLoggedIn()) : ?>
+							<?php if(empty($tgdb_user) || !$tgdb_user->isLoggedIn()) : ?>
 							<li><a href="https://discord.gg/2gxeAURxmA">Request Account on Discord</a></li>
 							<?php endif; ?>
 							<li><a href="/browse.php">Games</a></li>

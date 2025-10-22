@@ -9,6 +9,7 @@ $_user = phpBBUser::getInstance();
 $tgdb_user = TGDBUser::getInstance();
 if(isset($_REQUEST['logout']))
 {
+	$tgdb_user->Logout();
 	if($_user->isLoggedIn() && $_user->Logout())
 	{
 		$success_msg[] = "User logged out successfully. You will be automatically redirected, if it takes longer than 10 seconds <a href='" . CommonUtils::$WEBSITE_BASE_URL . "'>Click Here</a>." .
