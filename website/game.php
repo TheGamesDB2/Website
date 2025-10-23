@@ -81,9 +81,9 @@ if(!empty($box_cover->back))
 	$box_cover->back = $box_cover->back[0];
 }
 
-$Header = new HEADER();
-$Header->setTitle("TGDB - Browse - Game - $Game->game_title");
-$Header->appendRawHeader(function() { global $Game, $box_cover, $_user;
+//$Header = new HEADER();
+//$Header->setTitle("TGDB - Browse - Game - $Game->game_title");
+//$Header->appendRawHeader(function() { global $Game, $box_cover, $_user;
 
 ?>
 
