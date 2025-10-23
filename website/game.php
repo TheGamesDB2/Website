@@ -14,7 +14,7 @@ require_once __DIR__ . "/../include/CommonUtils.class.php";
 require_once __DIR__ . "/include/login.common.class.php";
 
 $tgdb_user = TGDBUser::getInstance();
-var_dump($tgdb_user->GetUsername());
+//var_dump($tgdb_user->GetUsername());
 $API = TGDB::getInstance();
 
 if(isset($_REQUEST['id']) && !empty($_REQUEST['id']) && is_numeric($_REQUEST['id']))
@@ -83,7 +83,9 @@ if(!empty($box_cover->back))
 
 $Header = new HEADER();
 $Header->setTitle("TGDB - Browse - Game - $Game->game_title");
-$Header->appendRawHeader(function() { global $Game, $box_cover, $_user; ?>
+$Header->appendRawHeader(function() { global $Game, $box_cover, $_user;
+
+?>
 
 	<meta property="og:title" content="<?= $Game->game_title; ?>" />
 	<meta property="og:type" content="article" />
