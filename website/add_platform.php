@@ -21,7 +21,7 @@ else
 	}
 }
 
-echo $tgdb_user->getUsername()."1<br>";
+
 require_once __DIR__ . "/include/TGDBUtils.class.php";
 require_once __DIR__ . "/../include/TGDB.API.php";
 require_once __DIR__ . "/../include/CommonUtils.class.php";
@@ -29,11 +29,11 @@ require_once __DIR__ . "/../include/CommonUtils.class.php";
 $API = TGDB::getInstance();
 $devs_list = $API->GetDevsList();
 $pubs_list = $API->GetPubsList();
-echo $tgdb_user->getUsername()."2<br>";
+
 $Header = new HEADER();
 $Header->setTitle("TGDB - Add Platform");
 $Header->appendRawHeader(function() { global $devs_list, $pubs_list, $tgdb_user; 
-echo $tgdb_user->getUsername()."3<br>";
+
 ?>
 
 	<link href="/css/social-btn.css" rel="stylesheet">
