@@ -29,7 +29,7 @@ else if($_user->isLoggedIn())
 
 if($_SERVER['REQUEST_METHOD'] == "POST" && empty($error_msgs) && empty($success_msg))
 {
-	if(!$_user->isLoggedIn())
+	if(!$tgdb_user->isLoggedIn())
 	{
 		if(!empty($_POST['username']) && !empty($_POST['password']))
 		{
