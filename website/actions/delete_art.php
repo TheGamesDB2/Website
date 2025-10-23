@@ -8,14 +8,14 @@ function returnJSONAndDie($code, $msg)
 	die();
 }
 
-$_user = phpBBuser::getInstance();
-if(!$_user->isLoggedIn())
+$tgdb_user = TGDBUser::getInstance();
+if(!$tgdb_user->isLoggedIn())
 {
 	returnJSONAndDie(-1, ErrorPage::$MSG_NOT_LOGGED_IN_EDIT_ERROR);
 }
 else
 {
-	if(!$_user->hasPermission('m_delete_games'))
+	if(!$tgdb_user->hasPermission('STAFF'))
 	{
 		returnJSONAndDie(-1, ErrorPage::$MSG_NO_PERMISSION_TO_EDIT_ERROR);
 	}
@@ -56,10 +56,10 @@ try
 					}
 				}
 				WebUtils::purgeCDNCache($cover->filename);
-				$res = $API->DeleteGameImages($_user->GetUserID(), $_REQUEST['game_id'], $_REQUEST['image_id'], $cover->type);
+				$res = $API->DeleteGameImages($tgdb_user->GetUserID(), $_REQUEST['game_id'], $_REQUEST['image_id'], $cover->type);
 				if($res)
 				{
-					DiscordUtils::PostImageUpdate($_user, $_REQUEST['game_id'], '',  $cover->type, $cover->side, 2);
+					DiscordUtils::PostImageUpdate($tgdb_user, $_REQUEST['game_id'], '',  $cover->type, $cover->side, 2);
 					returnJSONAndDie(1, "success!!");
 				}
 			}

@@ -54,14 +54,14 @@ function returnJSONAndDie($code, $msg, $id = 0, $name = null)
 	die();
 }
 
-$_user = phpBBuser::getInstance();
-if(!$_user->isLoggedIn())
+$tgdb_user = TGDBUser::getInstance();
+if(!$tgdb_user->isLoggedIn())
 {
 	returnJSONAndDie(-1, ErrorPage::$MSG_NOT_LOGGED_IN_EDIT_ERROR);
 }
 else
 {
-	if(!$_user->hasPermission('m_delete_games'))
+	if(!$tgdb_user->hasPermission('STAFF'))
 	{
 		returnJSONAndDie(-1, ErrorPage::$MSG_NO_PERMISSION_TO_EDIT_ERROR);
 	}
@@ -119,7 +119,7 @@ try
 					if($res === true)
 					{
 						$API->deletePlatformImage($id, $type);
-						$API->InsertPlatformImage($_user->GetUserID(), $id, $type, $PATHS[$type]['path'] . "$id." . $PATHS[$type]['type']);
+						$API->InsertPlatformImage($tgdb_user->GetUserID(), $id, $type, $PATHS[$type]['path'] . "$id." . $PATHS[$type]['type']);
 					}
 					else
 					{

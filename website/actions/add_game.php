@@ -128,7 +128,7 @@ try
 	}
 	else
 	{
-		$res = $API->InsertGame($_user->GetUserID(), $_REQUEST['game_title'], $_REQUEST['overview'], $_REQUEST['youtube'], $_REQUEST['release_date'],
+		$res = $API->InsertGame($tgdb_user->GetUserID(), $_REQUEST['game_title'], $_REQUEST['overview'], $_REQUEST['youtube'], $_REQUEST['release_date'],
 			$_REQUEST['players'], $_REQUEST['coop'], $_REQUEST['developers'], $_REQUEST['publishers'], $_REQUEST['platform'], $_REQUEST['genres'], $_REQUEST['rating'],
 			$_REQUEST['alternate_names'], $_REQUEST['uids'], $_REQUEST['region_id'], $_REQUEST['country_id']);
 	}
@@ -139,7 +139,7 @@ try
 		$Lock->commit();
 		$filters = ['game_title' => true, 'overview' => true, 'youtube' => true, 'release_date' => true, 'players' => true, 'coop' => true, 'developers' => true, 'publishers' => true, 'genres' => true, 'rating' => true, 'alternates' => true, "uids" => true];
 		$new_game_data = $API->GetGameByID($res, 0, 1, $filters)[0];
-		DiscordUtils::PostGameUpdate($_user, [], $new_game_data, 0);
+		DiscordUtils::PostGameUpdate($tgdb_user, [], $new_game_data, 0);
 		returnJSONAndDie(1, $res);
 	}
 

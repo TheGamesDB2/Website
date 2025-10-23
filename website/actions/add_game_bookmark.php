@@ -9,8 +9,8 @@ function returnJSONAndDie($code, $msg)
 	die();
 }
 
-$_user = phpBBuser::getInstance();
-if(!$_user->isLoggedIn())
+$tgdb_user = TGDBUser::getInstance();
+if(!$tgdb_user->isLoggedIn())
 {
 	returnJSONAndDie(-1, ErrorPage::$MSG_NOT_LOGGED_IN_EDIT_ERROR);
 }
@@ -34,7 +34,7 @@ try
 	}
 
 	$is_booked = $_REQUEST['is_booked'] > 0 ? 1 : 0;
-	$res = $API->InsertUserGameBookmark($_user->GetUserID(), $Game, $is_booked);
+	$res = $API->InsertUserGameBookmark($tgdb_user->GetUserID(), $Game, $is_booked);
 	if($res)
 	{
 		returnJSONAndDie(0, $is_booked);

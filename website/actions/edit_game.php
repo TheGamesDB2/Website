@@ -8,14 +8,14 @@ function returnJSONAndDie($code, $msg)
 	die();
 }
 
-$_user = phpBBuser::getInstance();
-if(!$_user->isLoggedIn())
+$tgdb_user = TGDBUser::getInstance();
+if(!$tgdb_user->isLoggedIn())
 {
 	returnJSONAndDie(-1, ErrorPage::$MSG_NOT_LOGGED_IN_EDIT_ERROR);
 }
 else
 {
-	if(!$_user->hasPermission('u_edit_games'))
+	if(!$tgdb_user->hasPermission('STAFF'))
 	{
 		returnJSONAndDie(-1, ErrorPage::$MSG_NO_PERMISSION_TO_EDIT_ERROR);
 	}
@@ -96,7 +96,7 @@ try
 	}
 
 	$Lock = $API->GetGameLockByID($_REQUEST['game_id']);
-	if(!$_user->hasPermission('m_delete_games'))
+	if(!$tgdb_user->hasPermission('STAFF'))
 	{
 		$_REQUEST['platform'] = $old_game_data->platform;
 		foreach($Lock->iterator() as $key => $val)
@@ -122,7 +122,7 @@ try
 		$Lock->commit();
 	}
 
-	$res = $API->UpdateGame( $_user->GetUserID(), $_REQUEST['game_id'], trim($_REQUEST['game_title']), $_REQUEST['overview'], $_REQUEST['youtube'], $_REQUEST['release_date'],
+	$res = $API->UpdateGame( $tgdb_user->GetUserID(), $_REQUEST['game_id'], trim($_REQUEST['game_title']), $_REQUEST['overview'], $_REQUEST['youtube'], $_REQUEST['release_date'],
 		$_REQUEST['players'], $_REQUEST['coop'], $_REQUEST['developers'], $_REQUEST['publishers'], $_REQUEST['genres'], $_REQUEST['rating'],  $_REQUEST['alternate_names'],
 		$_REQUEST['uids'], $_REQUEST['platform'], $_REQUEST['region_id'], $_REQUEST['country_id']);
 
@@ -130,7 +130,7 @@ try
 	if($res)
 	{
 		$new_game_data = $API->GetGameByID($_REQUEST['game_id'], 0, 1, $filters)[0];
-		DiscordUtils::PostGameUpdate($_user, $old_game_data, $new_game_data, 1);
+		DiscordUtils::PostGameUpdate($tgdb_user, $old_game_data, $new_game_data, 1);
 		returnJSONAndDie(1, "success!!");
 	}
 

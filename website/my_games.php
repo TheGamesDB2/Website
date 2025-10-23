@@ -14,8 +14,8 @@ require_once __DIR__ . "/include/ErrorPage.class.php";
 
 
 require_once __DIR__ . "/include/login.common.class.php";
-$_user = phpBBUser::getInstance();
-if(!$_user->isLoggedIn())
+$tgdb_user = TGDBUser::getInstance();
+if(!$tgdb_user->isLoggedIn())
 {
 	$errorPage = new ErrorPage();
 	$errorPage->SetHeader(ErrorPage::$HEADER_OOPS_ERROR);
@@ -28,8 +28,8 @@ $API = TGDB::getInstance();
 $page = PaginationUtils::getPage();
 $limit = 18;
 $offset = ($page - 1) * $limit;
-$list = $API->GetUserBookmarkedGames($_user->GetUserID(), $offset, $limit + 1);
-$Platform_IDs = $API->GetUserBookmarkedGamesPlatforms($_user->GetUserID());
+$list = $API->GetUserBookmarkedGames($tgdb_user->GetUserID(), $offset, $limit + 1);
+$Platform_IDs = $API->GetUserBookmarkedGamesPlatforms($tgdb_user->GetUserID());
 $listed_by = "My Games";
 
 if($has_next_page = count($list) > $limit)
