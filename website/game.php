@@ -14,6 +14,7 @@ require_once __DIR__ . "/../include/CommonUtils.class.php";
 require_once __DIR__ . "/include/login.common.class.php";
 
 $tgdb_user = TGDBUser::getInstance();
+echo $tgdb_user->GetUsername()."1<br>";
 //var_dump($tgdb_user->GetUsername());
 $API = TGDB::getInstance();
 
@@ -57,7 +58,7 @@ if(isset($_REQUEST['id']) && !empty($_REQUEST['id']) && is_numeric($_REQUEST['id
 		$country = $API->GetGameCountry($Game->country_id);
 	}
 }
-
+echo $tgdb_user->GetUsername()."2<br>";
 $GenresList = $API->GetGenres();
 $DevsList = $API->GetDevsListByIDs($Game->developers);
 $PubsList = $API->GetPubsListByIDs($Game->publishers);
@@ -80,10 +81,13 @@ if(!empty($box_cover->back))
 {
 	$box_cover->back = $box_cover->back[0];
 }
-
+echo $tgdb_user->GetUsername()."3<br>";
 $Header = new HEADER();
+echo $tgdb_user->GetUsername()."4<br>";
 $Header->setTitle("TGDB - Browse - Game - $Game->game_title");
+echo $tgdb_user->GetUsername()."5<br>";
 $Header->appendRawHeader(function() { global $Game, $box_cover, $_user;
+	echo $tgdb_user->GetUsername()."6<br>";
 
 ?>
 
@@ -110,7 +114,7 @@ $Header->appendRawHeader(function() { global $Game, $box_cover, $_user;
 			$('#reportbtn').click(function()
 			{
 				<?php 
-					echo $tgdb_user->GetUsername();
+					
 					if ($tgdb_user->isLoggedIn()) : ?>
 				var game_id = parseInt(prompt("Please enter the original game id", ""));
 				if(isNaN(game_id))
