@@ -86,7 +86,7 @@ $Header = new HEADER();
 echo $tgdb_user->GetUsername()."4<br>";
 $Header->setTitle("TGDB - Browse - Game - $Game->game_title");
 echo $tgdb_user->GetUsername()."5<br>";
-$Header->appendRawHeader(function() { global $Game, $box_cover, $_user;
+$Header->appendRawHeader(function() { global $Game, $box_cover, $tgdb_user;
 	echo $tgdb_user->GetUsername()."6<br>";
 
 ?>
