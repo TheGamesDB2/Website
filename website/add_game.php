@@ -22,7 +22,7 @@ else
 	{
 		$errorPage = new ErrorPage();
 		$errorPage->SetHeader(ErrorPage::$HEADER_OOPS_ERROR);
-		$errorPage->SetMSG(ErrorPage::$MSG_NO_PERMISSION_TO_ADD_GAME_ERROR);
+		$errorPage->SetMSG(ErrorPage::$MSG_NO_PERMISSION_TO_ADD_ERROR);
 		$errorPage->print_die();
 	}
 }
