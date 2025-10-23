@@ -1,4 +1,7 @@
 <?php
+//not to be live for the time being
+header("Location: /");
+exit();
 require_once __DIR__ . "/include/ErrorPage.class.php";
 if(!isset($_REQUEST['type']))
 {
