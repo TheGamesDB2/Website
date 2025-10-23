@@ -107,7 +107,9 @@ $Header->appendRawHeader(function() { global $Game, $box_cover, $_user; ?>
 
 			$('#reportbtn').click(function()
 			{
-				<?php if ($tgdb_user->isLoggedIn()) : ?>
+				<?php 
+					echo $tgdb_user->GetUsername();
+					if ($tgdb_user->isLoggedIn()) : ?>
 				var game_id = parseInt(prompt("Please enter the original game id", ""));
 				if(isNaN(game_id))
 				{
