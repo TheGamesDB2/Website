@@ -32,7 +32,7 @@ $pubs_list = $API->GetPubsList();
 echo $tgdb_user->getUsername()."2<br>";
 $Header = new HEADER();
 $Header->setTitle("TGDB - Add Platform");
-$Header->appendRawHeader(function() { global $devs_list, $pubs_list; $tgdb_user; 
+$Header->appendRawHeader(function() { global $devs_list, $pubs_list, $tgdb_user; 
 echo $tgdb_user->getUsername()."3<br>";
 ?>
 
