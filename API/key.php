@@ -2,13 +2,13 @@
 require_once __DIR__ . "/../website/include/login.common.class.php";
 
 $key = "NA";
-$_user = phpBBUser::getInstance();
-if($_user->isLoggedIn())
+$tgdb_user = TGDBUser::getInstance();
+if($tgdb_user->isLoggedIn())
 {
 	require_once __DIR__ . "/../API/include/APIAccessDB.class.php";
 	$auth = APIAccessDB::getInstance();
-	$key = $auth->RequestPublicAPIKey($_user->GetUserID());
-	$private_key = $auth->RequestPrivateAPIKey($_user->GetUserID());
+	$key = $auth->RequestPublicAPIKey($tgdb_user->GetUserID());
+	$private_key = $auth->RequestPrivateAPIKey($tgdb_user->GetUserID());
 	if(!is_object($private_key))
 	{
 		$private_key = new stdClass();
@@ -60,9 +60,9 @@ if($_user->isLoggedIn())
 	<div class="container">
 		<div class="row">
 			<div class="col">
-				<?php if(!$_user->isLoggedIn() ) : ?>
+				<?php if(!$tgdb_user->isLoggedIn() ) : ?>
 				<h3>You must be logged in to the site to view your api key.</h3>
-				<?php elseif($_user->isLoggedIn()) : ?>
+				<?php elseif($tgdb_user->isLoggedIn()) : ?>
 
 				<div class="card" style="margin-bottom:10px;">
 					<div class="card-header">

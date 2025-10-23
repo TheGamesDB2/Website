@@ -2,7 +2,7 @@
 require_once __DIR__ . "/../../include/CommonUtils.class.php";
 session_start();
 require_once __DIR__ . "/login.common.class.php";
-$_user = phpBBUser::getInstance();
+
 $tgdb_user = TGDBUser::getInstance();
 FOOTER::$_time_start = microtime(true);
 
@@ -162,7 +162,7 @@ class FOOTER
 {
 	public static $_time_start = 0;
 	public static function print()
-	{ global $_user;?>
+	{ global $tgdb_user;?>
 		<footer class="container-fluid bg-dark" style="margin-top:10px; padding: 20px;">
 			<div class="container">
 				<div class="row">
