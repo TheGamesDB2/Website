@@ -13,7 +13,7 @@ require_once __DIR__ . "/../include/TGDB.API.php";
 require_once __DIR__ . "/../include/CommonUtils.class.php";
 require_once __DIR__ . "/include/login.common.class.php";
 
-$_user = phpBBuser::getInstance();
+$tgdb_user = TGDBUser::getInstance();
 $API = TGDB::getInstance();
 
 if(isset($_REQUEST['id']) && !empty($_REQUEST['id']) && is_numeric($_REQUEST['id']))
@@ -37,9 +37,9 @@ if(isset($_REQUEST['id']) && !empty($_REQUEST['id']) && is_numeric($_REQUEST['id
 		{
 			$Game->boxart = $covers[$_REQUEST['id']];
 		}
-		if($_user->isLoggedIn())
+		if($tgdb_user->isLoggedIn())
 		{
-			$Game->is_booked = $API->isUserGameBookmarked($_user->GetUserID(), $Game->id);
+			$Game->is_booked = $API->isUserGameBookmarked($tgdb_user->GetUserID(), $Game->id);
 		}
 	}
 	$Platform = $API->GetPlatforms($Game->platform, array("icon" => true, "overview" => true, "developer" => true));
@@ -106,7 +106,7 @@ $Header->appendRawHeader(function() { global $Game, $box_cover, $_user; ?>
 
 			$('#reportbtn').click(function()
 			{
-				<?php if ($_user->isLoggedIn()) : ?>
+				<?php if ($tgdb_user->isLoggedIn()) : ?>
 				var game_id = parseInt(prompt("Please enter the original game id", ""));
 				if(isNaN(game_id))
 				{
@@ -137,7 +137,7 @@ $Header->appendRawHeader(function() { global $Game, $box_cover, $_user; ?>
 
 			$('[data-toggle="bookmark"]').click(function()
 			{
-				<?php if ($_user->isLoggedIn()) : ?>
+				<?php if ($tgdb_user->isLoggedIn()) : ?>
 				$(this).append('<i class="fa fa-spinner fa-pulse"></i>');
 				$(this).attr("disabled", true);
 				$.ajax({
@@ -455,7 +455,7 @@ $Header->appendRawHeader(function() { global $Game, $box_cover, $_user; ?>
 
 			</div>
 
-			<?php if($_user->isLoggedIn() && $_user->hasPermission('u_edit_games')) : ?>
+			<?php if($tgdb_user->isLoggedIn() && $tgdb_user->hasPermission('STAFF')) : ?>
 			<div class="col-12 col-md-3 col-lg-2" style="padding-bottom:10px; text-align: center;">
 				<div class="row">
 					<div class="col">
@@ -467,7 +467,7 @@ $Header->appendRawHeader(function() { global $Game, $box_cover, $_user; ?>
 							<p><button id="reportbtn" class="btn btn-primary btn-block">Report Duplicate</button></p>
 							<!--<p><a href="https://forums.thegamesdb.net/memberlist.php?mode=contactadmin&subject=<?= urlencode("[REPORT][GAME:$Game->id][$Game->game_title]") ?>" class="btn btn-primary btn-block">Report</a></p>-->
 							<p><a href="/edit_game.php?id=<?= $Game->id ?>" class="btn btn-primary btn-block">Edit</a></p>
-							<?php if($_user->isLoggedIn() && $_user->hasPermission('m_delete_games')) : ?>
+							<?php if($tgdb_user->isLoggedIn() && $tgdb_user->hasPermission('STAFF')) : ?>
 							<p><a href="/contr.php?id=<?= $Game->id ?>" class="btn btn-primary btn-block">View Edits</a></p>
 							<?php endif; ?>
 							</div>
