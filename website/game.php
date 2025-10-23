@@ -13,7 +13,7 @@ require_once __DIR__ . "/../include/TGDB.API.php";
 require_once __DIR__ . "/../include/CommonUtils.class.php";
 require_once __DIR__ . "/include/login.common.class.php";
 
-$tgdb_user = TGDBUser::getInstance();
+//$tgdb_user = TGDBUser::getInstance();
 $API = TGDB::getInstance();
 
 if(isset($_REQUEST['id']) && !empty($_REQUEST['id']) && is_numeric($_REQUEST['id']))
