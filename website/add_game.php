@@ -18,6 +18,13 @@ else
 		$errorPage->SetMSG(ErrorPage::$MSG_NO_PERMISSION_TO_EDIT_ERROR);
 		$errorPage->print_die();
 	}
+	if(!$tgdb_user->hasPermission('ADD_GAME'))
+	{
+		$errorPage = new ErrorPage();
+		$errorPage->SetHeader(ErrorPage::$HEADER_OOPS_ERROR);
+		$errorPage->SetMSG(ErrorPage::$MSG_NO_PERMISSION_TO_ADD_GAME_ERROR);
+		$errorPage->print_die();
+	}
 }
 
 require_once __DIR__ . "/include/header.footer.class.php";
