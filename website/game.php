@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . "/include/ErrorPage.class.php";
+require_once __DIR__ . "/include/login.common.class.php";
 if(!isset($_REQUEST['id']) || !is_numeric($_REQUEST['id']))
 {
 	$errorPage = new ErrorPage();
