@@ -51,6 +51,7 @@ class TGDBUser
 
 		try {
 			// Check if user exists and get their data
+
 			$stmt = $this->dbh->prepare("SELECT id, username, password FROM users WHERE username = :username and hashed = ''");
 			$stmt->bindParam(':username', $login_username);
 			$stmt->execute();
