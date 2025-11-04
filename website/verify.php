@@ -94,10 +94,8 @@ if(!isset($_GET['hash']) || empty($_GET['hash'])) {
                     $stmt->execute();
                 }
                 
-                // Update the user's hash to prevent reuse of the verification link
-                $new_hash = md5($user['email_address'] . time() . 'verified');
-                $stmt = $db->prepare("UPDATE users SET hashed = :new_hash WHERE id = :user_id");
-                $stmt->bindParam(':new_hash', $new_hash);
+                // Clear the hashed column after verification to prevent reuse of the verification link
+                $stmt = $db->prepare("UPDATE users SET hashed = NULL WHERE id = :user_id");
                 $stmt->bindParam(':user_id', $user_id);
                 $stmt->execute();
                 
