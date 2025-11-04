@@ -38,7 +38,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && empty($error_msgs) && empty($success_
 			var_dump($tgdb_res);
 			echo "</pre>";
 
-			if($tgdb_res['status'] != LOGIN_SUCCESS)
+			if($tgdb_res['status'] != "LOGIN_SUCCESS")
 			{
 				$res = $_user->Login(isset($_POST['autologin']), isset($_POST['viewonline']));
 				if($res['status'] == LOGIN_SUCCESS)
