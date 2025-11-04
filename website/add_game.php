@@ -11,13 +11,6 @@ if(!$tgdb_user->isLoggedIn())
 }
 else
 {
-	if(!$tgdb_user->hasPermission('STAFF'))
-	{
-		$errorPage = new ErrorPage();
-		$errorPage->SetHeader(ErrorPage::$HEADER_OOPS_ERROR);
-		$errorPage->SetMSG(ErrorPage::$MSG_NO_PERMISSION_TO_EDIT_ERROR);
-		$errorPage->print_die();
-	}
 	if(!$tgdb_user->hasPermission('ADD_GAME'))
 	{
 		$errorPage = new ErrorPage();
