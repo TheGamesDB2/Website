@@ -15,10 +15,6 @@ if(!$tgdb_user->isLoggedIn())
 }
 else
 {
-	if(!$tgdb_user->hasPermission('STAFF'))
-	{
-		returnJSONAndDie(-1, ErrorPage::$MSG_NO_PERMISSION_TO_EDIT_ERROR);
-	}
 	if(!$tgdb_user->hasPermission('ADD_GAME'))
 	{
 		returnJSONAndDie(-1, ErrorPage::$MSG_NO_PERMISSION_TO_ADD_ERROR);
