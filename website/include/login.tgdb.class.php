@@ -164,7 +164,6 @@ class TGDBUser
 				JOIN permissions p ON up.permissions_id = p.id
 				WHERE up.users_id = :user_id AND p.permission_text = :permission_text
 			");
-			echo "SELECT COUNT(*) as has_perm FROM users_permissions up	JOIN permissions p ON up.permissions_id = p.id WHERE up.users_id = ".$_SESSION['user_id']." AND p.permission_text = ".$perm;
 			$stmt->execute([
 				':user_id' => $_SESSION['user_id'],
 				':permission_text' => $perm
