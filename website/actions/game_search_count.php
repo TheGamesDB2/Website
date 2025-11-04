@@ -51,6 +51,7 @@ try
 }
 catch (Exception $e)
 {
+	echo $e;
 	error_log($e);
 }
 returnJSONAndDie(-1, "Unexpected Error has occured, Please try again!!");
