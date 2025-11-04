@@ -1,6 +1,6 @@
 <?php
 // Include session configuration
-require_once __DIR__ . "/include/session.config.php";
+require_once __DIR__ . "../include/session.config.php";
 
 // Function to display session information
 function displaySessionInfo() {
