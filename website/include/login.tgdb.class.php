@@ -103,6 +103,32 @@ class TGDBUser
 	 */
 	function isLoggedIn()
 	{
+		// Debug information
+		if (!isset($_SESSION['login_debug'])) {
+			$_SESSION['login_debug'] = [];
+		}
+		
+		$debug_info = [
+			'time' => date('Y-m-d H:i:s'),
+			'session_id' => session_id(),
+			'is_logged_in_set' => isset($_SESSION['is_logged_in']),
+			'is_logged_in_value' => isset($_SESSION['is_logged_in']) ? $_SESSION['is_logged_in'] : null,
+			'user_id_set' => isset($_SESSION['user_id']),
+			'user_id' => isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null,
+			'username_set' => isset($_SESSION['username']),
+			'username' => isset($_SESSION['username']) ? $_SESSION['username'] : null,
+			'http_host' => isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : null,
+			'script' => isset($_SERVER['SCRIPT_NAME']) ? $_SERVER['SCRIPT_NAME'] : null
+		];
+		
+		$_SESSION['login_debug'][] = $debug_info;
+		
+		// Limit debug history to last 10 entries
+		if (count($_SESSION['login_debug']) > 10) {
+			$_SESSION['login_debug'] = array_slice($_SESSION['login_debug'], -10);
+		}
+		
+		// Actual login check
 		return isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true;
 	}
 
