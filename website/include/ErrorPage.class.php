@@ -15,6 +15,7 @@ class ErrorPage
 	static $MSG_REMOVED_GAME_INVALID_PARAM_ERROR = "The game you're looking for does not exist or has been removed.";
 	static $MSG_NOT_LOGGED_IN_EDIT_ERROR = "Please login to be able to edit this page.";
 	static $MSG_NO_PERMISSION_TO_EDIT_ERROR = "You don't currently have permission to edit this page.";
+	static $MSG_NO_API_PERMISSION_ERROR = "You don't currently have permission to access the API.";
 	static $MSG_NO_PERMISSION_TO_ADD_ERROR = "You don't currently have permission to add games - please reach out to us on discord.";
 
 	private $_error_header = "Error Has Occured";

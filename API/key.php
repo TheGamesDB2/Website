@@ -5,6 +5,10 @@ $key = "NA";
 $tgdb_user = TGDBUser::getInstance();
 if($tgdb_user->isLoggedIn())
 {
+	if(!$tgdb_user->hasPermission('API_ACCESS'))
+	{
+		returnJSONAndDie(-1, ErrorPage::$MSG_NO_API_PERMISSION_ERROR);
+	}
 	require_once __DIR__ . "/../API/include/APIAccessDB.class.php";
 	$auth = APIAccessDB::getInstance();
 	$key = $auth->RequestPublicAPIKey($tgdb_user->GetUserID());
