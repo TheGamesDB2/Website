@@ -3,7 +3,7 @@ require_once __DIR__ . "/../website/include/login.common.class.php";
 
 $key = "NA";
 $tgdb_user = TGDBUser::getInstance();
-echo "test";
+echo "test2";
 exit();
 if($tgdb_user->isLoggedIn())
 {
