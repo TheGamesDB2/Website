@@ -153,6 +153,7 @@ class TGDBUser
 	function hasPermission($perm)
 	{
 		if (!$this->isLoggedIn()) {
+			echo "not logged in";
 			return false;
 		}
 
