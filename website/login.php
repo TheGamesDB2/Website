@@ -6,18 +6,14 @@ $error_msgs = array();
 $success_msg = array();
 
 $_user = phpBBUser::getInstance();
+$tgdb_user = TGDBUser::getInstance();
 if(isset($_REQUEST['logout']))
 {
-	if($_user->isLoggedIn() && $_user->Logout())
-	{
+	$tgdb_user->Logout();
+
 		$success_msg[] = "User logged out successfully. You will be automatically redirected, if it takes longer than 10 seconds <a href='" . CommonUtils::$WEBSITE_BASE_URL . "'>Click Here</a>." .
 		'<script type="text/javascript">setTimeout(function(){window.location="' . CommonUtils::$WEBSITE_BASE_URL . '";}, 5000);</script>';
-	}
-	else
-	{
-		$error_msgs[] = "User is already logged out. You will be automatically redirected, if it takes longer than 10 seconds <a href='" . CommonUtils::$WEBSITE_BASE_URL . "'>Click Here</a>." .
-			'<script type="text/javascript">setTimeout(function(){window.location="' . CommonUtils::$WEBSITE_BASE_URL . '";}, 5000);</script>';
-	}
+	
 }
 else if($_user->isLoggedIn())
 {
@@ -27,34 +23,52 @@ else if($_user->isLoggedIn())
 
 if($_SERVER['REQUEST_METHOD'] == "POST" && empty($error_msgs) && empty($success_msg))
 {
-	if(!$_user->isLoggedIn())
+	if(!$tgdb_user->isLoggedIn())
 	{
 		if(!empty($_POST['username']) && !empty($_POST['password']))
 		{
-			$res = $_user->Login(isset($_POST['autologin']), isset($_POST['viewonline']));
-			if($res['status'] == LOGIN_SUCCESS)
-			{
-				if(!empty($_POST['redirect']) && strpos($_POST['redirect'], "login") === false)
-				{
-					$length = strlen("thegamesdb.net");
-					$url = parse_url($_POST['redirect']);
-					if($length !== 0 && (substr($url['host'], -$length) === "thegamesdb.net"))
-					{
-						$success_msg[] = "Login successful, You will be automatically redirected, if it takes longer than 10 seconds <a href='" .$_POST['redirect'] . "'>Click Here</a>." .
-							'<script type="text/javascript">setTimeout(function(){window.location="' . $_POST['redirect'] . '";}, 5000);</script>';
+			$tgdb_res = $tgdb_user->Login(false,false);
 
-					}
-					else
-					{
-						$success_msg[] = "Login successful, You will be automatically redirected, if it takes longer than 10 seconds <a href='" . CommonUtils::$WEBSITE_BASE_URL . "'>Click Here</a>." .
-							'<script type="text/javascript">setTimeout(function(){window.location="' . CommonUtils::$WEBSITE_BASE_URL . '";}, 5000);</script>';					}
-				}
-				else
+			if($tgdb_res['status'] != "LOGIN_SUCCESS")
+			{
+				$res = $_user->Login(isset($_POST['autologin']), isset($_POST['viewonline']));
+				if($res['status'] == LOGIN_SUCCESS)
 				{
-					$success_msg[] = "Login successful, You will be automatically redirected, if it takes longer than 10 seconds <a href='" . CommonUtils::$WEBSITE_BASE_URL . "'>Click Here</a>." .
-						'<script type="text/javascript">setTimeout(function(){window.location="' . CommonUtils::$WEBSITE_BASE_URL . '";}, 5000);</script>';
+
+					$res = $tgdb_user->createUser($_POST['username'], $_POST['password'], $_user->user->data['user_email']);
+					$_GET['sid'] = $_user->user->session_id;
+					$_GET['logout'] = true;
+					
+					$session_user_id = $_user->user->data['user_id'];
+
+					$_user->user->session_kill();
+					$tgdb_user->Login(false, false);
+
+					$db = $tgdb_user->getDatabase();
+					$stmt = $db->prepare("UPDATE apiusers SET users_id = :tgdb_user_id WHERE userid = :session_user_id");
+
+					$userData = $tgdb_user->getUserData();
+					//echo "UPDATE apiusers SET users_id = " . $userData['id'] . " WHERE userid = " . $session_user_id;
+					//exit();
+
+					$stmt->execute([
+						':tgdb_user_id' => $userData['id'],
+						':session_user_id' => $session_user_id
+					]);
+
+					// Grant ADD_GAME and API_ACCESS permissions to the new user
+$permStmt = $db->prepare("
+    INSERT INTO users_permissions (users_id, permissions_id)
+    SELECT :user_id, id FROM permissions 
+    WHERE permission_text IN ('API_ACCESS', 'VALID_USER')
+");
+$permStmt->bindParam(':user_id', $userData['id'], PDO::PARAM_INT);
+$permStmt->execute();
+
+
+					header("Location: index.php");
+					exit();
 				}
-			}
 			else
 			{
 				$error_msgs[] = $res['error_msg_str'];
@@ -62,8 +76,14 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && empty($error_msgs) && empty($success_
 		}
 		else
 		{
-			$error_msgs[] = "Username or Password fields can't be empty, please try again.";
+			header("Location: index.php");
+			exit();
 		}
+	}
+	else
+	{
+		$error_msgs[] = "Username or Password fields can't be empty, please try again.";
+	}
 	}
 }
 
@@ -139,7 +159,7 @@ $Header->appendRawHeader(function() { global $Game; ?>
 							<button type="submit" class="btn btn-primary btn-lg btn-block">login</button>
 						</div>
 						<div class="login-register">
-							Visit us on <a href="https://discord.gg/2gxeAURxmA">Discord</a> to request an account.
+							Not got an account? Sign up <a href="register.php">here</a>
 						</div>
 					</form>
 				</div>

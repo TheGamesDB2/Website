@@ -8,8 +8,8 @@ function returnJSONAndDie($code, $msg)
 	die();
 }
 
-$_user = phpBBuser::getInstance();
-if(!$_user->isLoggedIn())
+$tgdb_user = TGDBUser::getInstance();
+if(!$tgdb_user->isLoggedIn())
 {
 	returnJSONAndDie(-1, ErrorPage::$MSG_NOT_LOGGED_IN_EDIT_ERROR);
 }
@@ -35,7 +35,7 @@ try
 {
 
 	$API = TGDB::getInstance();
-	$res = $API->ReportGame($_user->GetUserID(), $_user->GetUsername(), $_REQUEST);
+	$res = $API->ReportGame($tgdb_user->GetUserID(), $tgdb_user->GetUsername(), $_REQUEST);
 
 	switch((integer) $res)
 	{

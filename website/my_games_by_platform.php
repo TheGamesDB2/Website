@@ -9,8 +9,8 @@ require_once __DIR__ . "/../include/CommonUtils.class.php";
 require_once __DIR__ . "/include/ErrorPage.class.php";
 
 require_once __DIR__ . "/include/login.common.class.php";
-$_user = phpBBUser::getInstance();
-if(!$_user->isLoggedIn())
+$tgdb_user = TGDBUser::getInstance();
+if(!$tgdb_user->isLoggedIn())
 {
 	$errorPage = new ErrorPage();
 	$errorPage->SetHeader(ErrorPage::$HEADER_OOPS_ERROR);
@@ -36,8 +36,8 @@ $limit = 18;
 $offset = ($page - 1) * $limit;
 if(isset($_REQUEST['platform_id']) && is_numeric($_REQUEST['platform_id']))
 {
-	$list = $API->GetUserBookmarkedGamesByPlatformID($_user->GetUserID(), $_REQUEST['platform_id'], $offset, $limit + 1);
-	$Platform_IDs = $API->GetUserBookmarkedGamesPlatforms($_user->GetUserID());
+	$list = $API->GetUserBookmarkedGamesByPlatformID($tgdb_user->GetUserID(), $_REQUEST['platform_id'], $offset, $limit + 1);
+	$Platform_IDs = $API->GetUserBookmarkedGamesPlatforms($tgdb_user->GetUserID());
 
 	if($has_next_page = subarray_item_count($list) > $limit)
 	{

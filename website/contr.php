@@ -13,7 +13,7 @@ require_once __DIR__ . "/../include/TGDB.API.php";
 require_once __DIR__ . "/../include/CommonUtils.class.php";
 require_once __DIR__ . "/include/login.common.class.php";
 
-$_user = phpBBuser::getInstance();
+$tgdb_user = TGDBUser::getInstance();
 
 {
 	$game_id = $_REQUEST['id'];
@@ -29,7 +29,7 @@ $_user = phpBBuser::getInstance();
 
 $Header = new HEADER();
 $Header->setTitle("TGDB - Browse - GameEdits - $Game->game_title");
-$Header->appendRawHeader(function() { global $Game, $_user; ?>
+$Header->appendRawHeader(function() { global $Game, $tgdb_user; ?>
 
 	<link href="/css/social-btn.css" rel="stylesheet">
 	<link href="/css/fa-brands.5.0.10.css" rel="stylesheet">

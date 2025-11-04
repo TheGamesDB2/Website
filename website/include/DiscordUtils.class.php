@@ -65,7 +65,7 @@ class DiscordUtils
 			$embeds["author"] = array(
 				"name" => $_user->GetUsername(),
 				"url" => "https://forums.thegamesdb.net/memberlist.php?mode=viewprofile&u=" . $_user->GetUserID(),
-				"icon_url" => $_user->GetAvatar()
+				"icon_url" => ""
 			);
 			$embeds["title"] = $new_game_data->game_title;
 			$embeds["url"] = CommonUtils::$WEBSITE_BASE_URL . "game.php?id=$new_game_data->id";
@@ -167,7 +167,7 @@ class DiscordUtils
 			$embeds["author"] = array(
 				"name" => $_user->GetUsername(),
 				"url" => "https://forums.thegamesdb.net/memberlist.php?mode=viewprofile&u=" . $_user->GetUserID(),
-				"icon_url" => $_user->GetAvatar()
+				"icon_url" => ""
 			);
 			$embeds["title"] = $game->game_title;
 			$embeds["url"] = CommonUtils::$WEBSITE_BASE_URL . "game.php?id=$game->id";

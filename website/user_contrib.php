@@ -50,7 +50,7 @@ if(isset($IDs) && !empty($IDs))
 
 $Header = new HEADER();
 $Header->setTitle("TGDB - Browse - Game - $Game->game_title");
-$Header->appendRawHeader(function() { global $Game, $box_cover, $_user; ?>
+$Header->appendRawHeader(function() { global $Game, $box_cover, $tgdb_user; ?>
 
 	<link href="/css/social-btn.css" rel="stylesheet">
 	<link href="/css/jquery.fancybox.min.3.3.5.css" rel="stylesheet">
