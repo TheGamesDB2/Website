@@ -108,7 +108,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && empty($error_msgs) && empty($success_
                         
                         // Insert the new user
                         $stmt = $db->prepare("INSERT INTO users (username, password, email_address, created_at, hashed) 
-                                             VALUES (:username, :password, :email, :created_at, :hash, 0)");
+                                             VALUES (:username, :password, :email, :created_at, :hash)");
                         $stmt->bindParam(':username', $username);
                         $stmt->bindParam(':password', $hashed_password);
                         $stmt->bindParam(':email', $email);
