@@ -81,7 +81,7 @@ class APIAccessDB
 		$dbh = $this->database->dbh;
 
 		$sth = $dbh->prepare("Select apikey, is_banned FROM apiusers where users_id = :users_id AND is_private_key = 0 LIMIT 1;");
-		$sth->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+		$sth->bindValue(':users_id', $user_id, PDO::PARAM_INT);
 
 		if($sth->execute())
 		{
