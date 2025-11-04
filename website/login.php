@@ -10,16 +10,10 @@ $tgdb_user = TGDBUser::getInstance();
 if(isset($_REQUEST['logout']))
 {
 	$tgdb_user->Logout();
-	//if($_user->isLoggedIn() && $_user->Logout())
-	//{
+
 		$success_msg[] = "User logged out successfully. You will be automatically redirected, if it takes longer than 10 seconds <a href='" . CommonUtils::$WEBSITE_BASE_URL . "'>Click Here</a>." .
 		'<script type="text/javascript">setTimeout(function(){window.location="' . CommonUtils::$WEBSITE_BASE_URL . '";}, 5000);</script>';
-	//}
-	//else
-	//{
-	//	$error_msgs[] = "User is already logged out. You will be automatically redirected, if it takes longer than 10 seconds <a href='" . CommonUtils::$WEBSITE_BASE_URL . "'>Click Here</a>." .
-	//		'<script type="text/javascript">setTimeout(function(){window.location="' . CommonUtils::$WEBSITE_BASE_URL . '";}, 5000);</script>';
-	//}
+	
 }
 else if($_user->isLoggedIn())
 {
@@ -63,29 +57,6 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && empty($error_msgs) && empty($success_
 
 					header("Location: index.php");
 					exit();
-					//Capture forum info and then logout
-					//$_user->Logout();
-
-					/**if(!empty($_POST['redirect']) && strpos($_POST['redirect'], "login") === false)
-					{
-						$length = strlen("thegamesdb.net");
-						$url = parse_url($_POST['redirect']);
-						if($length !== 0 && (substr($url['host'], -$length) === "thegamesdb.net"))
-						{
-							$success_msg[] = "Login successful, You will be automatically redirected, if it takes longer than 10 seconds <a href='" .$_POST['redirect'] . "'>Click Here</a>." .
-								'<script type="text/javascript">setTimeout(function(){window.location="' . $_POST['redirect'] . '";}, 5000);</script>';
-
-						}
-						else
-						{
-							$success_msg[] = "Login successful, You will be automatically redirected, if it takes longer than 10 seconds <a href='" . CommonUtils::$WEBSITE_BASE_URL . "'>Click Here</a>." .
-								'<script type="text/javascript">setTimeout(function(){window.location="' . CommonUtils::$WEBSITE_BASE_URL . '";}, 5000);</script>';					}
-					}
-					else
-					{
-						$success_msg[] = "Login successful, You will be automatically redirected, if it takes longer than 10 seconds <a href='" . CommonUtils::$WEBSITE_BASE_URL . "'>Click Here</a>." .
-							'<script type="text/javascript">setTimeout(function(){window.location="' . CommonUtils::$WEBSITE_BASE_URL . '";}, 5000);</script>';
-					}**/
 				}
 			else
 			{
