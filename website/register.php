@@ -101,9 +101,8 @@ $subject = "Account Registration for TheGamesDB.net";
 
         // Final Boundary
         $message .= "--$boundary--\r\n";
-        $i++;
         // --- 4c. Send Email and Update Database ---
-        if (mail($to_email, $subject, $message, $headers)) {
+        if (mail($email, $subject, $message, $headers)) {
             return true;
         }
         else
