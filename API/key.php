@@ -5,10 +5,8 @@ $key = "NA";
 $tgdb_user = TGDBUser::getInstance();
 if($tgdb_user->isLoggedIn())
 {
-	if(!$tgdb_user->hasPermission('API_ACCESS'))
+	if($tgdb_user->hasPermission('API_ACCESS'))
 	{
-		returnJSONAndDie(-1, ErrorPage::$MSG_NO_API_PERMISSION_ERROR);
-	}
 	require_once __DIR__ . "/../API/include/APIAccessDB.class.php";
 	$auth = APIAccessDB::getInstance();
 	$key = $auth->RequestPublicAPIKey($tgdb_user->GetUserID());
@@ -20,6 +18,7 @@ if($tgdb_user->isLoggedIn())
 		$private_key->extra_allowance = "NA";
 
 	}
+}
 }
 
 ?>
@@ -66,7 +65,10 @@ if($tgdb_user->isLoggedIn())
 			<div class="col">
 				<?php if(!$tgdb_user->isLoggedIn() ) : ?>
 				<h3>You must be logged in to the site to view your api key.</h3>
-				<?php elseif($tgdb_user->isLoggedIn()) : ?>
+				<?php elseif($tgdb_user->isLoggedIn() && !$tgdb_user->hasPermission('API_ACCESS')) : ?>
+				<h3>You don't currently have permission to access the API.</h3>
+				<p>Please contact us on <a href="https://discord.gg/NCRVtMAe">discord</a> to request permission.</p>
+				<?php elseif($tgdb_user->isLoggedIn() && $tgdb_user->hasPermission('API_ACCESS')) : ?>
 
 				<div class="card" style="margin-bottom:10px;">
 					<div class="card-header">

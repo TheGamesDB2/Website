@@ -80,7 +80,7 @@ class APIAccessDB
 	{
 		$dbh = $this->database->dbh;
 
-		$sth = $dbh->prepare("Select apikey, is_banned FROM apiusers where userid = :user_id AND is_private_key = 0 LIMIT 1;");
+		$sth = $dbh->prepare("Select apikey, is_banned FROM apiusers where user_id = :user_id AND is_private_key = 0 LIMIT 1;");
 		$sth->bindValue(':user_id', $user_id, PDO::PARAM_INT);
 
 		if($sth->execute())
@@ -101,7 +101,7 @@ class APIAccessDB
 			{
 				$bytes = openssl_random_pseudo_bytes(64/2);
 				$key = bin2hex($bytes);
-				$sth = $dbh->prepare("INSERT INTO apiusers (userid, apikey, api_allowance_level_id, extra_allowance, is_private_key)
+				$sth = $dbh->prepare("INSERT INTO apiusers (user_id, apikey, api_allowance_level_id, extra_allowance, is_private_key)
 				VALUES(:user_id, :apikey, 1, 0, 0);");
 				$sth->bindValue(':user_id', $user_id, PDO::PARAM_INT);
 				$sth->bindValue(':apikey', $key, PDO::PARAM_INT);
