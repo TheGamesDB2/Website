@@ -72,6 +72,11 @@ $html_body = '
 </body>
 </html>
 ';
+$from_name = "TheGamesDB Team";
+$from_email = "noreply@thegamesdb.net";
+$reply_to_email = "support@thegamesdb.net";
+$subject = "Account Registration for TheGamesDB.net";
+
 
  $boundary = "boundary-" . md5(uniqid(time()));
 
