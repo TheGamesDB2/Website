@@ -92,6 +92,11 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && empty($error_msgs) && empty($success_
 				$error_msgs[] = $res['error_msg_str'];
 			}
 		}
+		else
+		{
+			header("Location: index.php");
+			exit();
+		}
 	}
 	else
 	{
