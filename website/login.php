@@ -48,6 +48,15 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && empty($error_msgs) && empty($success_
 
 					$db = $tgdb_user->getDatabase();
 					$stmt = $db->prepare("UPDATE apiusers SET users_id = :tgdb_user_id WHERE userid = :session_user_id");
+// Grant ADD_GAME and API_ACCESS permissions to the new user
+$permStmt = $db->prepare("
+    INSERT INTO users_permissions (users_id, permissions_id)
+    SELECT :user_id, id FROM permissions 
+    WHERE permission_text IN ('ADD_GAME', 'API_ACCESS')
+");
+$permStmt->bindParam(':user_id', $userData['id'], PDO::PARAM_INT);
+$permStmt->execute();
+
 					$userData = $tgdb_user->getUserData();
 					$stmt->execute([
 						':tgdb_user_id' => $userData['id'],
