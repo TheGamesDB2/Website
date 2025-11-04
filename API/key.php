@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . "/../website/include/login.common.class.php";
-
+echo "test";
+exit();
 $key = "NA";
 $tgdb_user = TGDBUser::getInstance();
 if($tgdb_user->isLoggedIn())
