@@ -31,7 +31,6 @@ if (session_status() === PHP_SESSION_NONE) {
         'httponly' => $httponly,
         'samesite' => 'Lax' // Allows the cookie to be sent when navigating to the site
     ];
-    session_debug_log('Setting cookie params', $cookie_params);
     
     // For PHP versions < 7.3
     if (PHP_VERSION_ID < 70300) {
@@ -42,16 +41,13 @@ if (session_status() === PHP_SESSION_NONE) {
             $cookie_params['secure'],
             $cookie_params['httponly']
         );
-        session_debug_log('Using legacy session_set_cookie_params');
     } else {
         // For PHP 7.3+
         session_set_cookie_params($cookie_params);
-        session_debug_log('Using modern session_set_cookie_params');
     }
     
     // Set the session name to be consistent
     session_name('TGDBSESSID');
-    session_debug_log('Session name set to', session_name());
     
     // Start the session
     session_start();
