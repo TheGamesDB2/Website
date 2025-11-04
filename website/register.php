@@ -16,12 +16,95 @@ if($tgdb_user->isLoggedIn())
 
 // Function to send verification email
 function sendVerificationEmail($username, $email, $hash) {
-    // This is a placeholder function that will be implemented later
-    // It should send an email to the user with a verification link
-    // The link should include the hash for verification
-    
-    // For now, we'll just return true to simulate success
-    return true;
+    $domain = substr(strrchr($email, "@"),1);
+    if ($domain === false)
+    {
+        return false;
+    }
+
+    if (!checkdnsrr($domain, "MX"))
+    {
+        return false;
+    }
+    $plain_text_greeting = "Hello " . $username . ",";
+    $html_greeting = "<p style=\"font-size: 1.1em;\">Hello " . htmlspecialchars($username) . ",</p>";
+
+    $plain_text_body = "" . $plain_text_greeting . "You're receiving this email as you have just registered an account on thegamesdb.net. If this was not you, please disregard this email and you will not receive any further emails from ourselves.
+
+Please click the link below to verify your account:
+
+https://thegamesdb.net/verify.php?hash=" . $hash."
+
+If you have any questions related to this, please reach out to us via support@thegamesdb.net or alternatively come chat to us on Discord (https://discord.gg/qZye7Rnh).
+
+Thanks,
+TheGamesDB Team
+
+You are receiving this email because you have an account at thegamesdb.net";
+
+$html_body = '
+<html>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0;">
+    <div style="width: 90%; max-width: 600px; margin: 20px auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
+
+        <div style="background-color: #0c1c38; color: #ffffff; padding: 25px 30px;">
+            <h1 style="margin: 0; font-size: 24px;">TheGamesDB.net New User Account</h1>
+        </div>
+
+        <div style="padding: 30px;">
+            ' . $html_greeting . '
+            <p>You\'re receiving this email as you have just registered an account on <strong>thegamesdb.net</strong>.</p>
+
+            <p>Please click the link below to verify your account:</p>
+            <a href="https://thegamesdb.net/verify.php?hash=' . $hash . '">https://thegamesdb.net/verify.php?hash=' . $hash . '</a>
+            
+            <h3 style="color: #0c1c38; border-bottom: 1px solid #eee; padding-bottom: 5px; margin-top: 25px;">Questions?</h3>
+            <p>If you have any questions, please reach out to us via <a href="mailto:support@thegamesdb.net">support@thegamesdb.net</a> or chat with us on <a href="https://discord.gg/qZye7Rnh">Discord</a>.</p>
+
+            <p style="margin-top: 30px; font-size: 0.9em;">Thanks,<br>TheGamesDB Team</p>
+        </div>
+
+        <div style="background-color: #f9f9f9; padding: 20px 30px; border-top: 1px solid #eee; font-size: 0.8em; color: #888; text-align: center;">
+            <p style="margin: 0;">You are receiving this email because you have an account at thegamesdb.net.</p>
+        </div>
+
+    </div>
+</body>
+</html>
+';
+
+ $boundary = "boundary-" . md5(uniqid(time()));
+
+        $headers = "From: $from_name <$from_email>\r\n";
+        $headers .= "Reply-To: $reply_to_email\r\n";
+        $headers .= "MIME-Version: 1.0\r\n";
+        $headers .= "Content-Type: multipart/alternative; boundary=\"$boundary\"\r\n";
+
+        $message = "This is a multi-part message in MIME format.\r\n\r\n";
+
+        // Plain Text Part
+        $message .= "--$boundary\r\n";
+        $message .= "Content-Type: text/plain; charset=\"UTF-8\"\r\n";
+        $message .= "Content-Transfer-Encoding: 7bit\r\n\r\n";
+        $message .= $plain_text_body . "\r\n\r\n";
+
+        // HTML Part
+        $message .= "--$boundary\r\n";
+        $message .= "Content-Type: text/html; charset=\"UTF-8\"\r\n";
+        $message .= "Content-Transfer-Encoding: 7bit\r\n\r\n";
+        $message .= $html_body . "\r\n\r\n";
+
+        // Final Boundary
+        $message .= "--$boundary--\r\n";
+        $i++;
+        // --- 4c. Send Email and Update Database ---
+        if (mail($to_email, $subject, $message, $headers)) {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
 }
 
 // Function to generate a hash from email
