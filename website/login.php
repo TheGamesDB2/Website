@@ -47,8 +47,10 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && empty($error_msgs) && empty($success_
 					$db = $tgdb_user->getDatabase();
 					$stmt = $db->prepare("UPDATE apiusers SET users_id = :tgdb_user_id WHERE userid = :session_user_id");
 
-
 					$userData = $tgdb_user->getUserData();
+					echo "UPDATE apiusers SET users_id = " . $userData['id'] . " WHERE userid = " . $session_user_id;
+					exit();
+
 					$stmt->execute([
 						':tgdb_user_id' => $userData['id'],
 						':session_user_id' => $session_user_id
