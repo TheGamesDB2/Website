@@ -168,7 +168,7 @@ $Header->appendRawHeader(function() { global $Game; ?>
 							<button type="submit" class="btn btn-primary btn-lg btn-block">login</button>
 						</div>
 						<div class="login-register">
-							Visit us on <a href="https://discord.gg/2gxeAURxmA">Discord</a> to request an account.
+							Not got an account? Sign up <a href="register.php">here</a>
 						</div>
 					</form>
 				</div>
