@@ -149,6 +149,7 @@ class HEADER
 				<?php else : ?>
 				<li class="nav-item mr-0">
 					<a class="nav-link" href="/login.php">Log in</a>
+					<a class="nav-link" href="/register.php">Sign Up</a>
 				</li>
 				<?php endif; ?>
 			</ul>
