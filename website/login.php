@@ -34,6 +34,10 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && empty($error_msgs) && empty($success_
 		if(!empty($_POST['username']) && !empty($_POST['password']))
 		{
 			$tgdb_res = $tgdb_user->Login(false,false);
+			echo "<pre>";
+			var_dump($tgdb_res);
+			echo "</pre>";
+
 			if($tgdb_res['status'] != LOGIN_SUCCESS)
 			{
 				$res = $_user->Login(isset($_POST['autologin']), isset($_POST['viewonline']));
@@ -88,11 +92,11 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && empty($error_msgs) && empty($success_
 				$error_msgs[] = $res['error_msg_str'];
 			}
 		}
-		}
-		else
-		{
-			$error_msgs[] = "Username or Password fields can't be empty, please try again.";
-		}
+	}
+	else
+	{
+		$error_msgs[] = "Username or Password fields can't be empty, please try again.";
+	}
 	}
 }
 
