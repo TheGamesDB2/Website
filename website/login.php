@@ -28,9 +28,6 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && empty($error_msgs) && empty($success_
 		if(!empty($_POST['username']) && !empty($_POST['password']))
 		{
 			$tgdb_res = $tgdb_user->Login(false,false);
-			echo "<pre>";
-			var_dump($tgdb_res);
-			echo "</pre>";
 
 			if($tgdb_res['status'] != "LOGIN_SUCCESS")
 			{
