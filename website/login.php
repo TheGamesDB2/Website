@@ -34,6 +34,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && empty($error_msgs) && empty($success_
 				$res = $_user->Login(isset($_POST['autologin']), isset($_POST['viewonline']));
 				if($res['status'] == LOGIN_SUCCESS)
 				{
+
 					$res = $tgdb_user->createUser($_POST['username'], $_POST['password'], $_user->user->data['user_email']);
 					$_GET['sid'] = $_user->user->session_id;
 					$_GET['logout'] = true;
@@ -57,7 +58,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && empty($error_msgs) && empty($success_
 $permStmt = $db->prepare("
     INSERT INTO users_permissions (users_id, permissions_id)
     SELECT :user_id, id FROM permissions 
-    WHERE permission_text IN ('ADD_GAME', 'API_ACCESS')
+    WHERE permission_text IN ('ADD_GAME', 'API_ACCESS', 'VALID_USER')
 ");
 $permStmt->bindParam(':user_id', $userData['id'], PDO::PARAM_INT);
 $permStmt->execute();
