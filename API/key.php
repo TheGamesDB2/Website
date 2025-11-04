@@ -1,9 +1,10 @@
 <?php
 require_once __DIR__ . "/../website/include/login.common.class.php";
-echo "test";
-exit();
+
 $key = "NA";
 $tgdb_user = TGDBUser::getInstance();
+echo "test";
+exit();
 if($tgdb_user->isLoggedIn())
 {
 	if($tgdb_user->hasPermission('API_ACCESS'))
