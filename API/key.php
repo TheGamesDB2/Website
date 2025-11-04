@@ -1,73 +1,10 @@
 <?php
-// Debug information
-echo "<h1>Session Debug Information</h1>";
-echo "<pre>";
-
-// Show current session status
-echo "Session Status: ";
-switch(session_status()) {
-    case PHP_SESSION_DISABLED:
-        echo "Sessions are disabled\n";
-        break;
-    case PHP_SESSION_NONE:
-        echo "Sessions are enabled, but no session exists\n";
-        break;
-    case PHP_SESSION_ACTIVE:
-        echo "Sessions are enabled, and a session exists\n";
-        break;
-}
-
-// Show session ID
-echo "\nSession ID: " . session_id() . "\n";
-
-// Show session cookie parameters
-echo "\nSession Cookie Parameters:\n";
-print_r(session_get_cookie_params());
-
-// Show domain information
-echo "\nDomain Information:\n";
-echo "HTTP_HOST: " . (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'Not set') . "\n";
-echo "SERVER_NAME: " . (isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : 'Not set') . "\n";
-
 // Include session configuration first to ensure proper session handling across subdomains
 require_once __DIR__ . "/../include/session.config.php";
-
-// Show session status after configuration
-echo "\nSession Status After Config: ";
-switch(session_status()) {
-    case PHP_SESSION_DISABLED:
-        echo "Sessions are disabled\n";
-        break;
-    case PHP_SESSION_NONE:
-        echo "Sessions are enabled, but no session exists\n";
-        break;
-    case PHP_SESSION_ACTIVE:
-        echo "Sessions are enabled, and a session exists\n";
-        break;
-}
-
-echo "\nSession ID After Config: " . session_id() . "\n";
-
 require_once __DIR__ . "/../website/include/login.common.class.php";
-
-// Show session data
-echo "\nSession Data:\n";
-print_r($_SESSION);
 
 $key = "NA";
 $tgdb_user = TGDBUser::getInstance();
-
-// Show TGDBUser information
-echo "\nTGDBUser Information:\n";
-echo "Is Logged In: " . ($tgdb_user->isLoggedIn() ? 'Yes' : 'No') . "\n";
-echo "User ID: " . $tgdb_user->GetUserID() . "\n";
-echo "Username: " . $tgdb_user->GetUsername() . "\n";
-
-// Show cookies
-echo "\nCookies:\n";
-print_r($_COOKIE);
-
-echo "</pre>";
 
 if($tgdb_user->isLoggedIn())
 {
