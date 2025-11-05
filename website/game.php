@@ -459,7 +459,7 @@ $Header->appendRawHeader(function() { global $Game, $box_cover, $tgdb_user;
 
 			</div>
 
-			<?php if($tgdb_user->isLoggedIn() && $tgdb_user->hasPermission('STAFF')) : ?>
+			<?php if($tgdb_user->isLoggedIn() && $tgdb_user->hasPermission('ADD_GAME')) : ?>
 			<div class="col-12 col-md-3 col-lg-2" style="padding-bottom:10px; text-align: center;">
 				<div class="row">
 					<div class="col">
