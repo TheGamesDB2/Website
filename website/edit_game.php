@@ -18,7 +18,7 @@ if(!$tgdb_user->isLoggedIn())
 }
 else
 {
-	if(!$tgdb_user->hasPermission('STAFF'))
+	if(!$tgdb_user->hasPermission('ADD_GAME'))
 	{
 		$errorPage = new ErrorPage();
 		$errorPage->SetHeader(ErrorPage::$HEADER_OOPS_ERROR);
