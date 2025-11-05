@@ -1,14 +1,19 @@
 <?php
+// Include session configuration first to ensure proper session handling across subdomains
+require_once __DIR__ . "/../include/session.config.php";
 require_once __DIR__ . "/../website/include/login.common.class.php";
 
 $key = "NA";
-$_user = phpBBUser::getInstance();
-if($_user->isLoggedIn())
+$tgdb_user = TGDBUser::getInstance();
+
+if($tgdb_user->isLoggedIn())
 {
+	if($tgdb_user->hasPermission('API_ACCESS'))
+	{
 	require_once __DIR__ . "/../API/include/APIAccessDB.class.php";
 	$auth = APIAccessDB::getInstance();
-	$key = $auth->RequestPublicAPIKey($_user->GetUserID());
-	$private_key = $auth->RequestPrivateAPIKey($_user->GetUserID());
+	$key = $auth->RequestPublicAPIKey($tgdb_user->GetUserID());
+	$private_key = $auth->RequestPrivateAPIKey($tgdb_user->GetUserID());
 	if(!is_object($private_key))
 	{
 		$private_key = new stdClass();
@@ -16,6 +21,7 @@ if($_user->isLoggedIn())
 		$private_key->extra_allowance = "NA";
 
 	}
+}
 }
 
 ?>
@@ -60,9 +66,12 @@ if($_user->isLoggedIn())
 	<div class="container">
 		<div class="row">
 			<div class="col">
-				<?php if(!$_user->isLoggedIn() ) : ?>
+				<?php if(!$tgdb_user->isLoggedIn() ) : ?>
 				<h3>You must be logged in to the site to view your api key.</h3>
-				<?php elseif($_user->isLoggedIn()) : ?>
+				<?php elseif($tgdb_user->isLoggedIn() && !$tgdb_user->hasPermission('API_ACCESS')) : ?>
+				<h3>You don't currently have permission to access the API.</h3>
+				<p>Please contact us on <a href="https://discord.gg/NCRVtMAe">discord</a> to request permission.</p>
+				<?php elseif($tgdb_user->isLoggedIn() && $tgdb_user->hasPermission('API_ACCESS')) : ?>
 
 				<div class="card" style="margin-bottom:10px;">
 					<div class="card-header">

@@ -1,8 +1,9 @@
 <?php
 require_once __DIR__ . "/include/ErrorPage.class.php";
+require_once __DIR__ . "/include/header.footer.class.php";
 require_once __DIR__ . "/include/login.common.class.php";
-$_user = phpBBUser::getInstance();
-if(!$_user->isLoggedIn())
+$tgdb_user = TGDBUser::getInstance();
+if(!$tgdb_user->isLoggedIn())
 {
 	$errorPage = new ErrorPage();
 	$errorPage->SetHeader(ErrorPage::$HEADER_OOPS_ERROR);
@@ -11,7 +12,7 @@ if(!$_user->isLoggedIn())
 }
 else
 {
-	if(!$_user->hasPermission('m_delete_games'))
+	if(!$tgdb_user->hasPermission('STAFF'))
 	{
 		$errorPage = new ErrorPage();
 		$errorPage->SetHeader(ErrorPage::$HEADER_OOPS_ERROR);
@@ -20,7 +21,7 @@ else
 	}
 }
 
-require_once __DIR__ . "/include/header.footer.class.php";
+
 require_once __DIR__ . "/include/TGDBUtils.class.php";
 require_once __DIR__ . "/../include/TGDB.API.php";
 require_once __DIR__ . "/../include/CommonUtils.class.php";
@@ -30,8 +31,10 @@ $devs_list = $API->GetDevsList();
 $pubs_list = $API->GetPubsList();
 
 $Header = new HEADER();
-$Header->setTitle("TGDB - Add Platforms");
-$Header->appendRawHeader(function() { global $_user, $devs_list, $pubs_list; ?>
+$Header->setTitle("TGDB - Add Platform");
+$Header->appendRawHeader(function() { global $devs_list, $pubs_list, $tgdb_user; 
+
+?>
 
 	<link href="/css/social-btn.css" rel="stylesheet">
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
@@ -73,7 +76,7 @@ $Header->appendRawHeader(function() { global $_user, $devs_list, $pubs_list; ?>
 
 		$(document).ready(function()
 		{
-			<?php if($_user->hasPermission('m_delete_games')) : ?>
+			<?php if($tgdb_user->hasPermission('STAFF')) : ?>
 
 				$("#platform_form").submit(function(e)
 				{

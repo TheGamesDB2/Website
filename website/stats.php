@@ -7,8 +7,8 @@ require_once __DIR__ . "/include/login.common.class.php";
 
 $API = TGDB::getInstance();
 
-$_user = phpBBuser::getInstance();
-if($_user->isLoggedIn() && $_user->hasPermission('m_delete_games') && isset($_REQUEST['update']))
+$tgdb_user = TGDBUser::getInstance();
+if($tgdb_user->isLoggedIn() && $tgdb_user->hasPermission('STAFF') && isset($_REQUEST['update']))
 {
 	$API->UpdateStats();
 }

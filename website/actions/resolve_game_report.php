@@ -8,14 +8,14 @@ function returnJSONAndDie($code, $msg)
 	die();
 }
 
-$_user = phpBBuser::getInstance();
-if(!$_user->isLoggedIn())
+$tgdb_user = TGDBUser::getInstance();
+if(!$tgdb_user->isLoggedIn())
 {
 	returnJSONAndDie(-1, ErrorPage::$MSG_NOT_LOGGED_IN_EDIT_ERROR);
 }
 else
 {
-	if(!$_user->hasPermission('m_delete_games'))
+	if(!$tgdb_user->hasPermission('STAFF'))
 	{
 		returnJSONAndDie(-1, ErrorPage::$MSG_NO_PERMISSION_TO_EDIT_ERROR);
 	}
@@ -34,7 +34,7 @@ try
 	$API = TGDB::getInstance();
 	
 
-	$res = $API->ResolveGameReport($_user->GetUserID(), $_user->GetUsername(), $_REQUEST['id']);
+	$res = $API->ResolveGameReport($tgdb_user->GetUserID(), $tgdb_user->GetUsername(), $_REQUEST['id']);
 
 	returnJSONAndDie(1, "success!!");
 	

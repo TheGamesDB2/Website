@@ -1,8 +1,8 @@
 <?php
 require_once __DIR__ . "/include/ErrorPage.class.php";
 require_once __DIR__ . "/include/login.common.class.php";
-$_user = phpBBUser::getInstance();
-if(!$_user->isLoggedIn())
+$tgdb_user = TGDBUser::getInstance();
+if(!$tgdb_user->isLoggedIn())
 {
 	$errorPage = new ErrorPage();
 	$errorPage->SetHeader(ErrorPage::$HEADER_OOPS_ERROR);
@@ -11,7 +11,7 @@ if(!$_user->isLoggedIn())
 }
 else
 {
-	if(!$_user->hasPermission('m_delete_games'))
+	if(!$tgdb_user->hasPermission('STAFF'))
 	{
 		$errorPage = new ErrorPage();
 		$errorPage->SetHeader(ErrorPage::$HEADER_OOPS_ERROR);
@@ -31,7 +31,7 @@ $pubs_list = $API->GetPubsList();
 
 $Header = new HEADER();
 $Header->setTitle("TGDB - Merge");
-$Header->appendRawHeader(function() { global $_user, $devs_list, $pubs_list; ?>
+$Header->appendRawHeader(function() { global $tgdb_user, $devs_list, $pubs_list; ?>
 
 	<link href="/css/select-pure.css" rel="stylesheet">
 	<link href="/css/social-btn.css" rel="stylesheet">
@@ -91,7 +91,7 @@ $Header->appendRawHeader(function() { global $_user, $devs_list, $pubs_list; ?>
 			
 
 
-			<?php if($_user->hasPermission('m_delete_games')) : ?>
+			<?php if($tgdb_user->hasPermission('STAFF')) : ?>
 				function getInput(tbl_name, keep, remove, var_url)
 				{
 					return {

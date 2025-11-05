@@ -286,6 +286,8 @@ class TGDB
 		$qry .= " FROM games WHERE game_title=:game_title LIMIT :limit OFFSET :offset";
 
 		$sth = $dbh->prepare($qry);
+		$regex = '/(\p{Emoji_Presentation}|\p{Extended_Pictographic})/u';
+        $searchTerm = preg_replace($regex, '', $searchTerm);
 
 		$sth->bindValue(':game_title', $searchTerm);
 
@@ -377,6 +379,9 @@ class TGDB
 		$qry .= "GROUP BY games.id ORDER BY MIN(games_ordered.rank) LIMIT :limit OFFSET :offset";
 
 		$sth = $dbh->prepare($qry);
+
+		$regex = '/(\p{Emoji_Presentation}|\p{Extended_Pictographic})/u';
+        $game_title = preg_replace($regex, '', $game_title);
 
 		$searchTerm = htmlspecialchars($game_title);
 		$sth->bindValue(':name', "%$searchTerm%");
@@ -483,6 +488,9 @@ class TGDB
 
 		$sth = $dbh->prepare($qry);
 
+		$regex = '/(\p{Emoji_Presentation}|\p{Extended_Pictographic})/u';
+        $game_title = preg_replace($regex, '', $game_title);
+
 		$searchTerm = htmlspecialchars($game_title);
 		$sth->bindValue(':name', "%$searchTerm%");
 		$sth->bindValue(':name2', $searchTerm);
@@ -570,6 +578,9 @@ class TGDB
 		$qry .= "GROUP BY games.id ORDER BY MIN(games_ordered.rank) LIMIT :limit OFFSET :offset";
 
 		$sth = $dbh->prepare($qry);
+
+		$regex = '/(\p{Emoji_Presentation}|\p{Extended_Pictographic})/u';
+        $game_title = preg_replace($regex, '', $game_title);
 
 		$searchTerm = htmlspecialchars($game_title);
 		$sth->bindValue(':name', "%$searchTerm%");
@@ -668,6 +679,9 @@ class TGDB
 		$qry .= "GROUP BY games.id ORDER BY MIN(games_ordered.rank) LIMIT :limit OFFSET :offset";
 
 		$sth = $dbh->prepare($qry);
+
+		$regex = '/(\p{Emoji_Presentation}|\p{Extended_Pictographic})/u';
+        $game_title = preg_replace($regex, '', $game_title);
 
 		$searchTerm = htmlspecialchars($game_title);
 		$sth->bindValue(':name', "%$searchTerm%");
@@ -3297,7 +3311,7 @@ class TGDB
 
 	function GetGameEditContributors($game_id)
 	{
-		$qry = "SELECT UE.id, UE.timestamp, UE.type, UE.value, UE.users_id, BB.username FROM user_edits UE, phpbb_0.phpbb_users BB WHERE UE.games_id = :games_id and BB.user_id = UE.users_id order by UE.id DESC;";
+		$qry = "SELECT UE.id, UE.timestamp, UE.type, UE.value, UE.users_id, US.username FROM user_edits UE, users US WHERE UE.games_id = :games_id and US.id = UE.users_id order by UE.id DESC;";
 
 		$dbh = $this->database->dbh;
 		$sth = $dbh->prepare($qry);

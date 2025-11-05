@@ -8,16 +8,16 @@ function returnJSONAndDie($code, $msg)
 	die();
 }
 
-$_user = phpBBuser::getInstance();
-if(!$_user->isLoggedIn())
+$tgdb_user = TGDBUser::getInstance();
+if(!$tgdb_user->isLoggedIn())
 {
 	returnJSONAndDie(-1, ErrorPage::$MSG_NOT_LOGGED_IN_EDIT_ERROR);
 }
 else
 {
-	if(!$_user->hasPermission('u_edit_games'))
+	if(!$tgdb_user->hasPermission('ADD_GAME'))
 	{
-		returnJSONAndDie(-1, ErrorPage::$MSG_NO_PERMISSION_TO_EDIT_ERROR);
+		returnJSONAndDie(-1, ErrorPage::$MSG_NO_PERMISSION_TO_ADD_ERROR);
 	}
 }
 
@@ -47,6 +47,7 @@ try
 }
 catch (Exception $e)
 {
+	echo $e;
 	error_log($e);
 }
 returnJSONAndDie(-1, "Unexpected Error has occured, Please try again!!");

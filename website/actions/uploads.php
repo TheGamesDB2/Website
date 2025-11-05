@@ -46,14 +46,14 @@ function returnJSONAndDie($msg)
 	die();
 }
 
-$_user = phpBBUser::getInstance();
-if(!$_user->isLoggedIn())
+$tgdb_user = TGDBUser::getInstance();
+if(!$tgdb_user->isLoggedIn())
 {
 	returnJSONAndDie(ErrorPage::$MSG_NOT_LOGGED_IN_EDIT_ERROR);
 }
 else
 {
-	if(!$_user->hasPermission('u_edit_games'))
+	if(!$tgdb_user->hasPermission('STAFF'))
 	{
 		returnJSONAndDie(ErrorPage::$MSG_NO_PERMISSION_TO_EDIT_ERROR);
 	}
@@ -210,19 +210,19 @@ if (get_request_method() == "POST")
 						if($_REQUEST['subtype'] == $cover->side)
 						{
 							$image_path = $_REQUEST['type'] . "/" . $_REQUEST['subtype'] . "/" . $image_name;
-							$res = $API->DeleteAndInsertGameImages($_user->GetUserID(), $cover->id, $_REQUEST['game_id'], $_REQUEST['type'], $image_path, $_REQUEST['subtype']);
-							DiscordUtils::PostImageUpdate($_user, $_REQUEST['game_id'], CommonUtils::getImagesBaseURL()['thumb'] . $image_path, $_REQUEST['type'], $_REQUEST['subtype'], 1);
+							$res = $API->DeleteAndInsertGameImages($tgdb_user->GetUserID(), $cover->id, $_REQUEST['game_id'], $_REQUEST['type'], $image_path, $_REQUEST['subtype']);
+							DiscordUtils::PostImageUpdate($tgdb_user, $_REQUEST['game_id'], CommonUtils::getImagesBaseURL()['thumb'] . $image_path, $_REQUEST['type'], $_REQUEST['subtype'], 1);
 								echo json_encode($result); return;
 						}
 					}
 				}
 				$image_path = $_REQUEST['type'] . "/" . $_REQUEST['subtype'] . "/" . $image_name;
-				$res = $API->InsertGameImages($_user->GetUserID(), $_REQUEST['game_id'], $_REQUEST['type'], $image_path, $_REQUEST['subtype']);
+				$res = $API->InsertGameImages($tgdb_user->GetUserID(), $_REQUEST['game_id'], $_REQUEST['type'], $image_path, $_REQUEST['subtype']);
 			}
 			else
 			{
 				$image_path = $_REQUEST['type'] . "/" . $image_name;
-				$res = $API->InsertGameImages($_user->GetUserID(), $_REQUEST['game_id'], $_REQUEST['type'], $image_path);
+				$res = $API->InsertGameImages($tgdb_user->GetUserID(), $_REQUEST['game_id'], $_REQUEST['type'], $image_path);
 			}
 			
 			if(!isset($res) || !$res)
@@ -234,7 +234,7 @@ if (get_request_method() == "POST")
 				$sub_type = "";
 				if(!empty($_REQUEST['subtype']))
 					$sub_type = $_REQUEST['subtype'];
-				DiscordUtils::PostImageUpdate($_user, $_REQUEST['game_id'], CommonUtils::getImagesBaseURL()['thumb'] . $image_path, $_REQUEST['type'], $sub_type, 0);
+				DiscordUtils::PostImageUpdate($tgdb_user, $_REQUEST['game_id'], CommonUtils::getImagesBaseURL()['thumb'] . $image_path, $_REQUEST['type'], $sub_type, 0);
 
 			}
 		}

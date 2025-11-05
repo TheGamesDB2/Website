@@ -8,8 +8,8 @@ if(!isset($_REQUEST['id']) || !is_numeric($_REQUEST['id']))
 	$errorPage->print_die();
 }
 require_once __DIR__ . "/include/login.common.class.php";
-$_user = phpBBUser::getInstance();
-if(!$_user->isLoggedIn())
+$tgdb_user = TGDBUser::getInstance();
+if(!$tgdb_user->isLoggedIn())
 {
 	$errorPage = new ErrorPage();
 	$errorPage->SetHeader(ErrorPage::$HEADER_OOPS_ERROR);
@@ -18,7 +18,7 @@ if(!$_user->isLoggedIn())
 }
 else
 {
-	if(!$_user->hasPermission('u_edit_games'))
+	if(!$tgdb_user->hasPermission('ADD_GAME'))
 	{
 		$errorPage = new ErrorPage();
 		$errorPage->SetHeader(ErrorPage::$HEADER_OOPS_ERROR);
@@ -98,7 +98,7 @@ if(!empty($box_cover->back))
 
 $Header = new HEADER();
 $Header->setTitle("TGDB - Browse - Game - $Game->game_title");
-$Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_list, $game_pubs, $pubs_list; ?>
+$Header->appendRawHeader(function() { global $Game, $tgdb_user, $game_devs, $devs_list, $game_pubs, $pubs_list; ?>
 
 	<meta property="og:title" content="<?= $Game->game_title; ?>" />
 	<meta property="og:type" content="article" />
@@ -156,7 +156,7 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 				icon: "fas fa-times",
 			});
 
-			<?php if($_user->hasPermission('m_delete_games')) : ?>
+			<?php if($tgdb_user->hasPermission('STAFF')) : ?>
 			$.fancybox.defaults.btnTpl.del = '<button data-fancybox-del class="fancybox-button fancybox-button--del" title="Delete">' +
 				'<svg style="margin: 5px;" enable-background="new 0 0 32 32" id="Layer_1" version="1.1" viewBox="0 0 32 32" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g id="trash"><path clip-rule="evenodd" d="M29.98,6.819c-0.096-1.57-1.387-2.816-2.98-2.816h-3v-1V3.001   c0-1.657-1.344-3-3-3H11c-1.657,0-3,1.343-3,3v0.001v1H5c-1.595,0-2.885,1.246-2.981,2.816H2v1.183v1c0,1.104,0.896,2,2,2l0,0v17   c0,2.209,1.791,4,4,4h16c2.209,0,4-1.791,4-4v-17l0,0c1.104,0,2-0.896,2-2v-1V6.819H29.98z M10,3.002c0-0.553,0.447-1,1-1h10   c0.553,0,1,0.447,1,1v1H10V3.002z M26,28.002c0,1.102-0.898,2-2,2H8c-1.103,0-2-0.898-2-2v-17h20V28.002z M28,8.001v1H4v-1V7.002   c0-0.553,0.447-1,1-1h22c0.553,0,1,0.447,1,1V8.001z" fill="#333333" fill-rule="evenodd"/><path clip-rule="evenodd" d="M9,28.006h2c0.553,0,1-0.447,1-1v-13c0-0.553-0.447-1-1-1H9   c-0.553,0-1,0.447-1,1v13C8,27.559,8.447,28.006,9,28.006z M9,14.005h2v13H9V14.005z" fill="#333333" fill-rule="evenodd"/><path clip-rule="evenodd" d="M15,28.006h2c0.553,0,1-0.447,1-1v-13c0-0.553-0.447-1-1-1h-2   c-0.553,0-1,0.447-1,1v13C14,27.559,14.447,28.006,15,28.006z M15,14.005h2v13h-2V14.005z" fill="#333333" fill-rule="evenodd"/><path clip-rule="evenodd" d="M21,28.006h2c0.553,0,1-0.447,1-1v-13c0-0.553-0.447-1-1-1h-2   c-0.553,0-1,0.447-1,1v13C20,27.559,20.447,28.006,21,28.006z M21,14.005h2v13h-2V14.005z" fill="#333333" fill-rule="evenodd"/></g></svg>' +
 			'</button>';
@@ -219,7 +219,7 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 
 			$("#game_delete").click(function(e)
 			{
-				<?php if($_user->hasPermission('m_delete_games')): ?>
+				<?php if($tgdb_user->hasPermission('STAFF')): ?>
 				if (confirm('Deleting game record is irreversible, are you sure you want to continue?'))
 				{
 					var url = "./actions/delete_game.php";
@@ -248,7 +248,7 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 				alert("you dont have permission to delete the game, please report it instead, thanks.");
 				<?php endif ?>
 			});
-			<?php if($_user->hasPermission('m_delete_games')) : ?>
+			<?php if($tgdb_user->hasPermission('STAFF')) : ?>
 				function delete_image(image_id)
 				{
 					if (confirm('Deleting images record is irreversible, are you sure you want to continue?'))
@@ -667,7 +667,7 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 							<?php endif; ?>
 							</a>
 							<div class="card-body">
-								<?php if($_user->hasPermission('m_delete_games')): ?>
+								<?php if($tgdb_user->hasPermission('STAFF')): ?>
 								<p>Platform: <select name="platform" style="width:100%">
 												<?php foreach($PlatformList as $Platform) : ?>
 												<option value="<?= $Platform->id ?>" <?= ($Current_Platform->id == $Platform->id) ? "selected" : "" ?>><?= $Platform->name ?></option>
@@ -679,7 +679,7 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 								<?php endif; ?>
 								<p>Region*: 
 									<div class="input-group mb-3">
-										<select name="region_id" <?= $Lock->region_id && !$_user->hasPermission('m_delete_games') ? 'disabled' : '' ?> class="form-control">
+										<select name="region_id" <?= $Lock->region_id && !$tgdb_user->hasPermission('STAFF') ? 'disabled' : '' ?> class="form-control">
 											<option <?= $Game->region_id == 0 ? 'selected' : '' ?> value="" selected disabled hidden>Select Region</option>
 											<?php foreach($RegionList as $region) : ?>
 											<option <?= $Game->region_id == $region->id ? 'selected' : '' ?> value="<?= $region->id ?>"><?= $region->name ?></option>
@@ -687,7 +687,7 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 										</select>
 										<div class="input-group-append">
 											<label class="switch">
-												<input name="region_id_lock" type="checkbox" <?= !$_user->hasPermission('m_delete_games') ? 'disabled' : '' ?> <?= $Lock->region_id ? 'checked' : ''?>/>
+												<input name="region_id_lock" type="checkbox" <?= !$tgdb_user->hasPermission('STAFF') ? 'disabled' : '' ?> <?= $Lock->region_id ? 'checked' : ''?>/>
 												<span class="slider"></span>
 											</label>
 										</div>
@@ -695,7 +695,7 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 								</p>
 								<p>Country:
 									<div class="input-group mb-3">
-										<select name="country_id" <?= $Lock->country_id && !$_user->hasPermission('m_delete_games') ? 'disabled' : '' ?> class="form-control">
+										<select name="country_id" <?= $Lock->country_id && !$tgdb_user->hasPermission('STAFF') ? 'disabled' : '' ?> class="form-control">
 											<option <?= $Game->country_id == 0 ? 'selected' : '' ?> value="0">No Country</option>
 											<?php foreach($CountryList as $country) : ?>
 											<option <?= $Game->country_id == $country->id ? 'selected' : '' ?> value="<?= $country->id ?>"><?= $country->name ?></option>
@@ -703,7 +703,7 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 										</select>
 										<div class="input-group-append">
 											<label class="switch">
-												<input name="country_id_lock" type="checkbox" <?= !$_user->hasPermission('m_delete_games') ? 'disabled' : '' ?> <?= $Lock->country_id ? 'checked' : '' ?>/>
+												<input name="country_id_lock" type="checkbox" <?= !$tgdb_user->hasPermission('STAFF') ? 'disabled' : '' ?> <?= $Lock->country_id ? 'checked' : '' ?>/>
 												<span class="slider"></span>
 											</label>
 										</div>
@@ -731,10 +731,10 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 						<div class="card border-primary">
 							<div class="card-header">
 								<div class="input-group mb-3">
-									<input name="game_title" <?= $Lock->game_title && !$_user->hasPermission('m_delete_games') ? 'disabled' : '' ?> type="text" class="h1 form-control" value="<?= $Game->game_title?>"/>
+									<input name="game_title" <?= $Lock->game_title && !$tgdb_user->hasPermission('STAFF') ? 'disabled' : '' ?> type="text" class="h1 form-control" value="<?= $Game->game_title?>"/>
 									<div class="input-group-append">
 										<label class="switch">
-											<input name="game_title_lock" type="checkbox" <?= !$_user->hasPermission('m_delete_games') ? 'disabled' : '' ?> <?= $Lock->game_title ? 'checked' : ''?>/>
+											<input name="game_title_lock" type="checkbox" <?= !$tgdb_user->hasPermission('STAFF') ? 'disabled' : '' ?> <?= $Lock->game_title ? 'checked' : ''?>/>
 											<span class="slider"></span>
 										</label>
 									</div>
@@ -968,7 +968,7 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 
 							<div class="card-body">
 								<p><button type="submit" class="btn btn-primary btn-block">Save</button></p>
-								<?php if($_user->hasPermission('m_delete_games')): ?>
+								<?php if($tgdb_user->hasPermission('STAFF')): ?>
 								<p><button id="game_delete" type="button" class="btn btn-danger btn-block">Delete</button></p>
 								<?php endif; ?>
 								<p><a href="/game.php?id=<?= $Game->id ?>" class="btn btn-default btn-block">Back</a></p>

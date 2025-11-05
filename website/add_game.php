@@ -1,8 +1,8 @@
 <?php
 require_once __DIR__ . "/include/ErrorPage.class.php";
 require_once __DIR__ . "/include/login.common.class.php";
-$_user = phpBBUser::getInstance();
-if(!$_user->isLoggedIn())
+$tgdb_user = TGDBUser::getInstance();
+if(!$tgdb_user->isLoggedIn())
 {
 	$errorPage = new ErrorPage();
 	$errorPage->SetHeader(ErrorPage::$HEADER_OOPS_ERROR);
@@ -11,11 +11,11 @@ if(!$_user->isLoggedIn())
 }
 else
 {
-	if(!$_user->hasPermission('u_edit_games'))
+	if(!$tgdb_user->hasPermission('ADD_GAME'))
 	{
 		$errorPage = new ErrorPage();
 		$errorPage->SetHeader(ErrorPage::$HEADER_OOPS_ERROR);
-		$errorPage->SetMSG(ErrorPage::$MSG_NO_PERMISSION_TO_EDIT_ERROR);
+		$errorPage->SetMSG(ErrorPage::$MSG_NO_PERMISSION_TO_ADD_ERROR);
 		$errorPage->print_die();
 	}
 }
