@@ -95,7 +95,7 @@ if(!isset($_GET['hash']) || empty($_GET['hash'])) {
                 }
                 
                 // Clear the hashed column after verification to prevent reuse of the verification link
-                $stmt = $db->prepare("UPDATE users SET hashed = NULL WHERE id = :user_id");
+                $stmt = $db->prepare("UPDATE users SET hashed = '' WHERE id = :user_id");
 
                 $stmt->bindParam(':user_id', $user_id);
                 $stmt->execute();
