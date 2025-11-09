@@ -313,6 +313,130 @@ class TGDBUser
 		
 		return $result;
 	}
+
+	/**
+	 * Request a password reset for a user with the given email
+	 * 
+	 * @param string $email Email address of the user
+	 * @return array Result of the operation with status and message
+	 */
+	function requestPasswordReset($email)
+	{
+		$result = [
+			'success' => false,
+			'message' => '',
+			'token' => null
+		];
+
+		// Validate email
+		if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+			$result['message'] = 'Invalid email format.';
+			return $result;
+		}
+
+		try {
+			// Check if email exists in the database
+			$stmt = $this->dbh->prepare("SELECT id, username FROM users WHERE email_address = :email");
+			$stmt->bindParam(':email', $email);
+			$stmt->execute();
+			$user = $stmt->fetch(PDO::FETCH_ASSOC);
+			
+			if (!$user) {
+				// Don't reveal if email exists or not for security reasons
+				$result['success'] = true;
+				$result['message'] = 'If your email address exists in our database, you will receive a password reset link.';
+				return $result;
+			}
+
+			// Generate a unique token
+			$token = bin2hex(random_bytes(32));
+			$expires = time() + 3600; // Token expires in 1 hour
+			
+			// Store token in database
+			$stmt = $this->dbh->prepare("INSERT INTO password_reset_tokens (user_id, token, expires, used) VALUES (:user_id, :token, :expires, 0)");
+			$stmt->execute([
+				':user_id' => $user['id'],
+				':token' => $token,
+				':expires' => $expires
+			]);
+			
+			$result['success'] = true;
+			$result['message'] = 'Password reset token generated successfully.';
+			$result['token'] = $token;
+			$result['user'] = $user;
+			
+		} catch (PDOException $e) {
+			$result['message'] = 'Database error: ' . $e->getMessage();
+		}
+		
+		return $result;
+	}
+
+	/**
+	 * Reset a user's password using a valid token
+	 * 
+	 * @param string $token The reset token
+	 * @param string $new_password The new password
+	 * @return array Result of the operation with status and message
+	 */
+	function resetPassword($token, $new_password)
+	{
+		$result = [
+			'success' => false,
+			'message' => ''
+		];
+
+		// Validate inputs
+		if (empty($token) || empty($new_password)) {
+			$result['message'] = 'Token and new password are required.';
+			return $result;
+		}
+
+		if (strlen($new_password) < 8) {
+			$result['message'] = 'Password must be at least 8 characters long.';
+			return $result;
+		}
+
+		try {
+			$this->dbh->beginTransaction();
+
+			// Check if token is valid and not expired
+			$stmt = $this->dbh->prepare("SELECT user_id, expires FROM password_reset_tokens WHERE token = :token AND used = 0");
+			$stmt->bindParam(':token', $token);
+			$stmt->execute();
+			$token_data = $stmt->fetch(PDO::FETCH_ASSOC);
+			
+			if (!$token_data || $token_data['expires'] <= time()) {
+				$result['message'] = 'Invalid or expired password reset token.';
+				return $result;
+			}
+
+			// Hash the new password
+			$hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
+
+			// Update user's password
+			$stmt = $this->dbh->prepare("UPDATE users SET password = :password WHERE id = :user_id");
+			$stmt->bindParam(':password', $hashed_password);
+			$stmt->bindParam(':user_id', $token_data['user_id']);
+			$stmt->execute();
+
+			// Mark token as used
+			$stmt = $this->dbh->prepare("UPDATE password_reset_tokens SET used = 1 WHERE token = :token");
+			$stmt->bindParam(':token', $token);
+			$stmt->execute();
+
+			$this->dbh->commit();
+			
+			$result['success'] = true;
+			$result['message'] = 'Password reset successfully.';
+			
+		} catch (PDOException $e) {
+			$this->dbh->rollBack();
+			$result['message'] = 'Database error: ' . $e->getMessage();
+		}
+		
+		return $result;
+	}
 }
 
 // Make sure session is started

@@ -163,6 +163,9 @@ $Header->appendRawHeader(function() { global $Game; ?>
 						<div class="login-register">
 							Not got an account? Sign up <a href="register.php">here</a>
 						</div>
+						<div class="forgot-password">
+							<a href="forgot_password.php">Forgot Password?</a>
+						</div>
 					</form>
 				</div>
 			</div>
