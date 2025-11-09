@@ -83,14 +83,19 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                         }
                     }
                     
+                    // Get the user's email address
+                    $stmt = $db->prepare("SELECT email_address FROM users WHERE id = ?");
+                    $stmt->execute([$request['user_id']]);
+                    $user_email = $stmt->fetch(PDO::FETCH_ASSOC);
+                    
                     // Send notification email to user
-                    $to = $request['email'] ?? "user@example.com"; // You might need to fetch the user's email
+                    $to = $user_email['email_address'] ?? "user@example.com";
                     $subject = "TheGamesDB API Access Request " . ($action === 'approve' ? "Approved" : "Rejected");
                     $message = "Hello " . $request['username'] . ",\n\n";
                     $message .= "Your request for API access has been " . ($action === 'approve' ? "approved" : "rejected") . ".\n\n";
                     
                     if($action === 'approve') {
-                        $message .= "You can now access your API keys at: " . CommonUtils::$WEBSITE_BASE_URL . "API/key.php\n\n";
+                        $message .= "You can now access your API keys at: https://api.thegamesdb.net/key.php\n\n";
                     }
                     
                     if(!empty($notes)) {
