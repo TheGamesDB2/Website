@@ -88,7 +88,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                 }
                 
                 $discord_message = [
-                    "content" => "🔔 **New API Access Request**",
+                    "content" => "🔔 **New API Access Request**\n\n👉 **Review at:** <" . ADMIN_MANAGE_URL . ">",
                     "embeds" => [
                         [
                             "title" => "API Access Request from " . $safe_username,
