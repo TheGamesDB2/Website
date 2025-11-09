@@ -91,8 +91,19 @@ require_once __DIR__ . "/../website/include/header.footer.class.php";
 
 $Header = new HEADER();
 $Header->setTitle("TGDB - API Access Request");
-$Header->appendRawHeader(function() { ?>
+$Header->appendRawHeader(function() { global $tgdb_user; ?>
     <link href='//fonts.googleapis.com/css?family=Lato:300' rel='stylesheet' type='text/css'>
+    <!-- Explicit paths to CSS and JS files to avoid 404 errors -->
+    <link rel="stylesheet" href="<?= CommonUtils::$WEBSITE_BASE_URL ?>css/main.css" crossorigin="anonymous">
+    <script type="text/javascript">
+        // Ensure jQuery and Bootstrap are loaded
+        if (typeof jQuery === 'undefined') {
+            document.write('<script src="<?= CommonUtils::$WEBSITE_BASE_URL ?>js/jquery-3.2.1.min.js"><\/script>');
+        }
+        if (typeof $.fn.modal === 'undefined') {
+            document.write('<script src="<?= CommonUtils::$WEBSITE_BASE_URL ?>js/bootstrap.min.4.0.0.js"><\/script>');
+        }
+    </script>
     <style>
         h1 {
             color: #719e40;
@@ -169,5 +180,33 @@ $Header->appendRawHeader(function() { ?>
     </div>
     <?php endif; ?>
 </div>
+
+<!-- Fix for CSS/JS paths in subdirectory -->
+<script type="text/javascript">
+// Define base URL for assets
+var baseUrl = '<?= CommonUtils::$WEBSITE_BASE_URL ?>';
+
+// Check if CSS and JS files are loading correctly
+function checkResources() {
+    var resources = [
+        'js/jquery-3.2.1.min.js',
+        'js/popper.min.1.13.0.js',
+        'js/bootstrap.min.4.0.0.js',
+        'css/main.css'
+    ];
+    
+    resources.forEach(function(resource) {
+        var img = new Image();
+        img.onload = function() { console.log(resource + ' loaded successfully'); };
+        img.onerror = function() { console.error(resource + ' failed to load'); };
+        img.src = baseUrl + resource + '?check=' + new Date().getTime();
+    });
+}
+
+$(document).ready(function() {
+    // Check resources
+    checkResources();
+});
+</script>
 
 <?php FOOTER::print(); ?>
