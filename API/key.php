@@ -69,8 +69,26 @@ if($tgdb_user->isLoggedIn())
 				<?php if(!$tgdb_user->isLoggedIn() ) : ?>
 				<h3>You must be logged in to the site to view your api key.</h3>
 				<?php elseif($tgdb_user->isLoggedIn() && !$tgdb_user->hasPermission('API_ACCESS')) : ?>
-				<h3>You don't currently have permission to access the API.</h3>
-				<p>Please contact us on <a href="https://discord.gg/NCRVtMAe">discord</a> to request permission.</p>
+				<h3>Request API Access</h3>
+				<div class="card">
+					<div class="card-body">
+						<form method="post" action="request_access.php">
+							<div class="form-group">
+								<label for="app_name">Application Name</label>
+								<input type="text" class="form-control" id="app_name" name="app_name" required>
+							</div>
+							<div class="form-group">
+								<label for="app_description">How will you use our API?</label>
+								<textarea class="form-control" id="app_description" name="app_description" rows="3" required></textarea>
+							</div>
+							<div class="form-group">
+								<label for="app_url">Application URL (if applicable)</label>
+								<input type="url" class="form-control" id="app_url" name="app_url">
+							</div>
+							<button type="submit" class="btn btn-primary">Submit Request</button>
+						</form>
+					</div>
+				</div>
 				<?php elseif($tgdb_user->isLoggedIn() && $tgdb_user->hasPermission('API_ACCESS')) : ?>
 
 				<div class="card" style="margin-bottom:10px;">
