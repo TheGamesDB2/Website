@@ -31,16 +31,17 @@ try {
 // Process search
 $search_term = '';
 $found_user = null;
+$search_results = [];
 $user_permissions = [];
 
-if(isset($_GET['search']) && !empty($_GET['search'])) {
-    $search_term = trim($_GET['search']);
+// Handle user selection from search results
+if(isset($_GET['user_id']) && !empty($_GET['user_id'])) {
+    $user_id = (int)$_GET['user_id'];
     
     try {
-        // Search by username or email
-        $stmt = $db->prepare("SELECT id, username, email_address FROM users WHERE username LIKE ? OR email_address LIKE ? LIMIT 1");
-        $search_param = '%' . $search_term . '%';
-        $stmt->execute([$search_param, $search_param]);
+        // Get user details
+        $stmt = $db->prepare("SELECT id, username, email_address FROM users WHERE id = ?");
+        $stmt->execute([$user_id]);
         $found_user = $stmt->fetch(PDO::FETCH_ASSOC);
         
         if($found_user) {
@@ -59,15 +60,81 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
                 $user_permissions[$perm['id']] = $perm['permission_text'];
             }
         } else {
-            $error_msgs[] = "No user found matching: " . htmlspecialchars($search_term);
+            $error_msgs[] = "User not found.";
         }
     } catch (PDOException $e) {
         $error_msgs[] = "Database error: " . $e->getMessage();
     }
 }
+// Process search
+elseif(isset($_GET['search']) && !empty($_GET['search'])) {
+    $search_term = trim($_GET['search']);
+    
+    try {
+        // Search by username or email
+        $stmt = $db->prepare("SELECT id, username, email_address FROM users WHERE username LIKE ? OR email_address LIKE ? ORDER BY username LIMIT 50");
+        $search_param = '%' . $search_term . '%';
+        $stmt->execute([$search_param, $search_param]);
+        $search_results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        if(empty($search_results)) {
+            $error_msgs[] = "No users found matching: " . htmlspecialchars($search_term);
+        }
+    } catch (PDOException $e) {
+        $error_msgs[] = "Database error: " . $e->getMessage();
+    }
+}
+}
 
+// Process password reset
+if($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['user_id']) && isset($_POST['new_password']) && !empty($_POST['new_password'])) {
+    $user_id = (int)$_POST['user_id'];
+    $new_password = $_POST['new_password'];
+    
+    try {
+        // Verify user exists
+        $stmt = $db->prepare("SELECT id, username FROM users WHERE id = ?");
+        $stmt->execute([$user_id]);
+        $target_user = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if(!$target_user) {
+            $error_msgs[] = "User not found.";
+        } else {
+            // Hash the new password
+            $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
+            
+            // Update the password
+            $stmt = $db->prepare("UPDATE users SET password = ? WHERE id = ?");
+            $stmt->execute([$hashed_password, $user_id]);
+            
+            $success_msg[] = "Password updated successfully for user: " . htmlspecialchars($target_user['username']);
+            
+            // Refresh found_user to show the updated user
+            $stmt = $db->prepare("SELECT id, username, email_address FROM users WHERE id = ?");
+            $stmt->execute([$user_id]);
+            $found_user = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            // Get user's current permissions
+            $stmt = $db->prepare("
+                SELECT p.id, p.permission_text 
+                FROM permissions p
+                JOIN users_permissions up ON p.id = up.permissions_id
+                WHERE up.users_id = ?
+            ");
+            $stmt->execute([$user_id]);
+            $user_permissions_result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            $user_permissions = [];
+            foreach($user_permissions_result as $perm) {
+                $user_permissions[$perm['id']] = $perm['permission_text'];
+            }
+        }
+    } catch (PDOException $e) {
+        $error_msgs[] = "Database error: " . $e->getMessage();
+    }
+}
 // Process permission updates
-if($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['user_id']) && isset($_POST['permissions'])) {
+elseif($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['user_id']) && isset($_POST['permissions'])) {
     $user_id = (int)$_POST['user_id'];
     $new_permissions = $_POST['permissions'];
     
@@ -213,6 +280,47 @@ $Header->appendRawHeader(function() { ?>
             margin-bottom: 20px;
         }
     </style>
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            // Password validation
+            const newPasswordInput = document.getElementById('new_password');
+            const confirmPasswordInput = document.getElementById('confirm_password');
+            const feedbackElement = document.getElementById('password_match_feedback');
+            
+            if (confirmPasswordInput) {
+                confirmPasswordInput.addEventListener('input', function() {
+                    if (newPasswordInput.value !== confirmPasswordInput.value) {
+                        confirmPasswordInput.classList.add('is-invalid');
+                        feedbackElement.style.display = 'block';
+                    } else {
+                        confirmPasswordInput.classList.remove('is-invalid');
+                        feedbackElement.style.display = 'none';
+                    }
+                });
+            }
+        });
+        
+        function confirmPasswordReset() {
+            const newPassword = document.getElementById('new_password').value;
+            const confirmPassword = document.getElementById('confirm_password').value;
+            
+            // Check if passwords match
+            if (newPassword !== confirmPassword) {
+                document.getElementById('confirm_password').classList.add('is-invalid');
+                document.getElementById('password_match_feedback').style.display = 'block';
+                return false;
+            }
+            
+            // Check password length
+            if (newPassword.length < 8) {
+                alert('Password must be at least 8 characters long.');
+                return false;
+            }
+            
+            // Confirm password reset
+            return confirm('Are you sure you want to reset this user\'s password?');
+        }
+    </script>
 <?php });?>
 <?= $Header->print(); ?>
 
@@ -251,48 +359,126 @@ $Header->appendRawHeader(function() { ?>
                 </div>
             </form>
             
-            <?php if($found_user) : ?>
-            <div class="user-info mb-4">
-                <h4>User: <?= htmlspecialchars($found_user['username']) ?></h4>
-                <p>Email: <?= htmlspecialchars($found_user['email_address']) ?></p>
-                <p>ID: <?= $found_user['id'] ?></p>
+            <?php if(!empty($search_results)) : ?>
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5>Search Results</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach($search_results as $user) : ?>
+                                <tr>
+                                    <td><?= $user['id'] ?></td>
+                                    <td><?= htmlspecialchars($user['username']) ?></td>
+                                    <td><?= htmlspecialchars($user['email_address']) ?></td>
+                                    <td>
+                                        <a href="?user_id=<?= $user['id'] ?>" class="btn btn-sm btn-primary">Select</a>
+                                    </td>
+                                </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
+            <?php endif; ?>
             
-            <form method="post" action="">
-                <input type="hidden" name="user_id" value="<?= $found_user['id'] ?>">
-                
-                <h5>Permissions</h5>
-                <div class="permission-grid">
-                    <?php foreach($all_permissions as $permission) : ?>
-                        <?php 
-                            $is_checked = isset($user_permissions[$permission['id']]);
-                            $is_admin_perm = $permission['permission_text'] === 'ADMIN';
-                            $is_staff_perm = $permission['permission_text'] === 'STAFF';
-                            $is_disabled = ($is_admin_perm && (!$is_admin || $found_user['id'] == $tgdb_user->GetUserID())) || 
-                                          ($is_staff_perm && !$is_admin);
-                            $perm_class = $is_admin_perm ? 'admin-permission' : ($is_staff_perm ? 'staff-permission' : '');
-                        ?>
-                        <div class="permission-item <?= $perm_class ?>">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="permissions[<?= $permission['id'] ?>]" id="perm_<?= $permission['id'] ?>" 
-                                       <?= $is_checked ? 'checked' : '' ?> <?= $is_disabled ? 'disabled' : '' ?>>
-                                <label class="form-check-label" for="perm_<?= $permission['id'] ?>">
-                                    <?= htmlspecialchars($permission['permission_text']) ?>
-                                    <?php if($is_admin_perm) : ?>
-                                        <span class="badge badge-danger">ADMIN ONLY</span>
-                                    <?php elseif($is_staff_perm) : ?>
-                                        <span class="badge badge-primary">ADMIN ONLY</span>
-                                    <?php endif; ?>
-                                </label>
-                            </div>
+            <?php if($found_user) : ?>
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5>User Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="user-info mb-4">
+                        <h4>User: <?= htmlspecialchars($found_user['username']) ?></h4>
+                        <p>Email: <?= htmlspecialchars($found_user['email_address']) ?></p>
+                        <p>ID: <?= $found_user['id'] ?></p>
+                    </div>
+                    
+                    <ul class="nav nav-tabs" id="userTabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="permissions-tab" data-toggle="tab" href="#permissions" role="tab">Permissions</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="password-tab" data-toggle="tab" href="#password" role="tab">Reset Password</a>
+                        </li>
+                    </ul>
+                    
+                    <div class="tab-content mt-3" id="userTabsContent">
+                        <!-- Permissions Tab -->
+                        <div class="tab-pane fade show active" id="permissions" role="tabpanel">
+                            <form method="post" action="">
+                                <input type="hidden" name="user_id" value="<?= $found_user['id'] ?>">
+                                
+                                <h5>Manage Permissions</h5>
+                                <div class="permission-grid">
+                                    <?php foreach($all_permissions as $permission) : ?>
+                                        <?php 
+                                            $is_checked = isset($user_permissions[$permission['id']]);
+                                            $is_admin_perm = $permission['permission_text'] === 'ADMIN';
+                                            $is_staff_perm = $permission['permission_text'] === 'STAFF';
+                                            $is_disabled = ($is_admin_perm && (!$is_admin || $found_user['id'] == $tgdb_user->GetUserID())) || 
+                                                          ($is_staff_perm && !$is_admin);
+                                            $perm_class = $is_admin_perm ? 'admin-permission' : ($is_staff_perm ? 'staff-permission' : '');
+                                        ?>
+                                        <div class="permission-item <?= $perm_class ?>">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="permissions[<?= $permission['id'] ?>]" id="perm_<?= $permission['id'] ?>" 
+                                                       <?= $is_checked ? 'checked' : '' ?> <?= $is_disabled ? 'disabled' : '' ?>>
+                                                <label class="form-check-label" for="perm_<?= $permission['id'] ?>">
+                                                    <?= htmlspecialchars($permission['permission_text']) ?>
+                                                    <?php if($is_admin_perm) : ?>
+                                                        <span class="badge badge-danger">ADMIN ONLY</span>
+                                                    <?php elseif($is_staff_perm) : ?>
+                                                        <span class="badge badge-primary">ADMIN ONLY</span>
+                                                    <?php endif; ?>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                                
+                                <div class="mt-4">
+                                    <button type="submit" class="btn btn-success">Update Permissions</button>
+                                </div>
+                            </form>
                         </div>
-                    <?php endforeach; ?>
+                        
+                        <!-- Password Reset Tab -->
+                        <div class="tab-pane fade" id="password" role="tabpanel">
+                            <form method="post" action="" onsubmit="return confirmPasswordReset();">
+                                <input type="hidden" name="user_id" value="<?= $found_user['id'] ?>">
+                                
+                                <div class="form-group">
+                                    <label for="new_password">New Password</label>
+                                    <input type="password" class="form-control" id="new_password" name="new_password" required>
+                                    <small class="form-text text-muted">Password must be at least 8 characters long.</small>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="confirm_password">Confirm Password</label>
+                                    <input type="password" class="form-control" id="confirm_password" required>
+                                    <div id="password_match_feedback" class="invalid-feedback">Passwords do not match.</div>
+                                </div>
+                                
+                                <div class="mt-4">
+                                    <button type="submit" class="btn btn-danger">Reset Password</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
-                
-                <div class="mt-4">
-                    <button type="submit" class="btn btn-success">Update Permissions</button>
-                </div>
-            </form>
+            </div>
             <?php endif; ?>
         </div>
     </div>
