@@ -92,7 +92,6 @@ require_once __DIR__ . "/../website/include/header.footer.class.php";
 $Header = new HEADER();
 $Header->setTitle("TGDB - API Access Request");
 $Header->appendRawHeader(function() { ?>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
     <link href='//fonts.googleapis.com/css?family=Lato:300' rel='stylesheet' type='text/css'>
     <style>
         h1 {

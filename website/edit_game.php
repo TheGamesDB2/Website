@@ -667,7 +667,7 @@ $Header->appendRawHeader(function() { global $Game, $tgdb_user, $game_devs, $dev
 							<?php endif; ?>
 							</a>
 							<div class="card-body">
-								<?php if($tgdb_user->hasPermission('STAFF')): ?>
+								<?php if($tgdb_user->hasPermission('ADD_GAME')): ?>
 								<p>Platform: <select name="platform" style="width:100%">
 												<?php foreach($PlatformList as $Platform) : ?>
 												<option value="<?= $Platform->id ?>" <?= ($Current_Platform->id == $Platform->id) ? "selected" : "" ?>><?= $Platform->name ?></option>

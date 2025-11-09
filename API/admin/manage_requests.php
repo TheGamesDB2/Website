@@ -139,7 +139,6 @@ require_once __DIR__ . "/../../website/include/header.footer.class.php";
 $Header = new HEADER();
 $Header->setTitle("TGDB - Manage API Access Requests");
 $Header->appendRawHeader(function() { ?>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
     <link href='//fonts.googleapis.com/css?family=Lato:300' rel='stylesheet' type='text/css'>
     <style>
         h1 {
@@ -371,5 +370,30 @@ $Header->appendRawHeader(function() { ?>
         </div>
     </div>
 </div>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    // Ensure modals work properly
+    $('.modal').each(function() {
+        var modalId = $(this).attr('id');
+        console.log('Initializing modal:', modalId);
+    });
+    
+    // Force modals to work by manually binding click events
+    $('button[data-toggle="modal"]').on('click', function(e) {
+        e.preventDefault();
+        var targetModal = $(this).data('target');
+        console.log('Opening modal:', targetModal);
+        $(targetModal).modal('show');
+        return false;
+    });
+    
+    // Handle form submissions in modals
+    $('.modal form').on('submit', function() {
+        console.log('Form submitted in modal');
+        $(this).closest('.modal').modal('hide');
+    });
+});
+</script>
 
 <?php FOOTER::print(); ?>
