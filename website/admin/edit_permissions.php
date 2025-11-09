@@ -322,27 +322,29 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                         $db->rollBack();
                         $error_msgs[] = "Permission changes were not applied due to security violations.";
                     }
-            
-            // Refresh user permissions
-            $stmt = $db->prepare("
-                SELECT p.id, p.permission_text 
-                FROM permissions p
-                JOIN users_permissions up ON p.id = up.permissions_id
-                WHERE up.users_id = ?
-            ");
-            $stmt->execute([$user_id]);
-            $user_permissions = [];
-            while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $user_permissions[$row['id']] = $row['permission_text'];
+                    
+                    // Refresh user permissions
+                    $stmt = $db->prepare("
+                        SELECT p.id, p.permission_text 
+                        FROM permissions p
+                        JOIN users_permissions up ON p.id = up.permissions_id
+                        WHERE up.users_id = ?
+                    ");
+                    $stmt->execute([$user_id]);
+                    $user_permissions = [];
+                    while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                        $user_permissions[$row['id']] = $row['permission_text'];
+                    }
+                    
+                    // Refresh found_user
+                    $found_user = $target_user;
+                    $found_user['id'] = $user_id;
+                }
+            } catch (PDOException $e) {
+                $db->rollBack();
+                $error_msgs[] = "Database error: " . $e->getMessage();
             }
-            
-            // Refresh found_user
-            $found_user = $target_user;
-            $found_user['id'] = $user_id;
         }
-    } catch (PDOException $e) {
-        $db->rollBack();
-        $error_msgs[] = "Database error: " . $e->getMessage();
     }
 }
 
@@ -515,6 +517,7 @@ $Header->appendRawHeader(function() { ?>
                         <!-- Permissions Tab -->
                         <div class="tab-pane fade show active" id="permissions" role="tabpanel">
                             <form method="post" action="">
+                                <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                                 <input type="hidden" name="user_id" value="<?= $found_user['id'] ?>">
                                 
                                 <h5>Manage Permissions</h5>
@@ -554,6 +557,7 @@ $Header->appendRawHeader(function() { ?>
                         <!-- Password Reset Tab -->
                         <div class="tab-pane fade" id="password" role="tabpanel">
                             <form method="post" action="" onsubmit="return confirmPasswordReset();">
+                                <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                                 <input type="hidden" name="user_id" value="<?= $found_user['id'] ?>">
                                 
                                 <div class="form-group">
