@@ -299,5 +299,3 @@ $(document).ready(function() {
     checkResources();
 });
 </script>
-
-<?php FOOTER::print(); ?>
