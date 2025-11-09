@@ -4,6 +4,11 @@ require_once __DIR__ . "/../../include/session.config.php";
 require_once __DIR__ . "/../include/login.common.class.php";
 require_once __DIR__ . "/../../include/CommonUtils.class.php";
 
+// Generate CSRF token if it doesn't exist
+if(!isset($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 $error_msgs = array();
 $success_msg = array();
 
@@ -86,79 +91,121 @@ elseif(isset($_GET['search']) && !empty($_GET['search'])) {
 }
 
 
-// Process password reset
-if($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['user_id']) && isset($_POST['new_password']) && !empty($_POST['new_password'])) {
-    $user_id = (int)$_POST['user_id'];
-    $new_password = $_POST['new_password'];
-    
-    try {
-        // Verify user exists
-        $stmt = $db->prepare("SELECT id, username FROM users WHERE id = ?");
-        $stmt->execute([$user_id]);
-        $target_user = $stmt->fetch(PDO::FETCH_ASSOC);
+// CSRF token validation for all POST requests
+if($_SERVER['REQUEST_METHOD'] == "POST") {
+    if(!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        $error_msgs[] = "Security violation: Invalid form submission detected.";
+        error_log("CSRF token validation failed for user ID {$tgdb_user->GetUserID()}");
+        // Generate a new token after a failed validation
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    } else {
+        // Process the form submission
         
-        if(!$target_user) {
-            $error_msgs[] = "User not found.";
-        } else {
-            // Hash the new password
-            $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
+        // Process password reset
+        if(isset($_POST['user_id']) && isset($_POST['new_password']) && !empty($_POST['new_password'])) {
+            $user_id = (int)$_POST['user_id'];
+            $new_password = $_POST['new_password'];
             
-            // Update the password
-            $stmt = $db->prepare("UPDATE users SET password = ? WHERE id = ?");
-            $stmt->execute([$hashed_password, $user_id]);
-            
-            $success_msg[] = "Password updated successfully for user: " . htmlspecialchars($target_user['username']);
-            
-            // Refresh found_user to show the updated user
-            $stmt = $db->prepare("SELECT id, username, email_address FROM users WHERE id = ?");
-            $stmt->execute([$user_id]);
-            $found_user = $stmt->fetch(PDO::FETCH_ASSOC);
-            
-            // Get user's current permissions
-            $stmt = $db->prepare("
-                SELECT p.id, p.permission_text 
-                FROM permissions p
-                JOIN users_permissions up ON p.id = up.permissions_id
-                WHERE up.users_id = ?
-            ");
-            $stmt->execute([$user_id]);
-            $user_permissions_result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            
-            $user_permissions = [];
-            foreach($user_permissions_result as $perm) {
-                $user_permissions[$perm['id']] = $perm['permission_text'];
+            try {
+                // Verify user exists
+                $stmt = $db->prepare("SELECT id, username FROM users WHERE id = ?");
+                $stmt->execute([$user_id]);
+                $target_user = $stmt->fetch(PDO::FETCH_ASSOC);
+                
+                if(!$target_user) {
+                    $error_msgs[] = "User not found.";
+                } else {
+                    // Security check - prevent changing ADMIN passwords unless you're an admin
+                    $is_target_admin = false;
+                    $stmt = $db->prepare("
+                        SELECT COUNT(*) as is_admin
+                        FROM permissions p
+                        JOIN users_permissions up ON p.id = up.permissions_id
+                        WHERE up.users_id = ? AND p.permission_text = 'ADMIN'
+                    ");
+                    $stmt->execute([$user_id]);
+                    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                    $is_target_admin = ($result['is_admin'] > 0);
+                    
+                    // Check if current user can reset this user's password
+                    $can_reset_password = true;
+                    $security_violation = false;
+                    
+                    if($is_target_admin && !$is_admin) {
+                        // Non-admin trying to reset an admin's password
+                        $error_msgs[] = "Security violation: Only administrators can reset an admin's password.";
+                        $can_reset_password = false;
+                        $security_violation = true;
+                        error_log("Password reset security violation: User ID {$tgdb_user->GetUserID()} attempted to reset password for admin user ID {$user_id}");
+                    }
+                    
+                    // Validate password length
+                    if(strlen($new_password) < 8) {
+                        $error_msgs[] = "Password must be at least 8 characters long.";
+                        $can_reset_password = false;
+                    }
+                    
+                    if($can_reset_password) {
+                        // Hash the new password
+                        $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
+                        
+                        // Update the password
+                        $stmt = $db->prepare("UPDATE users SET password = ? WHERE id = ?");
+                        $stmt->execute([$hashed_password, $user_id]);
+                        
+                        $success_msg[] = "Password updated successfully for user: " . htmlspecialchars($target_user['username']);
+                    }
+                    
+                    // Refresh found_user to show the updated user
+                    $stmt = $db->prepare("SELECT id, username, email_address FROM users WHERE id = ?");
+                    $stmt->execute([$user_id]);
+                    $found_user = $stmt->fetch(PDO::FETCH_ASSOC);
+                    
+                    // Get user's current permissions
+                    $stmt = $db->prepare("
+                        SELECT p.id, p.permission_text 
+                        FROM permissions p
+                        JOIN users_permissions up ON p.id = up.permissions_id
+                        WHERE up.users_id = ?
+                    ");
+                    $stmt->execute([$user_id]);
+                    $user_permissions_result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                    
+                    $user_permissions = [];
+                    foreach($user_permissions_result as $perm) {
+                        $user_permissions[$perm['id']] = $perm['permission_text'];
+                    }
+                }
+            } catch (PDOException $e) {
+                $error_msgs[] = "Database error: " . $e->getMessage();
             }
         }
-    } catch (PDOException $e) {
-        $error_msgs[] = "Database error: " . $e->getMessage();
-    }
-}
-// Process permission updates
-elseif($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['user_id']) && isset($_POST['permissions'])) {
-    $user_id = (int)$_POST['user_id'];
-    $new_permissions = $_POST['permissions'];
-    
-    // Verify user exists
-    try {
-        $stmt = $db->prepare("SELECT id, username FROM users WHERE id = ?");
-        $stmt->execute([$user_id]);
-        $target_user = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        if(!$target_user) {
-            $error_msgs[] = "User not found.";
-        } else {
-            // Get current permissions
-            $stmt = $db->prepare("
-                SELECT p.id, p.permission_text 
-                FROM permissions p
-                JOIN users_permissions up ON p.id = up.permissions_id
-                WHERE up.users_id = ?
-            ");
-            $stmt->execute([$user_id]);
-            $current_permissions = [];
-            while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $current_permissions[$row['id']] = $row['permission_text'];
-            }
+        // Process permission updates
+        elseif(isset($_POST['user_id']) && isset($_POST['permissions'])) {
+            $user_id = (int)$_POST['user_id'];
+            $new_permissions = $_POST['permissions'];
+            
+            // Verify user exists
+            try {
+                $stmt = $db->prepare("SELECT id, username FROM users WHERE id = ?");
+                $stmt->execute([$user_id]);
+                $target_user = $stmt->fetch(PDO::FETCH_ASSOC);
+                
+                if(!$target_user) {
+                    $error_msgs[] = "User not found.";
+                } else {
+                    // Get current permissions
+                    $stmt = $db->prepare("
+                        SELECT p.id, p.permission_text 
+                        FROM permissions p
+                        JOIN users_permissions up ON p.id = up.permissions_id
+                        WHERE up.users_id = ?
+                    ");
+                    $stmt->execute([$user_id]);
+                    $current_permissions = [];
+                    while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                        $current_permissions[$row['id']] = $row['permission_text'];
+                    }
             
             // Start transaction
             $db->beginTransaction();
@@ -167,7 +214,11 @@ elseif($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['user_id']) && isset
             $admin_permission_id = null;
             $staff_permission_id = null;
             
+            // Get all permission IDs and texts for validation
+            $permission_map = [];
             foreach($all_permissions as $perm) {
+                $permission_map[$perm['id']] = $perm['permission_text'];
+                
                 if($perm['permission_text'] === 'ADMIN') {
                     $admin_permission_id = $perm['id'];
                 }
@@ -176,20 +227,58 @@ elseif($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['user_id']) && isset
                 }
             }
             
-            // Check for special permissions
-            if($admin_permission_id && isset($new_permissions[$admin_permission_id])) {
-                // Only admins can give/remove admin permission, and they can't remove their own
+            // Server-side security validation
+            $security_violation = false;
+            
+            // Check if trying to modify ADMIN permission
+            $admin_in_current = isset($current_permissions[$admin_permission_id]);
+            $admin_in_new = isset($new_permissions[$admin_permission_id]);
+            
+            if($admin_in_current != $admin_in_new) {
+                // Someone is trying to add or remove ADMIN permission
                 if(!$is_admin || ($user_id == $tgdb_user->GetUserID())) {
-                    unset($new_permissions[$admin_permission_id]);
-                    $error_msgs[] = "You cannot modify ADMIN permissions.";
+                    // Not an admin or trying to remove own admin - revert the change
+                    if($admin_in_current) {
+                        $new_permissions[$admin_permission_id] = 'ADMIN'; // Keep admin permission
+                    } else {
+                        unset($new_permissions[$admin_permission_id]); // Don't add admin permission
+                    }
+                    $error_msgs[] = "Security violation: You cannot modify ADMIN permissions.";
+                    $security_violation = true;
                 }
             }
             
-            if($staff_permission_id && isset($new_permissions[$staff_permission_id])) {
-                // Only admins can give/remove staff permission
+            // Check if trying to modify STAFF permission
+            $staff_in_current = isset($current_permissions[$staff_permission_id]);
+            $staff_in_new = isset($new_permissions[$staff_permission_id]);
+            
+            if($staff_in_current != $staff_in_new) {
+                // Someone is trying to add or remove STAFF permission
                 if(!$is_admin) {
-                    unset($new_permissions[$staff_permission_id]);
-                    $error_msgs[] = "Only ADMIN users can modify STAFF permissions.";
+                    // Not an admin - revert the change
+                    if($staff_in_current) {
+                        $new_permissions[$staff_permission_id] = 'STAFF'; // Keep staff permission
+                    } else {
+                        unset($new_permissions[$staff_permission_id]); // Don't add staff permission
+                    }
+                    $error_msgs[] = "Security violation: Only ADMIN users can modify STAFF permissions.";
+                    $security_violation = true;
+                }
+            }
+            
+            // Log security violations
+            if($security_violation) {
+                error_log("Permission security violation detected: User ID {$tgdb_user->GetUserID()} attempted to modify restricted permissions for User ID {$user_id}");
+            }
+            
+            // Additional security check - verify all permission IDs are valid
+            foreach(array_keys($new_permissions) as $perm_id) {
+                if(!isset($permission_map[$perm_id])) {
+                    // Invalid permission ID submitted
+                    unset($new_permissions[$perm_id]);
+                    $error_msgs[] = "Security violation: Invalid permission ID detected.";
+                    $security_violation = true;
+                    error_log("Invalid permission ID submitted: {$perm_id} by user ID {$tgdb_user->GetUserID()}");
                 }
             }
             
@@ -197,34 +286,41 @@ elseif($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['user_id']) && isset
             $to_add = array_diff_key($new_permissions, $current_permissions);
             $to_remove = array_diff_key($current_permissions, $new_permissions);
             
-            // Remove permissions
-            if(!empty($to_remove)) {
-                $remove_ids = array_keys($to_remove);
-                $placeholders = implode(',', array_fill(0, count($remove_ids), '?'));
-                
-                $stmt = $db->prepare("DELETE FROM users_permissions WHERE users_id = ? AND permissions_id IN ($placeholders)");
-                $params = array_merge([$user_id], $remove_ids);
-                
-                for($i = 0; $i < count($params); $i++) {
-                    $stmt->bindValue($i + 1, $params[$i]);
+            // Only proceed with permission changes if no security violations were detected
+            if(!$security_violation) {
+                // Remove permissions
+                if(!empty($to_remove)) {
+                    $remove_ids = array_keys($to_remove);
+                    $placeholders = implode(',', array_fill(0, count($remove_ids), '?'));
+                    
+                    $stmt = $db->prepare("DELETE FROM users_permissions WHERE users_id = ? AND permissions_id IN ($placeholders)");
+                    $params = array_merge([$user_id], $remove_ids);
+                    
+                    for($i = 0; $i < count($params); $i++) {
+                        $stmt->bindValue($i + 1, $params[$i]);
+                    }
+                    
+                    $stmt->execute();
                 }
                 
-                $stmt->execute();
-            }
-            
-            // Add permissions
-            if(!empty($to_add)) {
-                $stmt = $db->prepare("INSERT INTO users_permissions (users_id, permissions_id) VALUES (?, ?)");
-                
-                foreach(array_keys($to_add) as $perm_id) {
-                    $stmt->execute([$user_id, $perm_id]);
+                // Add permissions
+                if(!empty($to_add)) {
+                    $stmt = $db->prepare("INSERT INTO users_permissions (users_id, permissions_id) VALUES (?, ?)");
+                    
+                    foreach(array_keys($to_add) as $perm_id) {
+                        $stmt->execute([$user_id, $perm_id]);
+                    }
                 }
+                
+                // Commit transaction
+                $db->commit();
+                
+                $success_msg[] = "Permissions updated successfully for user: " . htmlspecialchars($target_user['username']);
+            } else {
+                // Roll back transaction if security violation occurred
+                $db->rollBack();
+                $error_msgs[] = "Permission changes were not applied due to security violations.";
             }
-            
-            // Commit transaction
-            $db->commit();
-            
-            $success_msg[] = "Permissions updated successfully for user: " . htmlspecialchars($target_user['username']);
             
             // Refresh user permissions
             $stmt = $db->prepare("
