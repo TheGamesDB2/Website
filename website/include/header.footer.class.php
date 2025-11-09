@@ -144,6 +144,7 @@ class HEADER
 						<a class="dropdown-item" href="/report_review.php">Duplicates Reports</a>
 						<div class="dropdown-divider"></div>
 						<a class="dropdown-item" href="/admin/manage_requests.php">API Access Requests</a>
+						<a class="dropdown-item" href="/admin/edit_permissions.php">Edit User Permissions</a>
 						<?php endif; ?>
 						<a class="dropdown-item" href="<?= append_sid("/login.php", 'logout', false, $tgdb_user->GetUserSessionID()); ?>">Logout</a>
 					</div>
