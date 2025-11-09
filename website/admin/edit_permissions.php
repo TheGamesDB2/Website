@@ -98,7 +98,8 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
         error_log("CSRF token validation failed for user ID {$tgdb_user->GetUserID()}");
         // Generate a new token after a failed validation
         $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-    } else {
+    } 
+    else {
         // Process the form submission
         
         // Process password reset
@@ -180,7 +181,6 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                 $error_msgs[] = "Database error: " . $e->getMessage();
             }
         }
-    }
         // Process permission updates
         elseif(isset($_POST['user_id']) && isset($_POST['permissions'])) {
             $user_id = (int)$_POST['user_id'];
@@ -345,6 +345,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
         $error_msgs[] = "Database error: " . $e->getMessage();
     }
 }
+    }
 
 // Include header
 require_once __DIR__ . "/../include/header.footer.class.php";
