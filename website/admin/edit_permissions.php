@@ -345,7 +345,6 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
         $error_msgs[] = "Database error: " . $e->getMessage();
     }
 }
-    }
 
 // Include header
 require_once __DIR__ . "/../include/header.footer.class.php";
