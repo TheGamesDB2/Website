@@ -38,10 +38,9 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
     
     try {
         // Search by username or email
-        $stmt = $db->prepare("SELECT id, username, email_address FROM users WHERE username LIKE :search OR email_address LIKE :search LIMIT 1");
+        $stmt = $db->prepare("SELECT id, username, email_address FROM users WHERE username LIKE ? OR email_address LIKE ? LIMIT 1");
         $search_param = '%' . $search_term . '%';
-        $stmt->bindParam(':search', $search_param);
-        $stmt->execute();
+        $stmt->execute([$search_param, $search_param]);
         $found_user = $stmt->fetch(PDO::FETCH_ASSOC);
         
         if($found_user) {
@@ -50,10 +49,9 @@ if(isset($_GET['search']) && !empty($_GET['search'])) {
                 SELECT p.id, p.permission_text 
                 FROM permissions p
                 JOIN users_permissions up ON p.id = up.permissions_id
-                WHERE up.users_id = :user_id
+                WHERE up.users_id = ?
             ");
-            $stmt->bindParam(':user_id', $found_user['id']);
-            $stmt->execute();
+            $stmt->execute([$found_user['id']]);
             $user_permissions_result = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
             // Convert to a simple array of permission IDs for easier checking
@@ -75,9 +73,8 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['user_id']) && isset($_P
     
     // Verify user exists
     try {
-        $stmt = $db->prepare("SELECT id, username FROM users WHERE id = :user_id");
-        $stmt->bindParam(':user_id', $user_id);
-        $stmt->execute();
+        $stmt = $db->prepare("SELECT id, username FROM users WHERE id = ?");
+        $stmt->execute([$user_id]);
         $target_user = $stmt->fetch(PDO::FETCH_ASSOC);
         
         if(!$target_user) {
@@ -88,10 +85,9 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['user_id']) && isset($_P
                 SELECT p.id, p.permission_text 
                 FROM permissions p
                 JOIN users_permissions up ON p.id = up.permissions_id
-                WHERE up.users_id = :user_id
+                WHERE up.users_id = ?
             ");
-            $stmt->bindParam(':user_id', $user_id);
-            $stmt->execute();
+            $stmt->execute([$user_id]);
             $current_permissions = [];
             while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $current_permissions[$row['id']] = $row['permission_text'];
@@ -168,10 +164,9 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['user_id']) && isset($_P
                 SELECT p.id, p.permission_text 
                 FROM permissions p
                 JOIN users_permissions up ON p.id = up.permissions_id
-                WHERE up.users_id = :user_id
+                WHERE up.users_id = ?
             ");
-            $stmt->bindParam(':user_id', $user_id);
-            $stmt->execute();
+            $stmt->execute([$user_id]);
             $user_permissions = [];
             while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $user_permissions[$row['id']] = $row['permission_text'];
