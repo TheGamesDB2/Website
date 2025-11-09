@@ -66,6 +66,11 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && empty($error_msgs) && empty($success_
 					");
 					$permStmt->bindParam(':user_id', $userData['id'], PDO::PARAM_INT);
 					$permStmt->execute();
+
+					$games_update = $db->prepare("UPDATE user_games SET users_id = :tgdb_user_id WHERE users_id = :session_user_id");
+					$games_update->bindParam(':tgdb_user_id', $userData['id'], PDO::PARAM_INT);
+					$games_update->bindParam(':session_user_id', $session_user_id, PDO::PARAM_INT);
+					$games_update->execute();
 					}
 
 					header("Location: index.php");
