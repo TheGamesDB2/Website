@@ -84,7 +84,7 @@ elseif(isset($_GET['search']) && !empty($_GET['search'])) {
         $error_msgs[] = "Database error: " . $e->getMessage();
     }
 }
-}
+
 
 // Process password reset
 if($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['user_id']) && isset($_POST['new_password']) && !empty($_POST['new_password'])) {
