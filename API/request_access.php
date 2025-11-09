@@ -4,6 +4,10 @@ require_once __DIR__ . "/../include/session.config.php";
 require_once __DIR__ . "/../website/include/login.common.class.php";
 require_once __DIR__ . "/../include/CommonUtils.class.php";
 
+// Configuration constants
+define('DISCORD_WEBHOOK_URL', 'https://discordapp.com/api/webhooks/1437142525432303718/apIYNAGJ8rSKI2_jJM8XnmwbRQMyMP4tR1GijftO9RLZMy7MGNCNX5vK2x_L2vAm9ne7');
+define('ADMIN_MANAGE_URL', 'https://thegamesdb.net/admin/manage_requests.php');
+
 $error_msgs = array();
 $success_msg = array();
 
@@ -65,18 +69,102 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                     ':app_url' => $app_url
                 ]);
                 
-                // Send notification email to admin (optional)
-                $admin_email = "admin@thegamesdb.net"; // Replace with actual admin email
-                $subject = "New API Access Request";
-                $message = "A new API access request has been submitted:\n\n";
-                $message .= "User: " . $tgdb_user->GetUsername() . " (ID: " . $tgdb_user->GetUserID() . ")\n";
-                $message .= "Application: " . $app_name . "\n";
-                $message .= "Description: " . $app_description . "\n";
-                $message .= "URL: " . ($app_url ? $app_url : "Not provided") . "\n\n";
-                $message .= "To review this request, please login to the admin panel.";
-                $headers = "From: noreply@thegamesdb.net";
+                // Get the request ID
+                $request_id = $db->lastInsertId();
                 
-                mail($admin_email, $subject, $message, $headers);
+                
+                // Send Discord webhook notification
+                
+                // Format the message for Discord
+                // Sanitize inputs for Discord message
+                $safe_username = htmlspecialchars($tgdb_user->GetUsername(), ENT_QUOTES, 'UTF-8');
+                $safe_app_name = htmlspecialchars($app_name, ENT_QUOTES, 'UTF-8');
+                $safe_app_description = htmlspecialchars($app_description, ENT_QUOTES, 'UTF-8');
+                $safe_app_url = $app_url ? htmlspecialchars($app_url, ENT_QUOTES, 'UTF-8') : "Not provided";
+                
+                // Truncate description if it's too long for Discord
+                if (strlen($safe_app_description) > 1500) {
+                    $safe_app_description = substr($safe_app_description, 0, 1497) . '...';
+                }
+                
+                $discord_message = [
+                    "content" => "🔔 **New API Access Request**",
+                    "embeds" => [
+                        [
+                            "title" => "API Access Request from " . $safe_username,
+                            "description" => "**Application:** " . $safe_app_name . "\n\n**Description:** " . $safe_app_description,
+                            "color" => 3447003, // Discord blue color
+                            "fields" => [
+                                [
+                                    "name" => "User ID",
+                                    "value" => $tgdb_user->GetUserID(),
+                                    "inline" => true
+                                ],
+                                [
+                                    "name" => "Request ID",
+                                    "value" => $request_id,
+                                    "inline" => true
+                                ],
+                                [
+                                    "name" => "Application URL",
+                                    "value" => $safe_app_url,
+                                    "inline" => false
+                                ]
+                            ],
+                            "footer" => [
+                                "text" => "TheGamesDB API Access Request System • " . date("Y-m-d H:i:s")
+                            ],
+                            "timestamp" => date("c")
+                        ]
+                    ],
+                    "components" => [
+                        [
+                            "type" => 1,
+                            "components" => [
+                                [
+                                    "type" => 2,
+                                    "style" => 5, // Link button style
+                                    "label" => "Manage Requests",
+                                    "url" => ADMIN_MANAGE_URL
+                                ]
+                            ]
+                        ]
+                    ]
+                ];
+                
+                // Send the webhook
+                try {
+                    // Check if curl is available
+                    if (!function_exists('curl_init')) {
+                        throw new Exception('cURL is not available on this server');
+                    }
+                    
+                    $ch = curl_init(DISCORD_WEBHOOK_URL);
+                    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+                    curl_setopt($ch, CURLOPT_POST, 1);
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($discord_message));
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                    curl_setopt($ch, CURLOPT_TIMEOUT, 10); // Set timeout to 10 seconds
+                    
+                    $response = curl_exec($ch);
+                    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                    $curl_error = curl_error($ch);
+                    curl_close($ch);
+                    
+                    // Log webhook response
+                    if ($http_code != 204 && $http_code != 200) { // Discord returns 204 No Content on success
+                        error_log("Discord webhook error: HTTP code $http_code, Response: $response");
+                    }
+                    
+                    // Log webhook errors if any
+                    if (!empty($curl_error)) {
+                        error_log("Discord webhook cURL error: " . $curl_error);
+                    }
+                } catch (Exception $e) {
+                    // Log the exception but don't stop the request process
+                    error_log("Discord webhook exception: " . $e->getMessage());
+                }
                 
                 $success_msg[] = "Your API access request has been submitted successfully. You will be notified when your request is processed.";
             }
