@@ -176,9 +176,6 @@ class FOOTER
 						<h5>Get started</h5>
 						<ul>
 							<li><a href="/">Home</a></li>
-							<?php if(empty($tgdb_user) || !$tgdb_user->isLoggedIn()) : ?>
-							<li><a href="https://discord.gg/2gxeAURxmA">Request Account on Discord</a></li>
-							<?php endif; ?>
 							<li><a href="/browse.php">Games</a></li>
 							<li><a href="/list_platforms.php">Platforms</a></li>
 							<li><a href="/list_devs.php">Developers</a></li>

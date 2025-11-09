@@ -50,21 +50,23 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && empty($error_msgs) && empty($success_
 					$userData = $tgdb_user->getUserData();
 					//echo "UPDATE apiusers SET users_id = " . $userData['id'] . " WHERE userid = " . $session_user_id;
 					//exit();
-
-					$stmt->execute([
-						':tgdb_user_id' => $userData['id'],
-						':session_user_id' => $session_user_id
-					]);
+					if (isset($userData['id']))
+					{
+						$stmt->execute([
+							':tgdb_user_id' => $userData['id'],
+							':session_user_id' => $session_user_id
+						]);
+					
 
 					// Grant ADD_GAME and API_ACCESS permissions to the new user
-$permStmt = $db->prepare("
-    INSERT INTO users_permissions (users_id, permissions_id)
-    SELECT :user_id, id FROM permissions 
-    WHERE permission_text IN ('API_ACCESS', 'VALID_USER')
-");
-$permStmt->bindParam(':user_id', $userData['id'], PDO::PARAM_INT);
-$permStmt->execute();
-
+					$permStmt = $db->prepare("
+						INSERT INTO users_permissions (users_id, permissions_id)
+						SELECT :user_id, id FROM permissions 
+						WHERE permission_text IN ('API_ACCESS', 'VALID_USER')
+					");
+					$permStmt->bindParam(':user_id', $userData['id'], PDO::PARAM_INT);
+					$permStmt->execute();
+					}
 
 					header("Location: index.php");
 					exit();
