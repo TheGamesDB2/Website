@@ -180,6 +180,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                 $error_msgs[] = "Database error: " . $e->getMessage();
             }
         }
+    }
         // Process permission updates
         elseif(isset($_POST['user_id']) && isset($_POST['permissions'])) {
             $user_id = (int)$_POST['user_id'];
@@ -206,121 +207,121 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                     while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                         $current_permissions[$row['id']] = $row['permission_text'];
                     }
-            
-            // Start transaction
-            $db->beginTransaction();
-            
-            // Handle special permissions
-            $admin_permission_id = null;
-            $staff_permission_id = null;
-            
-            // Get all permission IDs and texts for validation
-            $permission_map = [];
-            foreach($all_permissions as $perm) {
-                $permission_map[$perm['id']] = $perm['permission_text'];
-                
-                if($perm['permission_text'] === 'ADMIN') {
-                    $admin_permission_id = $perm['id'];
-                }
-                if($perm['permission_text'] === 'STAFF') {
-                    $staff_permission_id = $perm['id'];
-                }
-            }
-            
-            // Server-side security validation
-            $security_violation = false;
-            
-            // Check if trying to modify ADMIN permission
-            $admin_in_current = isset($current_permissions[$admin_permission_id]);
-            $admin_in_new = isset($new_permissions[$admin_permission_id]);
-            
-            if($admin_in_current != $admin_in_new) {
-                // Someone is trying to add or remove ADMIN permission
-                if(!$is_admin || ($user_id == $tgdb_user->GetUserID())) {
-                    // Not an admin or trying to remove own admin - revert the change
-                    if($admin_in_current) {
-                        $new_permissions[$admin_permission_id] = 'ADMIN'; // Keep admin permission
+                    
+                    // Start transaction
+                    $db->beginTransaction();
+                    
+                    // Handle special permissions
+                    $admin_permission_id = null;
+                    $staff_permission_id = null;
+                    
+                    // Get all permission IDs and texts for validation
+                    $permission_map = [];
+                    foreach($all_permissions as $perm) {
+                        $permission_map[$perm['id']] = $perm['permission_text'];
+                        
+                        if($perm['permission_text'] === 'ADMIN') {
+                            $admin_permission_id = $perm['id'];
+                        }
+                        if($perm['permission_text'] === 'STAFF') {
+                            $staff_permission_id = $perm['id'];
+                        }
+                    }
+                    
+                    // Server-side security validation
+                    $security_violation = false;
+                    
+                    // Check if trying to modify ADMIN permission
+                    $admin_in_current = isset($current_permissions[$admin_permission_id]);
+                    $admin_in_new = isset($new_permissions[$admin_permission_id]);
+                    
+                    if($admin_in_current != $admin_in_new) {
+                        // Someone is trying to add or remove ADMIN permission
+                        if(!$is_admin || ($user_id == $tgdb_user->GetUserID())) {
+                            // Not an admin or trying to remove own admin - revert the change
+                            if($admin_in_current) {
+                                $new_permissions[$admin_permission_id] = 'ADMIN'; // Keep admin permission
+                            } else {
+                                unset($new_permissions[$admin_permission_id]); // Don't add admin permission
+                            }
+                            $error_msgs[] = "Security violation: You cannot modify ADMIN permissions.";
+                            $security_violation = true;
+                        }
+                    }
+                    
+                    // Check if trying to modify STAFF permission
+                    $staff_in_current = isset($current_permissions[$staff_permission_id]);
+                    $staff_in_new = isset($new_permissions[$staff_permission_id]);
+                    
+                    if($staff_in_current != $staff_in_new) {
+                        // Someone is trying to add or remove STAFF permission
+                        if(!$is_admin) {
+                            // Not an admin - revert the change
+                            if($staff_in_current) {
+                                $new_permissions[$staff_permission_id] = 'STAFF'; // Keep staff permission
+                            } else {
+                                unset($new_permissions[$staff_permission_id]); // Don't add staff permission
+                            }
+                            $error_msgs[] = "Security violation: Only ADMIN users can modify STAFF permissions.";
+                            $security_violation = true;
+                        }
+                    }
+                    
+                    // Log security violations
+                    if($security_violation) {
+                        error_log("Permission security violation detected: User ID {$tgdb_user->GetUserID()} attempted to modify restricted permissions for User ID {$user_id}");
+                    }
+                    
+                    // Additional security check - verify all permission IDs are valid
+                    foreach(array_keys($new_permissions) as $perm_id) {
+                        if(!isset($permission_map[$perm_id])) {
+                            // Invalid permission ID submitted
+                            unset($new_permissions[$perm_id]);
+                            $error_msgs[] = "Security violation: Invalid permission ID detected.";
+                            $security_violation = true;
+                            error_log("Invalid permission ID submitted: {$perm_id} by user ID {$tgdb_user->GetUserID()}");
+                        }
+                    }
+                    
+                    // Determine permissions to add and remove
+                    $to_add = array_diff_key($new_permissions, $current_permissions);
+                    $to_remove = array_diff_key($current_permissions, $new_permissions);
+                    
+                    // Only proceed with permission changes if no security violations were detected
+                    if(!$security_violation) {
+                        // Remove permissions
+                        if(!empty($to_remove)) {
+                            $remove_ids = array_keys($to_remove);
+                            $placeholders = implode(',', array_fill(0, count($remove_ids), '?'));
+                            
+                            $stmt = $db->prepare("DELETE FROM users_permissions WHERE users_id = ? AND permissions_id IN ($placeholders)");
+                            $params = array_merge([$user_id], $remove_ids);
+                            
+                            for($i = 0; $i < count($params); $i++) {
+                                $stmt->bindValue($i + 1, $params[$i]);
+                            }
+                            
+                            $stmt->execute();
+                        }
+                        
+                        // Add permissions
+                        if(!empty($to_add)) {
+                            $stmt = $db->prepare("INSERT INTO users_permissions (users_id, permissions_id) VALUES (?, ?)");
+                            
+                            foreach(array_keys($to_add) as $perm_id) {
+                                $stmt->execute([$user_id, $perm_id]);
+                            }
+                        }
+                        
+                        // Commit transaction
+                        $db->commit();
+                        
+                        $success_msg[] = "Permissions updated successfully for user: " . htmlspecialchars($target_user['username']);
                     } else {
-                        unset($new_permissions[$admin_permission_id]); // Don't add admin permission
+                        // Roll back transaction if security violation occurred
+                        $db->rollBack();
+                        $error_msgs[] = "Permission changes were not applied due to security violations.";
                     }
-                    $error_msgs[] = "Security violation: You cannot modify ADMIN permissions.";
-                    $security_violation = true;
-                }
-            }
-            
-            // Check if trying to modify STAFF permission
-            $staff_in_current = isset($current_permissions[$staff_permission_id]);
-            $staff_in_new = isset($new_permissions[$staff_permission_id]);
-            
-            if($staff_in_current != $staff_in_new) {
-                // Someone is trying to add or remove STAFF permission
-                if(!$is_admin) {
-                    // Not an admin - revert the change
-                    if($staff_in_current) {
-                        $new_permissions[$staff_permission_id] = 'STAFF'; // Keep staff permission
-                    } else {
-                        unset($new_permissions[$staff_permission_id]); // Don't add staff permission
-                    }
-                    $error_msgs[] = "Security violation: Only ADMIN users can modify STAFF permissions.";
-                    $security_violation = true;
-                }
-            }
-            
-            // Log security violations
-            if($security_violation) {
-                error_log("Permission security violation detected: User ID {$tgdb_user->GetUserID()} attempted to modify restricted permissions for User ID {$user_id}");
-            }
-            
-            // Additional security check - verify all permission IDs are valid
-            foreach(array_keys($new_permissions) as $perm_id) {
-                if(!isset($permission_map[$perm_id])) {
-                    // Invalid permission ID submitted
-                    unset($new_permissions[$perm_id]);
-                    $error_msgs[] = "Security violation: Invalid permission ID detected.";
-                    $security_violation = true;
-                    error_log("Invalid permission ID submitted: {$perm_id} by user ID {$tgdb_user->GetUserID()}");
-                }
-            }
-            
-            // Determine permissions to add and remove
-            $to_add = array_diff_key($new_permissions, $current_permissions);
-            $to_remove = array_diff_key($current_permissions, $new_permissions);
-            
-            // Only proceed with permission changes if no security violations were detected
-            if(!$security_violation) {
-                // Remove permissions
-                if(!empty($to_remove)) {
-                    $remove_ids = array_keys($to_remove);
-                    $placeholders = implode(',', array_fill(0, count($remove_ids), '?'));
-                    
-                    $stmt = $db->prepare("DELETE FROM users_permissions WHERE users_id = ? AND permissions_id IN ($placeholders)");
-                    $params = array_merge([$user_id], $remove_ids);
-                    
-                    for($i = 0; $i < count($params); $i++) {
-                        $stmt->bindValue($i + 1, $params[$i]);
-                    }
-                    
-                    $stmt->execute();
-                }
-                
-                // Add permissions
-                if(!empty($to_add)) {
-                    $stmt = $db->prepare("INSERT INTO users_permissions (users_id, permissions_id) VALUES (?, ?)");
-                    
-                    foreach(array_keys($to_add) as $perm_id) {
-                        $stmt->execute([$user_id, $perm_id]);
-                    }
-                }
-                
-                // Commit transaction
-                $db->commit();
-                
-                $success_msg[] = "Permissions updated successfully for user: " . htmlspecialchars($target_user['username']);
-            } else {
-                // Roll back transaction if security violation occurred
-                $db->rollBack();
-                $error_msgs[] = "Permission changes were not applied due to security violations.";
-            }
             
             // Refresh user permissions
             $stmt = $db->prepare("
