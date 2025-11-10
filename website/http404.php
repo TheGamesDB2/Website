@@ -73,7 +73,7 @@
 </head>
 <body>
     <div class="maintenance-container">
-        <img src="images/404-<?php rand(1, 3); ?>.png" alt="404" class="maintenance-image">
+        <img src="images/404-<?php echo rand(1, 3); ?>.png" alt="404" class="maintenance-image">
         <p>Don't worry, we're here to help.</p>
         <div class="status-update">
             <h4>What's going on?</h4>
