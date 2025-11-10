@@ -1,0 +1,93 @@
+!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TheGamesDB - Maintenance</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+    <link href='//fonts.googleapis.com/css?family=Lato:300,400,700' rel='stylesheet' type='text/css'>
+    <style>
+        body {
+            font-family: 'Lato', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+        .maintenance-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            text-align: center;
+        }
+        .maintenance-image {
+            max-width: 100%;
+            height: auto;
+            margin: 2rem 0;
+        }
+        h1 {
+            color: #0c1c38;
+            font-weight: 300;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto 1.5rem;
+            line-height: 1.6;
+        }
+        .status-update {
+            background-color: #e9ecef;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 2rem;
+            max-width: 600px;
+        }
+        footer {
+            background-color: #0c1c38;
+            color: #fff;
+            text-align: center;
+            padding: 1rem;
+            margin-top: auto;
+        }
+        footer a {
+            color: #fff;
+            text-decoration: underline;
+        }
+        .social-links {
+            margin: 1rem 0;
+        }
+        .social-links a {
+            margin: 0 10px;
+            color: #fff;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="maintenance-container">
+        <img src="images/404-<?php rand(1, 3); ?>.png" alt="404" class="maintenance-image">
+        <p>Don't worry, we're here to help.</p>
+        <div class="status-update">
+            <h4>What's going on?</h4>
+            <p>It looks like you've stumbled upon a page that doesn't exist. Don't worry, we're here to help.</p>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="social-links">
+                <a href="https://discord.gg/2gxeAURxmA">Discord</a>
+            </div>
+            <p>&copy; 2025 TheGamesDB</p>
+        </div>
+    </footer>
+</body>
+</html>
