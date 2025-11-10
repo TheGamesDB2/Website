@@ -11,7 +11,7 @@ $tgdb_user = TGDBUser::getInstance();
 
 // Check if user is logged in and has admin permissions
 if(!$tgdb_user->isLoggedIn() || (!$tgdb_user->hasPermission('STAFF') && !$tgdb_user->hasPermission('ADMIN'))) {
-    header("Location: ../key.php");
+    header("Location: /");
     exit;
 }
 
