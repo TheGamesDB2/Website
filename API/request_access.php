@@ -254,7 +254,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                         <div class="form-group">
                             <label for="app_description">How will you use our API?</label>
                             <textarea class="form-control" id="app_description" name="app_description" rows="3" required><?= isset($app_description) ? htmlspecialchars($app_description) : '' ?></textarea>
-                            <small class="form-text text-muted">Please provide details about your application and how you plan to use the API.</small>
+                            <small class="form-text text-muted">Please provide details about your application and how you plan to use the API. Give as much detail as possible as we are being very stringent on who gains API access. Little to no detail will result in you not gaining access.</small>
                         </div>
                         <div class="form-group">
                             <label for="app_url">Application URL (if applicable)</label>
