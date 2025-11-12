@@ -15,6 +15,7 @@ require_once __DIR__ . "/../include/CommonUtils.class.php";
 
 $API = TGDB::getInstance();
 $tgdb_user = TGDBUser::getInstance();
+$tgdb_user->checkAutologin();
 
 $fields = array("id" => true, "name" => true, "alias" => true, "icon" => true, "console" => true, "controller" => true, "developer" => true, "manufacturer" => true, "media" => true, "cpu" => true, "memory" => true, "graphics" => true, "sound" => true, "maxcontrollers" => true, "display" => true, "overview" => true, "youtube" => true);
 $Platform = $API->GetPlatforms($_REQUEST['id'], $fields);

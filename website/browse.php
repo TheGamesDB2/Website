@@ -5,6 +5,8 @@ require_once __DIR__ . "/../include/CommonUtils.class.php";
 require_once __DIR__ . "/include/TGDBUtils.class.php";
 
 $API = TGDB::getInstance();
+$tgdb_user->checkAutologin();
+
 $PlatformList = $API->GetPlatformsList(array("icon" => true));
 
 $PlatformIDs = array();

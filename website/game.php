@@ -14,6 +14,7 @@ require_once __DIR__ . "/../include/CommonUtils.class.php";
 require_once __DIR__ . "/include/login.common.class.php";
 
 $tgdb_user = TGDBUser::getInstance();
+$tgdb_user->checkAutologin();
 
 $API = TGDB::getInstance();
 

@@ -7,6 +7,9 @@ $success_msg = array();
 
 $_user = phpBBUser::getInstance();
 $tgdb_user = TGDBUser::getInstance();
+
+// Check for autologin cookie and authenticate user if valid
+$tgdb_user->checkAutologin();
 if(isset($_REQUEST['logout']))
 {
 	$tgdb_user->Logout();

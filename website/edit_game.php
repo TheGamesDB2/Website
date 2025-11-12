@@ -9,6 +9,8 @@ if(!isset($_REQUEST['id']) || !is_numeric($_REQUEST['id']))
 }
 require_once __DIR__ . "/include/login.common.class.php";
 $tgdb_user = TGDBUser::getInstance();
+$tgdb_user->checkAutologin();
+
 if(!$tgdb_user->isLoggedIn())
 {
 	$errorPage = new ErrorPage();

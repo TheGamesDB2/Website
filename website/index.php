@@ -4,6 +4,11 @@ require_once __DIR__ . "/include/TGDBUtils.class.php";
 require_once __DIR__ . "/include/WebUtils.class.php";
 require_once __DIR__ . "/../include/TGDB.API.php";
 require_once __DIR__ . "/include/PaginationUtils.class.php";
+require_once __DIR__ . "/include/login.common.class.php";
+
+// Check for autologin cookie and authenticate user if valid
+$tgdb_user = TGDBUser::getInstance();
+$tgdb_user->checkAutologin();
 
 $API = TGDB::getInstance();
 $soon = $API->GetGamesByDate(date("d/m/Y"), 0, 5, array('AFTER' => true), "release_date", 'ASC');

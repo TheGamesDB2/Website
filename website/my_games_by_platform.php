@@ -10,6 +10,8 @@ require_once __DIR__ . "/include/ErrorPage.class.php";
 
 require_once __DIR__ . "/include/login.common.class.php";
 $tgdb_user = TGDBUser::getInstance();
+$tgdb_user->checkAutologin();
+
 if(!$tgdb_user->isLoggedIn())
 {
 	$errorPage = new ErrorPage();

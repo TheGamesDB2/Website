@@ -83,9 +83,17 @@ class TGDBUser
 				$token = bin2hex(random_bytes(32));
 				$expiry = time() + (86400 * 30); // 30 days
 				
-				// Store token in database (you would need to create a tokens table)
-				// $stmt = $this->dbh->prepare("INSERT INTO user_tokens (user_id, token, expires) VALUES (:user_id, :token, :expires)");
-				// $stmt->execute(['user_id' => $user['id'], 'token' => $token, 'expires' => $expiry]);
+				// Delete any existing tokens for this user
+				$deleteStmt = $this->dbh->prepare("DELETE FROM user_tokens WHERE user_id = :user_id");
+				$deleteStmt->execute([':user_id' => $user['id']]);
+				
+				// Store token in database
+				$stmt = $this->dbh->prepare("INSERT INTO user_tokens (user_id, token, expires) VALUES (:user_id, :token, :expires)");
+				$stmt->execute([
+					':user_id' => $user['id'], 
+					':token' => $token, 
+					':expires' => $expiry
+				]);
 				
 				// Set cookie
 				setcookie('tgdb_autologin', $user['id'] . ':' . $token, $expiry, '/', '', false, true);
@@ -106,6 +114,89 @@ class TGDBUser
 	{
 		return isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true;
 	}
+	
+	/**
+	 * Check for autologin cookie and authenticate user if valid
+	 * 
+	 * @return bool True if user was auto-logged in
+	 */
+	function checkAutologin()
+	{
+		// If user is already logged in, no need to check autologin
+		if ($this->isLoggedIn()) {
+			return true;
+		}
+		
+		// Check if autologin cookie exists
+		if (!isset($_COOKIE['tgdb_autologin'])) {
+			return false;
+		}
+		
+		// Parse the cookie value
+		$cookie_data = explode(':', $_COOKIE['tgdb_autologin']);
+		if (count($cookie_data) !== 2) {
+			// Invalid cookie format, delete it
+			setcookie('tgdb_autologin', '', time() - 3600, '/', '', false, true);
+			return false;
+		}
+		
+		list($user_id, $token) = $cookie_data;
+		
+		try {
+			// Check if token exists and is valid
+			$stmt = $this->dbh->prepare("
+				SELECT u.id, u.username, t.expires 
+				FROM user_tokens t
+				JOIN users u ON t.user_id = u.id
+				WHERE t.user_id = :user_id 
+				AND t.token = :token 
+				AND t.expires > :now
+			");
+			
+			$now = time();
+			$stmt->execute([
+				':user_id' => $user_id,
+				':token' => $token,
+				':now' => $now
+			]);
+			
+			$result = $stmt->fetch(PDO::FETCH_ASSOC);
+			
+			if (!$result) {
+				// Token not found or expired, delete cookie
+				setcookie('tgdb_autologin', '', time() - 3600, '/', '', false, true);
+				return false;
+			}
+			
+			// Auto-login successful, set session data
+			$this->user_data = $result;
+			$_SESSION['user_id'] = $result['id'];
+			$_SESSION['username'] = $result['username'];
+			$_SESSION['is_logged_in'] = true;
+			
+			// Extend the token expiration if it's going to expire soon (within 7 days)
+			if ($result['expires'] - $now < 86400 * 7) {
+				$new_expiry = time() + (86400 * 30); // 30 days
+				
+				// Update token expiration
+				$updateStmt = $this->dbh->prepare("UPDATE user_tokens SET expires = :expires WHERE user_id = :user_id AND token = :token");
+				$updateStmt->execute([
+					':expires' => $new_expiry,
+					':user_id' => $user_id,
+					':token' => $token
+				]);
+				
+				// Update cookie expiration
+				setcookie('tgdb_autologin', $user_id . ':' . $token, $new_expiry, '/', '', false, true);
+			}
+			
+			return true;
+			
+		} catch (PDOException $e) {
+			// Log error or handle it as needed
+			return false;
+		}
+	}
 
 	/**
 	 * Log out the current user
@@ -118,6 +209,9 @@ class TGDBUser
 		$sid = isset($_GET['sid']) ? $_GET['sid'] : '';
 		
 		if ($this->isLoggedIn() && session_id() === $sid) {
+			// Get user ID before clearing session
+			$user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
+			
 			// Clear session data
 			$_SESSION = array();
 			
@@ -132,6 +226,16 @@ class TGDBUser
 			
 			// Delete autologin cookie if it exists
 			setcookie('tgdb_autologin', '', time() - 3600, '/', '', false, true);
+			
+			// Delete autologin tokens from database
+			if ($user_id) {
+				try {
+					$stmt = $this->dbh->prepare("DELETE FROM user_tokens WHERE user_id = :user_id");
+					$stmt->execute([':user_id' => $user_id]);
+				} catch (PDOException $e) {
+					// Silently fail, not critical
+				}
+			}
 			
 			// Destroy the session
 			session_destroy();

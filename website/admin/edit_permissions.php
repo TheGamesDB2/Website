@@ -13,6 +13,7 @@ $error_msgs = array();
 $success_msg = array();
 
 $tgdb_user = TGDBUser::getInstance();
+$tgdb_user->checkAutologin();
 
 // Check if user is logged in and has admin or staff permissions
 if(!$tgdb_user->isLoggedIn() || (!$tgdb_user->hasPermission('STAFF') && !$tgdb_user->hasPermission('ADMIN'))) {
