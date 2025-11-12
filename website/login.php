@@ -30,7 +30,8 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && empty($error_msgs) && empty($success_
 	{
 		if(!empty($_POST['username']) && !empty($_POST['password']))
 		{
-			$tgdb_res = $tgdb_user->Login(false,false);
+			$autologin = isset($_POST['autologin']);
+			$tgdb_res = $tgdb_user->Login($autologin,false);
 
 			if($tgdb_res['status'] != "LOGIN_SUCCESS")
 			{
