@@ -45,7 +45,8 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && empty($error_msgs) && empty($success_
 					$session_user_id = $_user->user->data['user_id'];
 
 					$_user->user->session_kill();
-					$tgdb_user->Login(false, false);
+					$autologin = isset($_POST['autologin']);
+					$tgdb_user->Login($autologin, false);
 
 					$db = $tgdb_user->getDatabase();
 					$stmt = $db->prepare("UPDATE apiusers SET users_id = :tgdb_user_id WHERE userid = :session_user_id");
