@@ -125,7 +125,8 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 try {
     $stmt = $db->prepare("
         SELECT r.*, 
-               u.username as processed_by_username
+               u.username as processed_by_username,
+               (SELECT COUNT(*) FROM api_access_requests prev WHERE prev.user_id = r.user_id AND prev.id != r.id) as previous_request_count
         FROM api_access_requests r
         LEFT JOIN users u ON r.processed_by = u.id
         ORDER BY 
@@ -134,6 +135,26 @@ try {
     ");
     $stmt->execute();
     $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Get previous requests for each user
+    foreach($requests as &$request) {
+        if($request['previous_request_count'] > 0) {
+            $stmt = $db->prepare("
+                SELECT id, app_name, status, request_date 
+                FROM api_access_requests 
+                WHERE user_id = :user_id AND id != :current_id 
+                ORDER BY request_date DESC
+            ");
+            $stmt->execute([
+                ':user_id' => $request['user_id'],
+                ':current_id' => $request['id']
+            ]);
+            $request['previous_requests'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } else {
+            $request['previous_requests'] = [];
+        }
+    }
+    unset($request); // Break the reference with the last element
 } catch (PDOException $e) {
     $error_msgs[] = "Database error: " . $e->getMessage();
     $requests = [];
@@ -175,6 +196,15 @@ $Header->appendRawHeader(function() { global $tgdb_user; ?>
         }
         .badge-rejected {
             background-color: #dc3545;
+        }
+        .previous-request-link {
+            display: block;
+            padding: 5px 0;
+            text-decoration: none;
+        }
+        .previous-request-link:hover {
+            background-color: #f8f9fa;
+            text-decoration: none;
         }
     </style>
 <?php });?>
@@ -314,6 +344,23 @@ $Header->appendRawHeader(function() { global $tgdb_user; ?>
                                                 <dd class="col-sm-8"><?= nl2br(htmlspecialchars($request['notes'])) ?></dd>
                                             <?php endif; ?>
                                         <?php endif; ?>
+                                        
+                                        <?php if(!empty($request['previous_requests'])) : ?>
+                                            <dt class="col-sm-4">Previous Requests:</dt>
+                                            <dd class="col-sm-8">
+                                                <ul class="list-unstyled">
+                                                <?php foreach($request['previous_requests'] as $prev_request) : ?>
+                                                    <li>
+                                                        <a href="#" class="previous-request-link" data-request-id="<?= $prev_request['id'] ?>">
+                                                            <?= htmlspecialchars($prev_request['app_name']) ?>
+                                                            <span class="badge badge-<?= $prev_request['status'] ?>"><?= ucfirst($prev_request['status']) ?></span>
+                                                            <small>(<?= date('Y-m-d', strtotime($prev_request['request_date'])) ?>)</small>
+                                                        </a>
+                                                    </li>
+                                                <?php endforeach; ?>
+                                                </ul>
+                                            </dd>
+                                        <?php endif; ?>
                                     </dl>
                                 </div>
                                 <div class="modal-footer">
@@ -432,6 +479,16 @@ $(document).ready(function() {
     // Handle form submissions in modals
     $('.modal form').on('submit', function() {
         console.log('Form submitted in modal');
+        $(this).closest('.modal').modal('hide');
+    });
+    
+    // Handle clicking on previous request links
+    $(document).on('click', '.previous-request-link', function(e) {
+        e.preventDefault();
+        var requestId = $(this).data('request-id');
+        // Find the modal for this request and show it
+        $('#viewModal' + requestId).modal('show');
+        // Hide the current modal
         $(this).closest('.modal').modal('hide');
     });
 });
