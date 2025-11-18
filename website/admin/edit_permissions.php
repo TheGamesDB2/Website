@@ -39,6 +39,7 @@ $search_term = '';
 $found_user = null;
 $search_results = [];
 $user_permissions = [];
+$user_api_keys = [];
 
 // Handle user selection from search results
 if(isset($_GET['user_id']) && !empty($_GET['user_id'])) {
@@ -65,6 +66,11 @@ if(isset($_GET['user_id']) && !empty($_GET['user_id'])) {
             foreach($user_permissions_result as $perm) {
                 $user_permissions[$perm['id']] = $perm['permission_text'];
             }
+
+            // Get user's API keys
+            $stmt = $db->prepare("SELECT * FROM apiusers WHERE users_id = ? ORDER BY is_private_key, id");
+            $stmt->execute([$found_user['id']]);
+            $user_api_keys = $stmt->fetchAll(PDO::FETCH_ASSOC);
         } else {
             $error_msgs[] = "User not found.";
         }
@@ -103,8 +109,70 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
     else {
         // Process the form submission
         
+        // Regenerate API key
+        if(isset($_POST['regenerate_api_key']) && isset($_POST['user_id']) && isset($_POST['apiuser_id'])) {
+            $user_id = (int)$_POST['user_id'];
+            $apiuser_id = (int)$_POST['apiuser_id'];
+
+            try {
+                // Verify user exists
+                $stmt = $db->prepare("SELECT id, username, email_address FROM users WHERE id = ?");
+                $stmt->execute([$user_id]);
+                $target_user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                if(!$target_user) {
+                    $error_msgs[] = "User not found.";
+                } else {
+                    // Ensure the API key belongs to this user
+                    $stmt = $db->prepare("SELECT * FROM apiusers WHERE id = ? AND users_id = ? LIMIT 1");
+                    $stmt->execute([$apiuser_id, $user_id]);
+                    $api_key_row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                    if(!$api_key_row) {
+                        $error_msgs[] = "API key not found for this user.";
+                    } else {
+                        // Generate new 64-character hex key
+                        $bytes = random_bytes(32);
+                        $new_key = bin2hex($bytes);
+
+                        try {
+                            $stmt = $db->prepare("UPDATE apiusers SET apikey = ? WHERE id = ?");
+                            $stmt->execute([$new_key, $apiuser_id]);
+                            $success_msg[] = "API key regenerated successfully.";
+                        } catch (PDOException $e) {
+                            $error_msgs[] = "Database error while regenerating API key: " . $e->getMessage();
+                        }
+
+                        // Refresh user API keys
+                        $stmt = $db->prepare("SELECT * FROM apiusers WHERE users_id = ? ORDER BY is_private_key, id");
+                        $stmt->execute([$user_id]);
+                        $user_api_keys = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                        // Refresh found_user and permissions for display
+                        $found_user = $target_user;
+
+                        $stmt = $db->prepare(
+                            "
+                            SELECT p.id, p.permission_text 
+                            FROM permissions p
+                            JOIN users_permissions up ON p.id = up.permissions_id
+                            WHERE up.users_id = ?
+                        ");
+                        $stmt->execute([$user_id]);
+                        $user_permissions_result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                        $user_permissions = [];
+                        foreach($user_permissions_result as $perm) {
+                            $user_permissions[$perm['id']] = $perm['permission_text'];
+                        }
+                    }
+                }
+            } catch (PDOException $e) {
+                $error_msgs[] = "Database error: " . $e->getMessage();
+            }
+        }
         // Process password reset
-        if(isset($_POST['user_id']) && isset($_POST['new_password']) && !empty($_POST['new_password'])) {
+        elseif(isset($_POST['user_id']) && isset($_POST['new_password']) && !empty($_POST['new_password'])) {
             $user_id = (int)$_POST['user_id'];
             $new_password = $_POST['new_password'];
             
@@ -325,7 +393,8 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                     }
                     
                     // Refresh user permissions
-                    $stmt = $db->prepare("
+                    $stmt = $db->prepare(
+                        "
                         SELECT p.id, p.permission_text 
                         FROM permissions p
                         JOIN users_permissions up ON p.id = up.permissions_id
@@ -340,6 +409,11 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                     // Refresh found_user
                     $found_user = $target_user;
                     $found_user['id'] = $user_id;
+
+                    // Refresh user's API keys
+                    $stmt = $db->prepare("SELECT * FROM apiusers WHERE users_id = ? ORDER BY is_private_key, id");
+                    $stmt->execute([$user_id]);
+                    $user_api_keys = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 }
             } catch (PDOException $e) {
                 $db->rollBack();
@@ -512,6 +586,9 @@ $Header->appendRawHeader(function() { ?>
                         <li class="nav-item">
                             <a class="nav-link" id="password-tab" data-toggle="tab" href="#password" role="tab">Reset Password</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="api-keys-tab" data-toggle="tab" href="#api-keys" role="tab">API Keys</a>
+                        </li>
                     </ul>
                     
                     <div class="tab-content mt-3" id="userTabsContent">
@@ -577,6 +654,49 @@ $Header->appendRawHeader(function() { ?>
                                     <button type="submit" class="btn btn-danger">Reset Password</button>
                                 </div>
                             </form>
+                        </div>
+
+                        <!-- API Keys Tab -->
+                        <div class="tab-pane fade" id="api-keys" role="tabpanel">
+                            <?php if(!empty($user_api_keys)) : ?>
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Type</th>
+                                            <th>API Key</th>
+                                            <th>Allowance Level</th>
+                                            <th>Extra Allowance</th>
+                                            <th>Banned</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach($user_api_keys as $api_key) : ?>
+                                        <tr>
+                                            <td><?= $api_key['id'] ?></td>
+                                            <td><?= $api_key['is_private_key'] ? 'Private' : 'Public' ?></td>
+                                            <td><code><?= htmlspecialchars($api_key['apikey']) ?></code></td>
+                                            <td><?= $api_key['api_allowance_level_id'] ?></td>
+                                            <td><?= $api_key['extra_allowance'] ?></td>
+                                            <td><?= !empty($api_key['is_banned']) ? 'Yes' : 'No' ?></td>
+                                            <td>
+                                                <form method="post" action="" style="display:inline-block;">
+                                                    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                                                    <input type="hidden" name="user_id" value="<?= $found_user['id'] ?>">
+                                                    <input type="hidden" name="apiuser_id" value="<?= $api_key['id'] ?>">
+                                                    <button type="submit" name="regenerate_api_key" value="1" class="btn btn-sm btn-warning" onclick="return confirm('Are you sure you want to regenerate this API key? This will invalidate the old key.');">Regenerate</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <?php else : ?>
+                            <p>No API keys found for this user.</p>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
