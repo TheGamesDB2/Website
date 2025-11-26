@@ -18,7 +18,7 @@ function save_image($original_image, $dest_image, $type)
 				mkdir(dirname($dest_image), 0755, true);
 			}
 			$image = new \claviska\SimpleImage();
-			$image = $image->fromFile($original_image);
+			$image = @$image->fromFile($original_image);
 			$type = ($type == 'jpg') ? 'jpeg' : $type;
 			$image->toFile($dest_image, "image/$type", 100);
 			return true;
