@@ -2,6 +2,8 @@
 require_once __DIR__ . '/Utils.class.php';
 require_once __DIR__ . '/APIAccessDB.class.php';
 
+require_once __DIR__ . '/RateLimiter.class.php';
+
 class AuthMiddleware
 {
 	public function __invoke($request, $response, $next)
@@ -10,7 +12,16 @@ class AuthMiddleware
 		{
 			return $next($request, $response);
 		}
-		else if(empty($_REQUEST['apikey']))
+		
+		$rateLimiter = new RateLimiter();
+		$ip = $_SERVER['REMOTE_ADDR'];
+
+		if ($rateLimiter->isBlocked($ip)) {
+			$JSON_Response = Utils::getStatus(429);
+			return $response->withJson($JSON_Response, $JSON_Response['code']);
+		}
+
+		if(empty($_REQUEST['apikey']))
 		{
 			$JSON_Response = Utils::getStatus(401);
 			return $response->withJson($JSON_Response, $JSON_Response['code']);
@@ -44,6 +55,7 @@ class AuthMiddleware
 				}
 				else
 				{
+					$rateLimiter->block($ip);
 					$JSON_Response = Utils::getStatus(403);
 					$JSON_Response['remaining_monthly_allowance'] = 0;
 					$JSON_Response['allowance_refresh_timer'] = ($User->is_private_key == 1) ? NULL : $refresh;
