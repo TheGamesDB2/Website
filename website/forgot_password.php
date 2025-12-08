@@ -68,9 +68,11 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && empty($error_msgs) && empty($success_
         // new forgot password: first, check if a TGDB user already exists for this email
         try
         {
-            $db = $tgdb_user->getDatabase(); // new forgot password: reuse TGDB PDO connection
+            // $db = $tgdb_user->getDatabase(); // new forgot password: original line using $db for TGDB PDO (now commented to avoid conflict with phpBB $db)
+            $tgdbDb = $tgdb_user->getDatabase(); // new forgot password: use a distinct variable for TGDB PDO connection
 
-            $stmt = $db->prepare("SELECT id, username, email_address FROM users WHERE email_address = :email"); // new forgot password: check TGDB users table by email
+            // $stmt = $db->prepare("SELECT id, username, email_address FROM users WHERE email_address = :email"); // new forgot password: original TGDB query using $db
+            $stmt = $tgdbDb->prepare("SELECT id, username, email_address FROM users WHERE email_address = :email"); // new forgot password: TGDB users table lookup using $tgdbDb
             $stmt->bindParam(':email', $email);
             $stmt->execute();
             $existing_tgdb_user = $stmt->fetch(PDO::FETCH_ASSOC); // new forgot password: TGDB user row if it exists
