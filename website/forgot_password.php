@@ -22,17 +22,102 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && empty($error_msgs) && empty($success_
     {
         $email = trim($_POST['email']);
         
-        // Request password reset
+        // new forgot password: original TGDB-only password reset flow commented out below
+        // $result = $tgdb_user->requestPasswordReset($email);
+        // 
+        // if($result['success'])
+        // {
+        //     if(isset($result['token']) && isset($result['user']))
+        //     {
+        //         // Create reset link
+        //         $reset_link = CommonUtils::$WEBSITE_BASE_URL . "reset_password.php?token=" . $result['token'];
+        //         
+        //         // Send email with reset link
+        //         $to = $email;
+        //         $subject = "Password Reset Request - TheGamesDB";
+        //         $message = "Hello " . $result['user']['username'] . ",\n\n";
+        //         $message .= "You have requested to reset your password. Please click the link below to set a new password:\n\n";
+        //         $message .= $reset_link . "\n\n";
+        //         $message .= "This link will expire in 1 hour.\n\n";
+        //         $message .= "If you did not request this password reset, please ignore this email.\n\n";
+        //         $message .= "Regards,\nTheGamesDB Team";
+        //         $headers = "From: noreply@thegamesdb.net";
+        //         
+        //         if(mail($to, $subject, $message, $headers))
+        //         {
+        //             $success_msg[] = "Password reset instructions have been sent to your email address. Please check your inbox.";
+        //         }
+        //         else
+        //         {
+        //             $error_msgs[] = "Failed to send password reset email. Please try again later.";
+        //         }
+        //     }
+        //     else
+        //     {
+        //         // Don't reveal if email exists or not for security reasons
+        //         $success_msg[] = "If your email address exists in our database, you will receive a password reset link at your email address in a few minutes.";
+        //     }
+        // }
+        // else
+        // {
+        //     $error_msgs[] = $result['message'];
+        // }
+
+        // new forgot password: extended flow to migrate phpBB-only users into TGDB before requesting reset
+
+        // new forgot password: first, check if a TGDB user already exists for this email
+        try
+        {
+            $db = $tgdb_user->getDatabase(); // new forgot password: reuse TGDB PDO connection
+
+            $stmt = $db->prepare("SELECT id, username, email_address FROM users WHERE email_address = :email"); // new forgot password: check TGDB users table by email
+            $stmt->bindParam(':email', $email);
+            $stmt->execute();
+            $existing_tgdb_user = $stmt->fetch(PDO::FETCH_ASSOC); // new forgot password: TGDB user row if it exists
+
+            if(!$existing_tgdb_user)
+            {
+                // new forgot password: no TGDB user, attempt to find a phpBB user with this email and migrate them
+                global $db, $table_prefix; // new forgot password: phpBB database globals from included common.php
+
+                if(isset($db) && isset($table_prefix))
+                {
+                    $phpbb_sql = 'SELECT user_id, username, user_email FROM ' . $table_prefix . "users WHERE user_email = '" . $db->sql_escape($email) . "'"; // new forgot password: lookup phpBB user by email
+                    $phpbb_result = $db->sql_query($phpbb_sql); // new forgot password: execute phpBB query
+                    $phpbb_user = $db->sql_fetchrow($phpbb_result); // new forgot password: fetch phpBB user row
+                    $db->sql_freeresult($phpbb_result); // new forgot password: free phpBB result
+
+                    if($phpbb_user)
+                    {
+                        // new forgot password: phpBB user exists, create a corresponding TGDB user with a random password
+                        $random_password = bin2hex(random_bytes(8)); // new forgot password: temporary password, user will set a new one via reset
+
+                        $create_res = $tgdb_user->createUser($phpbb_user['username'], $random_password, $phpbb_user['user_email']); // new forgot password: create TGDB user from phpBB data
+
+                        if(!$create_res['success'])
+                        {
+                            $error_msgs[] = "Unable to create local account for password reset. Please try again later."; // new forgot password: surface migration error
+                        }
+                    }
+                }
+            }
+        }
+        catch(Exception $e)
+        {
+            // new forgot password: on any unexpected error during migration, continue with generic behavior below
+        }
+
+        // new forgot password: now request TGDB password reset (user may have just been created from phpBB)
         $result = $tgdb_user->requestPasswordReset($email);
         
         if($result['success'])
         {
             if(isset($result['token']) && isset($result['user']))
             {
-                // Create reset link
+                // Create reset link (new forgot password: unchanged behavior, but now works for migrated users too)
                 $reset_link = CommonUtils::$WEBSITE_BASE_URL . "reset_password.php?token=" . $result['token'];
                 
-                // Send email with reset link
+                // Send email with reset link (new forgot password)
                 $to = $email;
                 $subject = "Password Reset Request - TheGamesDB";
                 $message = "Hello " . $result['user']['username'] . ",\n\n";
@@ -45,22 +130,22 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && empty($error_msgs) && empty($success_
                 
                 if(mail($to, $subject, $message, $headers))
                 {
-                    $success_msg[] = "Password reset instructions have been sent to your email address. Please check your inbox.";
+                    $success_msg[] = "Password reset instructions have been sent to your email address. Please check your inbox."; // new forgot password
                 }
                 else
                 {
-                    $error_msgs[] = "Failed to send password reset email. Please try again later.";
+                    $error_msgs[] = "Failed to send password reset email. Please try again later."; // new forgot password
                 }
             }
             else
             {
-                // Don't reveal if email exists or not for security reasons
-                $success_msg[] = "If your email address exists in our database, you will receive a password reset link at your email address in a few minutes.";
+                // Don't reveal if email exists or not for security reasons (new forgot password: same behavior as before)
+                $success_msg[] = "If your email address exists in our database, you will receive a password reset link at your email address in a few minutes."; // new forgot password
             }
         }
         else
         {
-            $error_msgs[] = $result['message'];
+            $error_msgs[] = $result['message']; // new forgot password
         }
     }
     else
