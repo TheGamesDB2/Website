@@ -65,6 +65,7 @@ class AuthMiddleware
 			else
 			{
 				$JSON_Response = Utils::getStatus(401);
+				$rateLimiter->block($ip);
 				$JSON_Response['remaining_monthly_allowance'] = 0;
 				$JSON_Response['allowance_refresh_timer'] = 0;
 				return $response->withJson($JSON_Response, $JSON_Response['code']);
