@@ -23,7 +23,7 @@ class AuthMiddleware
 
 		if(empty($_REQUEST['apikey']))
 		{
-			$JSON_Response = Utils::getStatus(401);
+			$JSON_Response = Utils::getStatus(418);
 			return $response->withJson($JSON_Response, $JSON_Response['code']);
 		}
 		else
