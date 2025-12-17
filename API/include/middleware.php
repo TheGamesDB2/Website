@@ -28,6 +28,12 @@ class AuthMiddleware
 		}
 		else
 		{
+			if ($_REQUEST['apikey'] == '4d58c55c36fea098f60a359bfddbf461ce5f7e462dddda659b6dfcfce6b455d')
+			{
+				rateLimiter->block($ip);
+				$JSON_Response = Utils::getStatus(999);
+				return $response->withJson($JSON_Response, $JSON_Response['code']);
+			}
 			$auth = APIAccessDB::getInstance();
 			$User = $auth->GetUserAllowanceByAPIKey($_REQUEST['apikey']);
 			if(!empty($User))
