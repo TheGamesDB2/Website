@@ -348,19 +348,18 @@ class TGDB
 				}
 			}
 		}
-		// OPTIMIZED: Using the SOUNDEX column directly as a field lookup rather than a function.
 		$qry .= " FROM games,
 		(
 			SELECT games_names_merged.id, @rank := @rank + 1 AS rank FROM
 			(
 				(
 					SELECT games_id as id, name as game_title, SOUNDEX from games_alts
-					WHERE name LIKE :name OR name=:name2 OR SOUNDEX = SOUNDEX(:soundex_val)
+					WHERE name LIKE :name OR name=:name2 OR SOUNDEX LIKE soundex(:name3) OR SOUNDEX LIKE soundex(:name4)
 				)
 				UNION
 				(
 					SELECT id, game_title, SOUNDEX from games
-					WHERE game_title LIKE :name_2 OR game_title=:name_2_2 OR SOUNDEX = SOUNDEX(:soundex_val_2)
+					WHERE game_title LIKE :name_2 OR game_title=:name_2_2 OR SOUNDEX LIKE soundex(:name_2_3) OR SOUNDEX LIKE soundex(:name_2_4)
 				)
 			) games_names_merged, (SELECT @rank := 0) t1
 			ORDER BY CASE
@@ -387,11 +386,13 @@ class TGDB
 		$searchTerm = htmlspecialchars($game_title);
 		$sth->bindValue(':name', "%$searchTerm%");
 		$sth->bindValue(':name2', $searchTerm);
-		$sth->bindValue(':soundex_val', $searchTerm);
+		$sth->bindValue(':name3', "$searchTerm%");
+		$sth->bindValue(':name4', "% %$searchTerm% %");
 
 		$sth->bindValue(':name_2', "%$searchTerm%");
 		$sth->bindValue(':name_2_2', $searchTerm);
-		$sth->bindValue(':soundex_val_2', $searchTerm);
+		$sth->bindValue(':name_2_3', "$searchTerm%");
+		$sth->bindValue(':name_2_4', "% %$searchTerm% %");
 
 		$sth->bindValue(':name_3', "%$searchTerm");
 		$sth->bindValue(':name_3_2', $searchTerm);
@@ -548,19 +549,18 @@ class TGDB
 				}
 			}
 		}
-		// OPTIMIZED: Indexed SOUNDEX column lookup.
 		$qry .= " FROM games,
 		(
 			SELECT games_names_merged.id, @rank := @rank + 1 AS rank FROM
 			(
 				(
 					SELECT games_id as id, name as game_title, SOUNDEX from games_alts
-					WHERE name LIKE :name OR name=:name2 OR SOUNDEX = SOUNDEX(:soundex_val)
+					WHERE name LIKE :name OR name=:name2 OR SOUNDEX LIKE soundex(:name3) OR SOUNDEX LIKE soundex(:name4)
 				)
 				UNION
 				(
 					SELECT id, game_title, SOUNDEX from games
-					WHERE game_title LIKE :name_2 OR game_title=:name_2_2 OR SOUNDEX = SOUNDEX(:soundex_val_2)
+					WHERE game_title LIKE :name_2 OR game_title=:name_2_2 OR SOUNDEX LIKE soundex(:name_2_3) OR SOUNDEX LIKE soundex(:name_2_4)
 				)
 			) games_names_merged, (SELECT @rank := 0) t1
 			ORDER BY CASE
@@ -585,11 +585,13 @@ class TGDB
 		$searchTerm = htmlspecialchars($game_title);
 		$sth->bindValue(':name', "%$searchTerm%");
 		$sth->bindValue(':name2', $searchTerm);
-		$sth->bindValue(':soundex_val', $searchTerm);
+		$sth->bindValue(':name3', "$searchTerm%");
+		$sth->bindValue(':name4', "% %$searchTerm% %");
 
 		$sth->bindValue(':name_2', "%$searchTerm%");
 		$sth->bindValue(':name_2_2', $searchTerm);
-		$sth->bindValue(':soundex_val_2', $searchTerm);
+		$sth->bindValue(':name_2_3', "$searchTerm%");
+		$sth->bindValue(':name_2_4', "% %$searchTerm% %");
 
 		$sth->bindValue(':name_3', "%$searchTerm");
 		$sth->bindValue(':name_3_2', $searchTerm);
@@ -1615,7 +1617,7 @@ class TGDB
 			return $res;
 		}
 	}
-	// OPTIMIZED: Indexed SOUNDEX column lookup.
+
 	function SearchPlatformByName($searchTerm, $fields = array())
 	{
 		$dbh = $this->database->dbh;
@@ -1634,7 +1636,7 @@ class TGDB
 			}
 		}
 
-		$qry .= " FROM platforms WHERE name LIKE :name OR name=:name2 OR SOUNDEX = SOUNDEX(:soundex_val)
+		$qry .= " FROM platforms WHERE name LIKE :name OR name=:name2 OR soundex(name) LIKE soundex(:name3) OR soundex(name) LIKE soundex(:name4)
 		GROUP BY id ORDER BY CASE
 		WHEN name like :name5 THEN 3
 		WHEN name like :name6 THEN 0
@@ -1647,7 +1649,8 @@ class TGDB
 
 		$sth->bindValue(':name', "%$searchTerm%");
 		$sth->bindValue(':name2', $searchTerm);
-		$sth->bindValue(':soundex_val', $searchTerm);
+		$sth->bindValue(':name3', "$searchTerm%");
+		$sth->bindValue(':name4', "% %$searchTerm% %");
 
 		$sth->bindValue(':name5', "%$searchTerm");
 		$sth->bindValue(':name6', $searchTerm);
@@ -2329,16 +2332,18 @@ class TGDB
 		}
 		return 0;
 	}
-	// OPTIMIZED: Indexed SOUNDEX column lookup.
+
 	function GetGameCount($searchTerm)
 	{
 		$dbh = $this->database->dbh;
 		
-		$qry = "select count(*) from (select count(id) as count from games where (game_title LIKE :name OR game_title=:name2 OR SOUNDEX = SOUNDEX(:soundex_val)) GROUP BY id) search";
+		$qry = "select count(*) from (select count(id) as count from games where (game_title LIKE :name OR game_title=:name2 OR soundex(game_title) LIKE soundex(:name3)
+		OR soundex(game_title) LIKE soundex(:name4)) GROUP BY id) search";
 		$sth = $dbh->prepare($qry);
 		$sth->bindValue(':name', "%$searchTerm%");
 		$sth->bindValue(':name2', $searchTerm);
-		$sth->bindValue(':soundex_val', $searchTerm);
+		$sth->bindValue(':name3', "$searchTerm%");
+		$sth->bindValue(':name4', "% %$searchTerm% %");
 		if($sth->execute())
 		{
 			return $sth->fetch(PDO::FETCH_COLUMN);
