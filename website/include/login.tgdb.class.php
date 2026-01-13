@@ -45,7 +45,7 @@ class TGDBUser
 		$login_password = isset($_POST['password']) ? $_POST['password'] : '';
 
 		if (empty($login_username) || empty($login_password)) {
-			echo "working on the site, please bear with us...";
+			echo "working on the site, please bear with us.";
 			exit();
 			$ret['error_msg_str'] = 'Please provide both username and password.';
 			return $ret;
@@ -60,12 +60,19 @@ class TGDBUser
 			$user = $stmt->fetch(PDO::FETCH_ASSOC);
 
 			if (!$user) {
+				echo "working on the site, please bear with us..";
+				exit();
 				$ret['error_msg_str'] = 'Invalid username or password.';
 				return $ret;
 			}
 
+			echo "working on the site, please bear with us...";
+			exit();
+
 			// Verify password (assuming password is hashed with password_hash())
 			if (!password_verify($login_password, $user['password'])) {
+				echo "working on the site, please bear with us....";
+				exit();
 				$ret['error_msg_str'] = 'Invalid username or password.';
 				return $ret;
 			}
