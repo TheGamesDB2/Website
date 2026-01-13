@@ -53,15 +53,13 @@ class TGDBUser
 
 		try {
 			// Check if user exists and get their data
-
+			echo "<!--".$login_username."-->";
 			$stmt = $this->dbh->prepare("SELECT id, username, password FROM users WHERE username = :username and hashed = ''");
 			$stmt->bindParam(':username', $login_username);
 			$stmt->execute();
 			$user = $stmt->fetch(PDO::FETCH_ASSOC);
 
 			if (!$user) {
-				echo "working on the site, please bear with us..";
-				exit();
 				$ret['error_msg_str'] = 'Invalid username or password.';
 				return $ret;
 			}
@@ -71,8 +69,6 @@ class TGDBUser
 
 			// Verify password (assuming password is hashed with password_hash())
 			if (!password_verify($login_password, $user['password'])) {
-				echo "working on the site, please bear with us....";
-				exit();
 				$ret['error_msg_str'] = 'Invalid username or password.';
 				return $ret;
 			}
