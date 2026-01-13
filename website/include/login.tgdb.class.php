@@ -62,7 +62,7 @@ class TGDBUser
 				return $ret;
 			}
 
-			echo "working on the site, please bear with us";
+			echo "working on the site, please bear with us..";
 			exit();
 
 			// Verify password (assuming password is hashed with password_hash())
