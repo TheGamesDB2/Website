@@ -161,7 +161,7 @@ $Header->appendRawHeader(function() { global $Game; ?>
 
 						<div class="form-group">
 							<div>
-								<input type="hidden" name="redirect" value="<?= $_SERVER['HTTP_REFERER'] ?>"/>
+								
 								<div><label for="autologin"><input name="autologin" id="autologin" tabindex="4" type="checkbox"> Remember me</label></div>
 								<div><label for="viewonline"><input name="viewonline" id="viewonline" tabindex="5" type="checkbox"> Hide my online status this session</label></div>
 							</div>
