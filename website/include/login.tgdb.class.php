@@ -39,7 +39,8 @@ class TGDBUser
 			'error_msg_str' => '',
 			'user_row' => null
 		);
-		echo "yeh";
+		echo "working on the site, please bear with us";
+		exit();
 		// Get login credentials from POST
 		$login_username = isset($_POST['username']) ? trim($_POST['username']) : '';
 		$login_password = isset($_POST['password']) ? $_POST['password'] : '';
