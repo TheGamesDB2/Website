@@ -58,14 +58,14 @@ class TGDBUser
 			$stmt->bindParam(':username', $login_username);
 			$stmt->execute();
 			$user = $stmt->fetch(PDO::FETCH_ASSOC);
-
+echo "working on the site, please bear with us...";
+			exit();
 			if (!$user) {
 				$ret['error_msg_str'] = 'Invalid username or password.';
 				return $ret;
 			}
 
-			echo "working on the site, please bear with us...";
-			exit();
+			
 
 			// Verify password (assuming password is hashed with password_hash())
 			if (!password_verify($login_password, $user['password'])) {
