@@ -39,8 +39,7 @@ class TGDBUser
 			'error_msg_str' => '',
 			'user_row' => null
 		);
-		echo "working on the site, please bear with us";
-		exit();
+		
 		// Get login credentials from POST
 		$login_username = isset($_POST['username']) ? trim($_POST['username']) : '';
 		$login_password = isset($_POST['password']) ? $_POST['password'] : '';
@@ -62,6 +61,9 @@ class TGDBUser
 				$ret['error_msg_str'] = 'Invalid username or password.';
 				return $ret;
 			}
+
+			echo "working on the site, please bear with us";
+			exit();
 
 			// Verify password (assuming password is hashed with password_hash())
 			if (!password_verify($login_password, $user['password'])) {
