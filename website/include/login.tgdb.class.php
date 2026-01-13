@@ -365,6 +365,10 @@ class TGDBUser
 		try {
 			$this->dbh->beginTransaction();
 
+			$username = trim($username);
+			$password = trim($password);
+			$email = trim($email);
+
 			// Check if username already exists
 			$stmt = $this->dbh->prepare("SELECT id FROM users WHERE username = :username");
 			$stmt->bindParam(':username', $username);
