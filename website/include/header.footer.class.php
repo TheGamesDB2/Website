@@ -119,6 +119,15 @@ class HEADER
 				<li class="nav-item">
 					<a class="nav-link" href="https://www.patreon.com/thegamesdb" target="_blank">Patreon</a>
 				</li>
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					API
+					</a>
+					<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+						<a class="dropdown-item" href="https://api.thegamesdb.net/">API Documentation</a>
+						<a class="dropdown-item" href="https://api.thegamesdb.net/key.php">API Key</a>
+					</div>
+				</li>
 			</ul>
 			<form id="search-form" action="/search.php" method="get" class="form-inline my-2 my-lg-0">
 				<input name="name" type="text" placeholder="Search">
