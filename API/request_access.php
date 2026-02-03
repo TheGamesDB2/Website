@@ -166,7 +166,69 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                     error_log("Discord webhook exception: " . $e->getMessage());
                 }
                 
-                $success_msg[] = "Your API access request has been submitted successfully. You will be notified when your request is processed.";
+                // Auto-approve logic for 'iisu'
+                if (strtolower($app_name) == 'iisu') {
+                    $auto_approve_user_id = 4067;
+                    
+                    // Update request status
+                    $stmt = $db->prepare("UPDATE api_access_requests SET status = 'approved', processed_date = NOW(), processed_by = :processed_by, notes = 'Auto-approved via request script' WHERE id = :id");
+                    $stmt->execute([
+                        ':processed_by' => $auto_approve_user_id,
+                        ':id' => $request_id
+                    ]);
+
+                    // Grant API_ACCESS permission
+                    // Get the API_ACCESS permission ID
+                    $stmt = $db->prepare("SELECT id FROM permissions WHERE permission_text = 'API_ACCESS'");
+                    $stmt->execute();
+                    $permission = $stmt->fetch(PDO::FETCH_ASSOC);
+                    
+                    if(!$permission) {
+                         // If the permission doesn't exist, create it
+                        $stmt = $db->prepare("INSERT INTO permissions (permission_text) VALUES ('API_ACCESS')");
+                        $stmt->execute();
+                        $permission_id = $db->lastInsertId();
+                    } else {
+                        $permission_id = $permission['id'];
+                    }
+
+                    // Check if user already has the permission
+                    $stmt = $db->prepare("SELECT COUNT(*) as has_perm FROM users_permissions WHERE users_id = :user_id AND permissions_id = :permission_id");
+                    $stmt->execute([
+                        ':user_id' => $tgdb_user->GetUserID(),
+                        ':permission_id' => $permission_id
+                    ]);
+                    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                    
+                    if($result['has_perm'] == 0) {
+                        // Assign the API_ACCESS permission to the user
+                        $stmt = $db->prepare("INSERT INTO users_permissions (users_id, permissions_id) VALUES (:user_id, :permission_id)");
+                        $stmt->execute([
+                            ':user_id' => $tgdb_user->GetUserID(),
+                            ':permission_id' => $permission_id
+                        ]);
+                    }
+
+                    // Get the user's email address
+                    $stmt = $db->prepare("SELECT email_address FROM users WHERE id = ?");
+                    $stmt->execute([$tgdb_user->GetUserID()]);
+                    $user_email = $stmt->fetch(PDO::FETCH_ASSOC);
+                    
+                    // Send notification email to user
+                    $to = $user_email['email_address'] ?? "user@example.com";
+                    $subject = "TheGamesDB API Access Request Approved";
+                    $message = "Hello " . $tgdb_user->GetUsername() . ",\n\n";
+                    $message .= "Your request for API access has been approved.\n\n";
+                    $message .= "You can now access your API keys at: https://api.thegamesdb.net/key.php\n\n";
+                    $message .= "Regards,\nTheGamesDB Team";
+                    $headers = "From: noreply@thegamesdb.net";
+                    
+                    mail($to, $subject, $message, $headers);
+                    
+                    $success_msg[] = "Your API access request has been automatically approved. You can now access your API keys.";
+                } else {
+                    $success_msg[] = "Your API access request has been submitted successfully. You will be notified when your request is processed.";
+                }
             }
         } catch (PDOException $e) {
             $error_msgs[] = "Database error: " . $e->getMessage();
