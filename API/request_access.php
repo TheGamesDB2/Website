@@ -244,6 +244,8 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
             <div class="card">
                 <div class="card-header">
                     <h3>Request API Access</h3>
+                    <br>
+                    <p>Please fill out the form below to request API access. Approval can take up to 24 hours.</p>
                 </div>
                 <div class="card-body">
                     <form method="post" action="request_access.php">
