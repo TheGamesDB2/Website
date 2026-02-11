@@ -165,7 +165,12 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                     // Log the exception but don't stop the request process
                     error_log("Discord webhook exception: " . $e->getMessage());
                 }
-                
+                $query = "SELECT AVG(TIMESTAMPDIFF(SECOND, request_date, processed_date)) / 3600 AS avg_hours_to_approval FROM api_access_requests WHERE processed_date IS NOT NULL;";
+                $stmt = $db->prepare($query);
+                $result = $stmt->execute();
+                echo "<!--";
+                var_dump($result);
+                echo "-->";
                 $success_msg[] = "Your API access request has been submitted successfully. You will be notified when your request is processed.";
             }
         } catch (PDOException $e) {
