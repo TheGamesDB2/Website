@@ -76,7 +76,7 @@ if($tgdb_user->isLoggedIn())
                 $stmt = $db->prepare($query);
                 $result = $stmt->execute();
 				$row = $stmt->fetch(PDO::FETCH_ASSOC);
-                echo "Average Hours to Approval: " . round($row['avg_hours'], 2);
+                echo "Average Hours to Approval: " . round($row['avg_hours'], 0)." hours";
 					}
 					?>
 				<div class="card">
