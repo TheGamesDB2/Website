@@ -70,14 +70,14 @@ if($tgdb_user->isLoggedIn())
 				<h3>You must be logged in to the site to view your api key.</h3>
 				<?php elseif($tgdb_user->isLoggedIn() && !$tgdb_user->hasPermission('API_ACCESS')) : ?>
 				<h3>Request API Access</h3>
-				<?php if (isset($_GET['pete'])) {
+				<?php
 					$db = $tgdb_user->getDatabase();
 					$query = "SELECT AVG(TIMESTAMPDIFF(SECOND, request_date, processed_date)) / 3600 AS avg_hours FROM api_access_requests WHERE processed_date IS NOT NULL;";
                 $stmt = $db->prepare($query);
                 $result = $stmt->execute();
 				$row = $stmt->fetch(PDO::FETCH_ASSOC);
                 echo "Average Hours to Approval: " . round($row['avg_hours'], 0)." hours";
-					}
+					
 					?>
 				<div class="card">
 					<div class="card-body">
