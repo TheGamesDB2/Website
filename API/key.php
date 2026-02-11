@@ -70,6 +70,13 @@ if($tgdb_user->isLoggedIn())
 				<h3>You must be logged in to the site to view your api key.</h3>
 				<?php elseif($tgdb_user->isLoggedIn() && !$tgdb_user->hasPermission('API_ACCESS')) : ?>
 				<h3>Request API Access</h3>
+				<?php if (isset($_GET['pete'])) {
+					$query = "SELECT AVG(TIMESTAMPDIFF(SECOND, request_date, processed_date)) / 3600 AS avg_hours_to_approval FROM api_access_requests WHERE processed_date IS NOT NULL;";
+                $stmt = $db->prepare($query);
+                $result = $stmt->execute();
+                var_dump($result);
+					}
+					?>
 				<div class="card">
 					<div class="card-body">
 						<form method="post" action="request_access.php">
