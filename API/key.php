@@ -74,7 +74,8 @@ if($tgdb_user->isLoggedIn())
 					$query = "SELECT AVG(TIMESTAMPDIFF(SECOND, request_date, processed_date)) / 3600 AS avg_hours_to_approval FROM api_access_requests WHERE processed_date IS NOT NULL;";
                 $stmt = $db->prepare($query);
                 $result = $stmt->execute();
-                var_dump($result);
+				$row = $stmt->fetch(PDO::FETCH_ASSOC);
+                echo "Average Hours to Approval: " . round($row['avg_hours'], 2);
 					}
 					?>
 				<div class="card">
