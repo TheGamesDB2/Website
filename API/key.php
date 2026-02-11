@@ -71,6 +71,7 @@ if($tgdb_user->isLoggedIn())
 				<?php elseif($tgdb_user->isLoggedIn() && !$tgdb_user->hasPermission('API_ACCESS')) : ?>
 				<h3>Request API Access</h3>
 				<?php if (isset($_GET['pete'])) {
+					$db = $tgdb_user->getDatabase();
 					$query = "SELECT AVG(TIMESTAMPDIFF(SECOND, request_date, processed_date)) / 3600 AS avg_hours_to_approval FROM api_access_requests WHERE processed_date IS NOT NULL;";
                 $stmt = $db->prepare($query);
                 $result = $stmt->execute();
