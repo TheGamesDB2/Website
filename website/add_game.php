@@ -335,6 +335,7 @@ $Header->appendRawHeader(function() { global $devs_list, $pubs_list; ?>
 					<div class="col">
 						<div class="card border-primary">
 							<div class="card-header">
+								<strong>If it is not a game, please do not add it</strong>
 								<h1><input style="width:100%" name="game_title" placeholder="GameTitle goes here..."/></h1>
 								<div id="alts_fields">
 									<div class="input-group mb-3">
