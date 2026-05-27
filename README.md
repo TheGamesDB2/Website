@@ -7,7 +7,7 @@ This site serves as a frontend to a complete database of video games.
 
 The site includes artwork and metadata that can be incorporated into various HTPC software and plug-ins via our API.
 
-
+Please note that updates to this repo are not as often as the site receives updates. Whilst we work on our new site we are only applying basic changes to the main site.
 
 Getting started
 ---------------
